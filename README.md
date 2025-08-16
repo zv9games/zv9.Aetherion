@@ -71,4 +71,4 @@
 ║ Built by Greg (zv9), with Copilot riding shotgun.                      ║
 ║ Inspired by Grok, Godot, and the sacred geometry of open-source.       ║
 ╚══════════════════════════════════════════════════════════════════════════╝
-════════════════════════════════╝
+
