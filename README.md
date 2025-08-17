@@ -1,4 +1,4 @@
-# zv9.echoengine
+# zv9.Aetherionengine
 2D/3D procedural gen core rust gdextension. 
 
 ```text
