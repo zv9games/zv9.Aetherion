@@ -1,0 +1,2 @@
+[alias]
+build-sync = "build --release && run --bin sync_to_godot"
