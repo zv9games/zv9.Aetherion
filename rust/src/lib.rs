@@ -3,10 +3,18 @@
 
 //! 📚 Aetherion Engine Core Library
 //! Modular, introspectable, legacy-friendly procedural engine for Godot.
-//! Exposes audit, dimension, signal, lifecycle, and overlay systems.
+//!
+//! 🔧 Exposes audit, dimension, signal, lifecycle, and overlay systems.
+//! 🧭 Mounts silently on Godot startup, initializing runtime ticker and observatory window.
+//! 🪶 Native debugger window (via `egui`) runs in parallel, displaying tick count, phase glyphs, and echo logs.
+//!
+//! When the temple opens, the echo listens.
+//! When the glyph is drawn, the observatory opens.
 
 use godot::prelude::*;
 use crate::interface::echo_api::EchoApi;
+use std::process::Command;
+
 
 // --- Modules ---
 pub mod engine {
@@ -32,6 +40,7 @@ pub mod audit {
     pub mod annotation;
     pub mod overlay;
     pub mod manifest;
+    pub mod debugger; // 🧿 Native observatory window
 }
 
 pub mod utils {

@@ -18,6 +18,10 @@ thiserror = "1.0"
 godot = { path = "../../zv9.gdext/godot" }
 godot-core = { path = "../../zv9.gdext/godot-core" }
 godot-macros = { path = "../../zv9.gdext/godot-macros", optional = true }
+egui = "0.27"
+eframe = "0.27"
+winit = "0.29"
+chrono = "0.4.41"
 
 [build-dependencies]
 gdext-gen = "0.1.0"
@@ -34,6 +38,10 @@ strip = "symbols"
 [[bin]]
 name = "sync_to_godot"
 path = "src/bin/sync_to_godot.rs"
+
+[[bin]]
+name = "debugger"
+path = "src/bin/debugger.rs"
 
 
 #[[bin]]
