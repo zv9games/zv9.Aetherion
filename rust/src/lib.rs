@@ -1,6 +1,3 @@
-#![allow(clippy::module_inception)]
-#![allow(clippy::too_many_arguments)]
-
 //! 📚 Aetherion Engine Core Library
 //! Modular, introspectable, legacy-friendly procedural engine for Godot.
 //!
@@ -14,7 +11,6 @@
 use godot::prelude::*;
 use crate::interface::echo_api::EchoApi;
 use std::process::Command;
-
 
 // --- Modules ---
 pub mod engine {
@@ -40,7 +36,7 @@ pub mod audit {
     pub mod annotation;
     pub mod overlay;
     pub mod manifest;
-    pub mod debugger; // 🧿 Native observatory window
+    //pub mod debugger; // 🧿 Native observatory window
 }
 
 pub mod utils {
@@ -67,3 +63,4 @@ pub mod prelude {
 // --- GDExtension Entry Point ---
 #[gdextension]
 unsafe impl ExtensionLibrary for EchoApi {}
+
