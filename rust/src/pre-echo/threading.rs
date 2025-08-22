@@ -1,9 +1,19 @@
+//! 🫥 Phantom Threading Rituals (Archived)
+//!
+//! Legacy async routines from the pre-Echo iteration.
+//! Includes tile payload decoding and changeover frame generation.
+//!
+//! These functions run in background threads and push into shared queues.
+//! Preserved for reference, debugging, or future resurrection.
+//!
+//! ⚠️ Not currently invoked by AetherionEngine. Treat as phantom lore.
+
 use std::thread;
 use std::sync::{Arc, Mutex};
 use once_cell::sync::Lazy;
 use rayon::prelude::*;
 use godot::prelude::*;
-use rand::{Rng, SeedableRng}; // ✅ Rng now used via gen/gen_bool
+use rand::{Rng, SeedableRng};
 use rand::rngs::StdRng;
 use crate::types::{TilePayload, WALL_TILE, FLOOR_TILE, ZERO_TILE, ONE_TILE};
 
@@ -16,15 +26,15 @@ pub static TILE_QUEUE: Lazy<Arc<Mutex<Vec<TilePayload>>>> =
 pub struct ChangeoverUpdate {
     pub source_id: i32,
     pub tiles: Vec<(Vector2i, Vector2i, i32)>, // (pos, atlas_coords, alt_id)
-    pub log_messages: Vec<String>, // Queued log messages
+    pub log_messages: Vec<String>,             // Queued log messages
 }
 
 /// Shared queue for changeover updates
 pub static CHANGEOVER_QUEUE: Lazy<Arc<Mutex<Vec<ChangeoverUpdate>>>> =
     Lazy::new(|| Arc::new(Mutex::new(Vec::new())));
 
-#[allow(dead_code)] // Called from GDScript
-/// Async tile decoder — runs in its own thread, pushes into TILE_QUEUE
+#[allow(dead_code)] // Called from GDScript in legacy flow
+/// 🧵 Async tile decoder — runs in its own thread, pushes into TILE_QUEUE
 pub fn generate_payload_async(image_data: Vec<u8>, width: i32, height: i32, chunk_size: i32) {
     thread::spawn(move || {
         let mut log_messages = Vec::new();
@@ -80,7 +90,6 @@ pub fn generate_payload_async(image_data: Vec<u8>, width: i32, height: i32, chun
             queue.len()
         ));
 
-        // Push log messages to CHANGEOVER_QUEUE
         let update = ChangeoverUpdate {
             source_id: 0,
             tiles: Vec::new(),
@@ -91,7 +100,7 @@ pub fn generate_payload_async(image_data: Vec<u8>, width: i32, height: i32, chun
     });
 }
 
-/// Generate changeover updates for a frame
+/// 🎬 Generate changeover updates for a frame (legacy async)
 pub fn generate_changeover_async(
     width: i32,
     height: i32,
@@ -132,7 +141,7 @@ pub fn generate_changeover_async(
 }
 
 #[allow(dead_code)] // Used by generate_payload_async
-/// Computes luminance from an RGBA byte array at (x, y)
+/// 🧮 Computes luminance from RGBA byte array at (x, y)
 fn compute_luminance(image_data: &[u8], x: i32, y: i32, width: i32, log_messages: &mut Vec<String>) -> f32 {
     let idx = ((y * width + x) * 4) as usize;
     if idx + 3 >= image_data.len() {
@@ -155,14 +164,10 @@ fn compute_luminance(image_data: &[u8], x: i32, y: i32, width: i32, log_messages
     }
 }
 
-/// Pulls everything currently in the tile queue, emptying it
+/// 🧺 Pulls and clears all tile payloads from the queue
 pub fn take_payload_batch() -> Vec<TilePayload> {
     let mut q = TILE_QUEUE.lock().unwrap();
     q.drain(..).collect()
 }
 
-/// Pulls everything currently in the changeover queue, emptying it
-pub fn take_changeover_batch() -> Vec<ChangeoverUpdate> {
-    let mut q = CHANGEOVER_QUEUE.lock().unwrap();
-    q.drain(..).collect()
-}
+/// 🧺 Pulls and clears all

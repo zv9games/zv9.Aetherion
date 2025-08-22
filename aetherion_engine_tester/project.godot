@@ -8,6 +8,10 @@
 
 config_version=5
 
+[aetherion]
+
+plugin_enabled=true
+
 [application]
 
 config/name="Aetherion_Engine_Tester"
@@ -15,9 +19,13 @@ run/main_scene="res://root_scenes/main.tscn"
 config/features=PackedStringArray("4.5", "Mobile")
 config/icon="res://icon.svg"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/aetherion_plugin/plugin.cfg")
+
 [gdextension]
 
-load="res://aetherion.gdextension"
+//load="res://aetherion.gdextension"
 
 [rendering]
 

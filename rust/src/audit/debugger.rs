@@ -40,14 +40,20 @@ fn current_time_string() -> String {
 
 pub fn start_debugger_window() {
     let native_options = NativeOptions {
-		viewport: egui::ViewportBuilder::default()
-			.with_title("🧿 Aetherion Debugger")
-			.with_inner_size([320.0, 120.0])
-			.with_always_on_top()
-			.with_decorations(true),
-		..Default::default()
-	};
+        viewport: egui::ViewportBuilder::default()
+            .with_title("🧿 Aetherion Debugger")
+            .with_inner_size([320.0, 120.0])
+            .with_always_on_top()
+            .with_decorations(true),
+        ..Default::default()
+    };
 
-
-    
+    thread::spawn(move || {
+        let _ = eframe::run_native(
+            "🧿 Aetherion Debugger",
+            native_options,
+            Box::new(|_cc: &CreationContext| Box::<DebuggerApp>::default()),
+        );
+    });
 }
+
