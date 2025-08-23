@@ -1,10 +1,13 @@
 use std::fs;
 use std::path::PathBuf;
+use std::process::Command;
 
 fn main() {
     println!("🔨 Building AetherionEngine...");
-    let build_status = std::process::Command::new("cargo")
-        .args(&["build", "--release"])
+    
+    // === CRITICAL CHANGE: Added the --features flag ===
+    let build_status = Command::new("cargo")
+        .args(&["build", "--release", "--features", "macros"])
         .current_dir("../rust")
         .status()
         .expect("Failed to run cargo build");
