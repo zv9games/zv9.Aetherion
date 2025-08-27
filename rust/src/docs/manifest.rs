@@ -54,47 +54,49 @@ c:/zv9/zv9.aetherion/rust/
 GDExtension.toml 
 
 c:/zv9/zv9.aetherion/rust/src/
-├── core/                                   # 🧠 Core Procedural Logic and Lifecyle Orchestration (formerly 'engine/')
-│   ├── animator.rs                       # Manages animation of tiles/voxels
-│   ├── dimension.rs                      # Abstracts 2D/3D coordinate systems
-│   ├── generator.rs                      # Core procedural generation algorithms
-│   ├── lifecycle.rs                      # Manages engine startup, tick, and shutdown
-│   ├── map_builder.rs                    # Builds the map grid from processed data
-│   ├── tile_placer.rs                    # Heavy lifter: places tiles/voxels based on map data (formerly tile_smasher)
-│   ├── registry.rs                       # Central registry for entities
-│   ├── runtime.rs                        # Engine runtime and state container
-│   ├── types.rs                          # Shared data structures and traits
-│   └── mod.rs                            # Core module manifest and re-exports
-│
-├── data_processing/                        # 🖼️ Utilities for handling external data and assets
-│   ├── level_importer.rs                 # Reads external level data and config (formerly annotation_loader)
-│   ├── tilemap_data_generator.rs         # Processes images to create tile placement data (formerly image_processor)
-│   └── mod.rs
-│
-├── godot_bridge/                           # 🎮 Godot-facing bindings and communication layer (formerly 'interface/')
-│   ├── bindings.rs                       # Native bindings for Godot classes
-│   ├── commands.rs                       # Defines the Godot-facing public command API (formerly api_bot, echo_api)
-│   ├── signals.rs                        # Handles emitting signals to Godot
-│   └── mod.rs                            # GDExtension entrypoint and module manifest
-│
-├── logging/                                # 📋 Debugging, logging, and engine introspection (formerly 'audit/')
-│   ├── debugger.rs                       # Debug tools for engine state
-│   ├── logger.rs                         # Structured logging and audit trails
-│   └── mod.rs
-│
-├── utilities/                              # 🛠️ Async ops, config, and helper utilities (formerly 'utils/')
-│   ├── config.rs                         # Runtime configuration and presets
-│   ├── concurrency.rs                    # Threading primitives and async coordination (consolidates all threading logic)
-│   ├── helpers.rs                        # General helper functions and wrappers
-│   ├── mapper.rs                         # Spatial mapping and coordinate transforms
-│   ├── time.rs                           # Tick management and time-based transitions
-│   └── mod.rs
-│
-├── game_logic/                             # 🕹️ Game-specific logic
-│   └── scene_transitions.rs              # Handles scene loading and fading (formerly changeover)
-│
-├── prelude.rs                              # Re-exports for ergonomic imports
-├── lib.rs                                  # Root crate manifest
+
+├── core/                                   # 🧠 Core procedural engine logic and lifecycle orchestration
+│   ├── animator.rs                         # Animates tile/voxel transitions and visual effects
+│   ├── dimension.rs                        # Abstracts 2D/3D coordinate systems for flexible spatial logic
+│   ├── generator.rs                        # Core procedural generation algorithms (noise, terrain, etc.)
+│   ├── lifecycle.rs                        # Manages engine startup, tick loop, and shutdown hooks
+│   ├── map_builder.rs                      # Constructs the map grid from processed tile data
+│   ├── tile_placer.rs                      # Places tiles/voxels into the world based on map data
+│   ├── registry.rs                         # Central registry for exposing Rust classes to Godot
+│   ├── runtime.rs                          # Holds runtime state, engine context, and execution flags
+│   ├── types.rs                            # Shared data structures, traits, and type aliases
+│   └── mod.rs                              # Manifest for the `core` module; re-exports internal components
+
+├── data_processing/                        # 🖼️ Handles external data ingestion and transformation
+│   ├── level_importer.rs                   # Loads annotated level data from external sources
+│   ├── tilemap_data_generator.rs           # Converts images into tile placement data
+│   └── mod.rs                              # Manifest for the `data_processing` module
+
+├── godot_bridge/                           # 🎮 Godot-facing bindings and communication layer
+│   ├── bindings.rs                         # Native bindings for Godot classes and types
+│   ├── commands.rs                         # Public API exposed to GDScript (e.g. build_map, reset)
+│   ├── signals.rs                          # Emits signals to Godot (e.g. build_map_start, generation_complete)
+│   └── mod.rs                              # Manifest and entrypoint for GDExtension integration
+
+├── logging/                                # 📋 Debugging, diagnostics, and audit trail infrastructure
+│   ├── debugger.rs                         # Tools for inspecting engine state and runtime behavior
+│   ├── logger.rs                           # Structured logging utilities and macros
+│   └── mod.rs                              # Manifest for the `logging` module
+
+├── utilities/                              # 🛠️ General-purpose helpers and runtime utilities
+│   ├── config.rs                           # Runtime configuration loader and presets
+│   ├── concurrency.rs                      # Threading primitives and async coordination
+│   ├── helpers.rs                          # Miscellaneous helper functions and wrappers
+│   ├── mapper.rs                           # Coordinate transforms and spatial mapping logic
+│   ├── time.rs                             # Tick management and time-based transitions
+│   └── mod.rs                              # Manifest for the `utilities` module
+
+├── game_logic/                             # 🕹️ Game-specific logic and scene orchestration
+│   └── scene_transitions.rs                # Handles scene loading, fading, and transitions
+
+├── prelude.rs                              # 🌟 Re-exports common types and traits for ergonomic imports
+├── lib.rs                                  # 🚀 Root crate manifest and GDExtension entrypoint
+
 
 AetherionEngine Changelog
 v0.0.1 - 2025-08-22
@@ -124,3 +126,39 @@ All external data processing logic is now housed in the data_processing module.
 Deprecated Modules: The confusing and abstract pre_echo/ directory has been completely removed. Its functional components have been moved and integrated into the new structure.
 
 Improved Clarity: The new file and module names are self-documenting, making the codebase significantly easier to navigate and understand for contributors.
+
+#####################################################################################################
+Action Plan: Configuring the TileSet
+Create a TileSet Texture: Open your ExpansiveTileMap node in Godot. In the inspector, next to "Tile Set," click the dropdown and select "New TileSet." Then, go into the TileSet editor.
+
+Add a Texture: In the TileSet editor, click the Add Texture button and import a simple texture. This can be any image file, but a simple 16x16 or 32x32 pixel image with a few colored squares will work best for testing.
+
+Create Tiles:
+
+Once you've added the texture, click on it.
+
+In the "Create a Tile" menu that pops up, you need to define the regions of your texture that are considered tiles. The simplest way is to select "Create a Tile" and then drag a box over one of the squares in your texture.
+
+Get Source ID and Atlas Coords: When you select a tile in your TileSet editor, you can see its "Source ID" and "Atlas Coords" in the inspector. You need to make sure the values you pass from your Rust code match the values in your Godot editor.
+
+Example for your Rust Code:
+
+Your Rust code is using:
+tilemap.set_cell(Vector2i::new(tile_coords.x, tile_coords.y), info.source_id, info.atlas_coords, info.alternate_id)
+
+This means the info struct in your Rust code must contain valid source_id and atlas_coords.
+
+info.source_id: This must match the Source ID of the texture in your TileSet.
+
+info.atlas_coords: This must match the coordinates of the tile within that texture.
+
+Recommendation:
+For initial testing, I would hardcode a simple value in your Rust code.
+
+Go to your Godot TileSet editor and create a single tile.
+
+Note its Source ID and Atlas Coords. For a single tile, this will likely be source_id: 0 and atlas_coords: (0, 0).
+
+In your commands.rs file, in the _process function, temporarily replace info.source_id and info.atlas_coords with the correct hardcoded values from your Godot editor.
+
+Once you have a single tile successfully placing, you can start to connect your procedural generation logic back up to the info struct.
