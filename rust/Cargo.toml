@@ -14,6 +14,7 @@ image = "0.25"
 serde = { version = "1.0", features = ["derive"] }
 bincode = "1.3"
 crossbeam-channel = "0.5"
+crossbeam = "0.8"
 
 # Required for concurrent programming, linear algebra, etc.
 rand = { version = "0.8.5", features = ["small_rng"] }
@@ -27,8 +28,7 @@ godot = { path = "../../zv9.gdext/godot" }
 godot-core = { path = "../../zv9.gdext/godot-core" }
 godot-macros = { path = "../../zv9.gdext/godot-macros" }
 
-[build-dependencies]
-gdext-gen = "0.1.0"
+
 
 [profile.dev]
 opt-level = 1
@@ -50,7 +50,4 @@ path = "src/bin/sync_to_godot.rs"
 [alias]
 build-sync = "build --release && run --bin sync_to_godot"
 
-# ✅ This is the missing piece: tells gdext-gen which classes to expose
-[package.metadata.godot]
-out-dir = "res://"
-classes = ["AetherionEngine", "AetherionSignals"]
+
