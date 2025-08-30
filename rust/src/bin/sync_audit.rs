@@ -30,7 +30,7 @@ fn main() {
 
     // Step 3: Optional — print last build time
     println!("\n⏱️ Last build timestamp:");
-    if let Ok(output) = Command::new("cargo")
+    if let Ok(_output) = Command::new("cargo")
         .args(&["build", "--release", "--timings"])
         .output()
     {
