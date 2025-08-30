@@ -36,34 +36,65 @@
 ╠══════════════════════════════════════════════════════════════════════════╣
 ║ 📦 MODULES                                                              ║
 ║                                                                          ║
-║ • engine/                                                              ║
-║   ├── generator.rs     → 🎲 Tile/voxel generation algorithms            ║
-║   ├── animator.rs      → 🎞️ Lifecycle frame logic                      ║
-║   ├── registry.rs      → 🗂️ Metadata and tile/voxel registry           ║
-║   ├── dimension.rs     → 🧭 Bot Flipper — 2D/3D abstraction layer       ║
-║   ├── lifecycle.rs     → 🔄 Procedural transitions and hooks           ║
-║   ├── runtime.rs       → ⚙️ Thread orchestration and mode runner       ║
-║   ├── types.rs         → 📐 Shared enums, traits, and type defs        ║
-║   └── prelude.rs       → 📦 Ergonomic re-exports for engine modules     ║
+║ • aetherion/                                                           ║
+║   ├── core/                                                            ║
+║   │   ├── dimension.rs     → 🧭 2D/3D abstraction layer                 ║
+║   │   ├── lifecycle.rs     → 🔄 Procedural transitions and hooks       ║
+║   │   ├── runtime.rs       → ⚙️ Engine runtime and tick logic          ║
+║   │   └── mod.rs           → 📦 Core re-exports                        ║
+║   ├── generator/                                                       ║
+║   │   ├── noise.rs         → 🌫️ Noise generation (Perlin, Simplex)     ║
+║   │   ├── patterns.rs      → 🧵 Pattern logic and spatial rules        ║
+║   │   └── mod.rs           → 📦 Generator re-exports                   ║
+║   ├── pipeline/                                                        ║
+║   │   ├── builder/                                                     ║
+║   │   │   ├── builder.rs    → 🏗️ Map builder logic                     ║
+║   │   │   ├── threaded.rs   → 🧵 Threaded generation routines          ║
+║   │   │   └── mod.rs        → 📦 Builder re-exports                    ║
+║   │   ├── data/                                                        ║
+║   │   │   ├── chunk.rs      → 🧩 MapDataChunk struct                   ║
+║   │   │   ├── tile.rs       → 🧱 TileInfo struct                       ║
+║   │   │   ├── options.rs    → ⚙️ MapBuildOptions config                ║
+║   │   │   └── mod.rs        → 📦 Data re-exports                       ║
+║   │   └── mod.rs            → 📦 Pipeline re-exports                   ║
+║   └── mod.rs                → 📦 Aetherion root re-exports             ║
 ║                                                                          ║
-║ • interface/                                                           ║
-║   ├── lib.rs           → 🚪 GDExtension entrypoint                     ║
-║   ├── echo_api.rs      → 📣 Public API exposed to Godot                ║
-║   ├── signal.rs        → 🔔 Signal routing and echo propagation        ║
-║   └── bindings.rs      → 🧩 Godot class wrappers and native bindings   ║
+║ • godot4/                                                              ║
+║   ├── api/                                                             ║
+║   │   ├── engine.rs       → 🚀 AetherionEngine Godot class             ║
+║   │   └── mod.rs          → 📦 API re-exports                          ║
+║   ├── bindings/                                                        ║
+║   │   ├── godot_types.rs  → 🔁 Vector2/Vector3 conversions             ║
+║   │   └── mod.rs          → 📦 Bindings re-exports                     ║
+║   ├── messaging/                                                       ║
+║   │   ├── messages.rs     → 📣 EngineMessage enum                      ║
+║   │   ├── sync.rs         → 🔄 GodotSync queue system                  ║
+║   │   └── mod.rs          → 📦 Messaging re-exports                    ║
+║   ├── signals/                                                        ║
+║   │   ├── definitions.rs  → 🔔 Signal definitions                      ║
+║   │   ├── dispatch.rs     → 📡 Signal dispatch logic                   ║
+║   │   └── mod.rs          → 📦 Signals re-exports                      ║
+║   └── mod.rs              → 📦 Godot4 root re-exports                  ║
 ║                                                                          ║
-║ • audit/                                                              ║
-║   ├── manifest.rs      → 📜 Ritual manifest and metadata ledger        ║
-║   ├── logger.rs        → 🧾 Structured logging and audit trails        ║
-║   ├── overlay.rs       → 🪞 Visual debug overlays                      ║
-║   └── annotation.rs    → 🏷️ Semantic tags and metadata ingestion       ║
+║ • shared/                                                              ║
+║   ├── math.rs            → ➗ Math utilities and constants             ║
+║   ├── types.rs           → 🧬 Common type aliases                      ║
+║   ├── traits.rs          → 🧠 Shared traits (Tickable, Serializable)   ║
+║   └── mod.rs             → 📦 Shared re-exports                        ║
 ║                                                                          ║
-║ • utils/                                                              ║
-║   ├── config.rs        → ⚙️ Generation presets and runtime config      ║
-║   ├── threading.rs     → 🧵 Async task orchestration                   ║
-║   ├── mapper.rs        → 🗺️ Spatial mapping and transforms             ║
-║   └── helpers.rs       → 🧰 Miscellaneous utilities                    ║
+║ • util/                                                                ║
+║   ├── config.rs          → ⚙️ Engine configuration                     ║
+║   ├── logging.rs         → 📜 Logging utilities                        ║
+║   ├── timing.rs          → ⏱️ Tick and budget management               ║
+║   └── mod.rs             → 📦 Utility re-exports                       ║
 ║                                                                          ║
+║ • tests/                                                               ║
+║   ├── aetherion_tests.rs → 🧪 Core engine integration tests            ║
+║   ├── godot_integration_tests.rs → 🧪 Godot API and signal tests       ║
+║   └── common.rs          → 🧰 Test utilities                           ║
+║                                                                          ║
+║ • lib.rs                 → 🧠 Crate entrypoint                         ║
+║ • prelude.rs            → 🪶 Common imports for ergonomic dev         ║
 ╠══════════════════════════════════════════════════════════════════════════╣
 ║ 🛠 ROADMAP                                                              ║
 ║                                                                          ║
