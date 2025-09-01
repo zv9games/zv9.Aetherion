@@ -89,7 +89,7 @@
 ║   └── common.rs                 → 🧰 Test utilities
 ║  																		║
 ║ • addons/																║
-║	└──	"excecutive head".godot.plugin/									║
+║	└──	"executive head".godot.plugin/									║
 ║		├── gdextension.rs   → 🧩 GDExtension entry point				║
 ║		├── registration.rs  → 🧠 Class registration logic				║
 ║		└── mod.rs           → 📦 Plugin re-exports						║					
