@@ -1,8 +1,8 @@
 use godot::prelude::*;
 
-/// AetherionConfig — exposes procedural engine settings to Godot
+/// Configuration node for exposing procedural engine settings to Godot.
 #[derive(GodotClass)]
-#[class(base=Node)]
+#[class(base = Node)]
 pub struct AetherionConfig {
     #[export]
     pub tile_size: i32,
@@ -34,6 +34,6 @@ impl AetherionConfig {
 
     #[func]
     fn regenerate_seed(&mut self) {
-        self.seed = godot::engine::random::rand_range(0, i64::MAX);
+        self.seed = godot4::api::engine::random::rand_range(0, i64::MAX);
     }
 }

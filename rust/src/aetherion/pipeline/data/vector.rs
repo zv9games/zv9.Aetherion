@@ -1,7 +1,8 @@
 use godot::prelude::*;
-use serde::Serialize;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
+/// Serializable wrapper for Godot's `Vector2i`.
+/// Used in map data, tile metadata, and chunk streaming.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SerializableVector2i {
     pub x: i32,
@@ -13,5 +14,3 @@ impl From<Vector2i> for SerializableVector2i {
         Self { x: v.x, y: v.y }
     }
 }
-
-

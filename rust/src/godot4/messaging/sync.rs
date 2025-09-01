@@ -1,7 +1,8 @@
-use std::sync::{Arc, Mutex};
-use crate::godot4::messaging::messages::EngineMessage;
-use crate::aetherion::pipeline::data::MapDataChunk;
 use godot::prelude::*;
+use std::sync::{Arc, Mutex};
+
+use crate::aetherion::pipeline::data::MapDataChunk;
+use crate::godot4::messaging::messages::EngineMessage;
 
 /// Thread-safe queue system for communicating between Rust threads and Godot.
 /// Stores tilemap chunks and signal messages to be drained in `_process()`.

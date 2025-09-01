@@ -1,9 +1,9 @@
 use godot::prelude::*;
 use crate::aetherion::pipeline::data::{MapDataChunk, TileInfo};
 
-/// AetherionMap — exposes runtime tile/voxel state to Godot
+/// Godot-facing node for exposing runtime tile/voxel state.
 #[derive(GodotClass)]
-#[class(base=Node)]
+#[class(base = Node)]
 pub struct AetherionMap {
     pub chunk: Option<MapDataChunk>,
 }
@@ -15,16 +15,18 @@ impl AetherionMap {
         godot_print!("🧩 AetherionMap initialized.");
     }
 
-    /// Load a chunk from raw tile data
+    /// Loads a chunk from raw tile data passed as an array of dictionaries.
     #[func]
     fn load_chunk(&mut self, tiles: Array) {
         let mut tile_vec = Vec::new();
+
         for tile in tiles.iter_shared() {
             if let Some(dict) = tile.try_to::<Dictionary>() {
                 let id = dict.get("id").try_to::<i32>().unwrap_or(0);
                 let meta = dict.get("meta").try_to::<String>().unwrap_or_default();
                 let visible = dict.get("visible").try_to::<bool>().unwrap_or(true);
                 let layer = dict.get("layer").try_to::<i32>().unwrap_or(0);
+
                 tile_vec.push(TileInfo {
                     id,
                     meta,
@@ -33,13 +35,15 @@ impl AetherionMap {
                 });
             }
         }
+
         self.chunk = Some(MapDataChunk::from_tiles(tile_vec));
     }
 
-    /// Get tile info at index
+    /// Retrieves tile info at the given index.
     #[func]
     fn get_tile(&self, index: i32) -> Dictionary {
         let mut dict = Dictionary::new();
+
         if let Some(chunk) = &self.chunk {
             if let Some(tile) = chunk.tiles.get(index as usize) {
                 dict.insert("id", tile.id);
@@ -48,10 +52,11 @@ impl AetherionMap {
                 dict.insert("layer", tile.layer);
             }
         }
+
         dict
     }
 
-    /// Clear the current chunk
+    /// Clears the current chunk.
     #[func]
     fn clear_chunk(&mut self) {
         self.chunk = None;

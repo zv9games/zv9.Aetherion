@@ -1,17 +1,16 @@
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
-use super::tile::TileInfo;
-use super::vector::SerializableVector2i;
+use super::{tile::TileInfo, vector::SerializableVector2i};
 
-/// Represents a chunk of tile data used in procedural generation.
-/// Each chunk maps grid positions to tile metadata.
+/// A chunk of tile data used in procedural generation.
+/// Maps grid positions to tile metadata.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct MapDataChunk {
     pub tiles: HashMap<SerializableVector2i, TileInfo>,
 }
 
 impl MapDataChunk {
-    /// Creates a new, empty chunk.
+    /// Creates an empty chunk.
     pub fn new() -> Self {
         Self {
             tiles: HashMap::new(),
@@ -43,8 +42,7 @@ impl MapDataChunk {
         self.tiles.iter()
     }
 
-    /// Merges another chunk into this one.
-    /// Overwrites any overlapping positions.
+    /// Merges another chunk into this one, overwriting overlapping positions.
     pub fn merge(&mut self, other: MapDataChunk) {
         self.tiles.extend(other.tiles);
     }

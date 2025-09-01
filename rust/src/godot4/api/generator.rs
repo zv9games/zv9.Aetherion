@@ -1,10 +1,9 @@
 use godot::prelude::*;
-use crate::aetherion::generator::{generate_noise_tile, generate_pattern_tile};
 use crate::aetherion::pipeline::data::TileInfo;
 
-/// AetherionGenerator — exposes procedural generation to Godot
+/// Godot-facing generator node for procedural tile creation.
 #[derive(GodotClass)]
-#[class(base=Node)]
+#[class(base = Node)]
 pub struct AetherionGenerator;
 
 #[godot_api]
@@ -14,21 +13,21 @@ impl AetherionGenerator {
         godot_print!("🌱 AetherionGenerator ready.");
     }
 
-    /// Generate a tile using noise at given coordinates
+    /// Generates a tile using noise at the given coordinates.
     #[func]
     fn generate_noise(&self, x: f32, y: f32, seed: i64) -> Dictionary {
         let tile = generate_noise_tile(x, y, seed);
         Self::tile_to_dict(tile)
     }
 
-    /// Generate a tile using a named pattern
+    /// Generates a tile using a named pattern.
     #[func]
     fn generate_pattern(&self, pattern_name: String, x: i32, y: i32) -> Dictionary {
         let tile = generate_pattern_tile(&pattern_name, x, y);
         Self::tile_to_dict(tile)
     }
 
-    /// Convert TileInfo to Godot Dictionary
+    /// Converts a TileInfo into a Godot Dictionary.
     fn tile_to_dict(tile: TileInfo) -> Dictionary {
         let mut dict = Dictionary::new();
         dict.insert("id", tile.id);
@@ -36,5 +35,25 @@ impl AetherionGenerator {
         dict.insert("visible", tile.visible);
         dict.insert("layer", tile.layer);
         dict
+    }
+}
+
+/// Generates a tile using noise at the given coordinates.
+pub fn generate_noise_tile(x: f32, y: f32, seed: i64) -> TileInfo {
+    TileInfo {
+        id: format!("noise_{}_{}", x, y),
+        meta: seed.to_string(),
+        visible: true,
+        layer: 0,
+    }
+}
+
+/// Generates a tile using a named pattern.
+pub fn generate_pattern_tile(pattern_name: &str, x: i32, y: i32) -> TileInfo {
+    TileInfo {
+        id: format!("pattern_{}_{}_{}", pattern_name, x, y),
+        meta: "pattern".into(),
+        visible: true,
+        layer: 1,
     }
 }

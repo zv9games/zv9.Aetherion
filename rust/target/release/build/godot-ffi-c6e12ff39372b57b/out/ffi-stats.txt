@@ -1,18 +1,18 @@
-                 delete_gen_dir:    1 ms
-                 write_header_h:    2 ms
-                write_header_rs:    1 ms
-               deserialize_json:  386 ms
-                  build_context:  139 ms
-              map_domain_models:  290 ms
-          generate_central_file:   18 ms
-  generate_builtin_methods_file:   89 ms
+                 delete_gen_dir:    0 ms
+                 write_header_h:    1 ms
+                write_header_rs:    0 ms
+               deserialize_json:  351 ms
+                  build_context:  173 ms
+              map_domain_models:  178 ms
+          generate_central_file:    3 ms
+  generate_builtin_methods_file:   35 ms
 generate_builtin_lifecycle_file:   12 ms
-  generate_classes_servers_file:   42 ms
-    generate_classes_scene_file:  540 ms
+  generate_classes_servers_file:   37 ms
+    generate_classes_scene_file:  331 ms
    generate_classes_editor_file:   10 ms
-   generate_virtual_consts_file:   66 ms
+   generate_virtual_consts_file:   68 ms
         generate_utilities_file:    3 ms
-        generate_interface_file:  257 ms
+        generate_interface_file:  156 ms
            generate_module_file:    0 ms
 ----------------------------------------
-                          total: 1861 ms
+                          total: 1367 ms
