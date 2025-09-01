@@ -71,16 +71,16 @@
 ║                                                                        	║
 ║ • godot4/																	║
 ║	├── api/                   # Public Godot-facing classes				║
-║	│   ├── engine.rs          # 🚀 AetherionEngine Godot class				║
-║	│   ├── signals.rs         # 🔔 AetherionSignals dispatcher				║
+║	│   ├── engine.rs          # 🚀 AetherionEngine Godot class			║
+║	│   ├── signals.rs         # 🔔 AetherionSignals dispatcher			║
 ║	│   ├── generator.rs       # 🌱 AetherionGenerator procedural logic		║
 ║	│   ├── config.rs          # ⚙️ AetherionConfig settings interface		║
 ║	│   ├── map.rs             # 🧩 AetherionMap runtime tile/voxel state 	║
 ║	│   └── mod.rs             # 📦 API re-exports			          		║
 ║	│																        ║
 ║	├── bindings/              # Rust ↔ Godot type conversions		        ║
-║	│   ├── godot_types.rs     # 🔁 Vector2/Vector3 conversions		        ║
-║	│   └── mod.rs             # 📦 Bindings re-exports				        ║
+║	│   ├── godot_types.rs     # 🔁 Vector2/Vector3 conversions		       ║
+║	│   └── mod.rs             # 📦 Bindings re-exports				       ║
 ║	│																        ║
 ║	├── messaging/             # Async communication				        ║
 ║	│   ├── messages.rs        # 📣 EngineMessage enum				        ║
