@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/godot_aetherion.jpg" alt="Godot Aetherion Poster" width="600"/>
+  <img src="./.assets/godot_aetherion.jpg" alt="Godot Aetherion Poster" width="600"/>
 </p>
 
 
