@@ -73,14 +73,14 @@
 ║	├── api/                   # Public Godot-facing classes				║
 ║	│   ├── engine.rs          # 🚀 AetherionEngine Godot class			║
 ║	│   ├── signals.rs         # 🔔 AetherionSignals dispatcher			║
-║	│   ├── generator.rs       # 🌱 AetherionGenerator procedural logic		║
+║	│   ├── generator.rs       # 🌱 AetherionGenerator procedural logic	║
 ║	│   ├── config.rs          # ⚙️ AetherionConfig settings interface		║
 ║	│   ├── map.rs             # 🧩 AetherionMap runtime tile/voxel state 	║
 ║	│   └── mod.rs             # 📦 API re-exports			          		║
 ║	│																        ║
 ║	├── bindings/              # Rust ↔ Godot type conversions		        ║
-║	│   ├── godot_types.rs     # 🔁 Vector2/Vector3 conversions		       ║
-║	│   └── mod.rs             # 📦 Bindings re-exports				       ║
+║	│   ├── godot_types.rs     # 🔁 Vector2/Vector3 conversions		      ║
+║	│   └── mod.rs             # 📦 Bindings re-exports				      ║
 ║	│																        ║
 ║	├── messaging/             # Async communication				        ║
 ║	│   ├── messages.rs        # 📣 EngineMessage enum				        ║
@@ -121,12 +121,12 @@
 		├── Aetherion.gd	  	   → 🚙 Core Aetherion system script  	    ║
 ║		├── S2O.godot.gdextension  → 🧩 Native GDExtension entry point		║
 ║		├── S2O.plugin.gd  		   → 🧠 Class registration logic			║
-║		└── plugin.cfg             → 📦 Plugin manifest						║		   				
+║		└── plugin.cfg             → 📦 Plugin manifest					║		   				
 ║																			║
 ║ • examples/																║		  	
 ║	├── pacman_expansive.rs → 🌍 Bitmask-to-map demo						║
 ║	├── infinity.rs          → ♾️ Endless maze streaming					║
-║	└── racing.rs            → 🏁 High-speed tile placement					║
+║	└── racing.rs            → 🏁 High-speed tile placement				║
 ║																			║
 ║                                                                        	║
 ║ • lib.rs                 → 🧠 Crate entrypoint                         	║
