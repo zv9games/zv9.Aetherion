@@ -116,11 +116,12 @@
 ║   ├── godot_integration_tests.rs → 🧪 GDScript ↔ Rust API tests			║
 ║   └── common.rs                 → 🧰 Test utilities						║
 ║  																			║
-║ • addons/	# belongs in your godot project directory.						║
+║ • addons/	🔧 Godot plugins: (must be inside your project directory)		║
 ║	└──	"executive head".godot.plugin/										║
-║		├── gdextension.rs   → 🧩 GDExtension entry point					║
-║		├── registration.rs  → 🧠 Class registration logic					║
-║		└── mod.rs           → 📦 Plugin re-exports							║		   				
+		├── Aetherion.gd	  	→ 🚙 Core Aetherion system script 	        ║
+║		├── S2O.godot.gdextension   → 🧩 Native GDExtension entry point		║
+║		├── S2O.plugin.gd  		→ 🧠 Class registration logic				║
+║		└── plugin.cfg           → 📦 Plugin manifest						║		   				
 ║																			║
 ║ • examples/																║		  	
 ║	├── pacman_expansive.rs → 🌍 Bitmask-to-map demo						║
