@@ -10,7 +10,7 @@ config_version=5
 
 [aetherion]
 
-plugin_enabled=true
+plugin_enabled=false
 
 [application]
 
@@ -22,10 +22,6 @@ config/icon="res://icon.svg"
 [autoload]
 
 GlobalLogger="*res://root_scripts/logger.gd"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/aetherion_plugin/plugin.cfg")
 
 [gdextension]
 

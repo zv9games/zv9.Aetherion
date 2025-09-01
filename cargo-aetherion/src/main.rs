@@ -20,7 +20,7 @@ fn main() {
     println!("📦 Syncing DLL to Godot bin folder...");
 
     let source = PathBuf::from("../rust/target/release/Aetherion_Engine.dll");
-    let dest_dir = PathBuf::from("../aetherion_engine_tester");
+    let dest_dir = PathBuf::from("../aetherion_engine_tester/addons/S2O.godot.plugin/bin");
 
     // Ensure destination directory exists
     if !dest_dir.exists() {

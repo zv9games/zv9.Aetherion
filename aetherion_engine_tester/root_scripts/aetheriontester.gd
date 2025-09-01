@@ -8,8 +8,8 @@ var scenemap = {}
 
 func _ready():
 	print("🌌 aetheriontester initializing...")
-	scanner.connect("tree_ready", self._on_tree_ready)
-	scanner.scan_tree()
+#	scanner.connect("tree_ready", self._on_tree_ready)
+#	scanner.scan_tree()
 
 func _on_tree_ready(map):
 	scenemap = map
