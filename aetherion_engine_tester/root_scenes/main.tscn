@@ -1,12 +1,7 @@
-[gd_scene load_steps=13 format=3 uid="uid://d330x0xxio1qa"]
+[gd_scene load_steps=8 format=3 uid="uid://d330x0xxio1qa"]
 
-[ext_resource type="Script" uid="uid://bcht0rdvkoh5t" path="res://root_scripts/main.gd" id="1_al6xd"]
-[ext_resource type="Script" uid="uid://tirkvtq5daju" path="res://root_scripts/aetheriontester.gd" id="1_kvte3"]
-[ext_resource type="Script" uid="uid://b1vqi77qqmdeq" path="res://root_scripts/scenescanner.gd" id="2_ragr5"]
 [ext_resource type="Texture2D" uid="uid://cvfsmomwng22s" path="res://Tileset_atlas_final.png" id="2_y374o"]
-[ext_resource type="Script" uid="uid://h0raajy2xukh" path="res://root_scripts/control_panel.gd" id="3_w5n1r"]
 [ext_resource type="TileSet" uid="uid://b6ts3mi2pbpvq" path="res://pacman_tilemap.tres" id="4_al6xd"]
-[ext_resource type="Script" uid="uid://3vq1fc7eby2u" path="res://root_scripts/aetherionsignals.gd" id="4_qo5bb"]
 [ext_resource type="Script" uid="uid://bq063osd4j4ja" path="res://root_scripts/cameras.gd" id="5_3lhfi"]
 [ext_resource type="Script" uid="uid://dgittl2ub82iy" path="res://root_scripts/camera_2.gd" id="5_al6xd"]
 [ext_resource type="Script" uid="uid://5tkm04wdelm8" path="res://root_scripts/init.gd" id="9_qo5bb"]
@@ -274,18 +269,10 @@ texture = ExtResource("2_y374o")
 sources/0 = SubResource("TileSetAtlasSource_w5n1r")
 
 [node name="aetheriontester" type="Node2D"]
-script = ExtResource("1_kvte3")
 
 [node name="scenescanner" type="Node" parent="."]
-script = ExtResource("2_ragr5")
 
 [node name="main" type="Node2D" parent="."]
-script = ExtResource("1_al6xd")
-
-[node name="aetherionengine" type="AetherionEngine" parent="main"]
-
-[node name="aetherionsignals" type="AetherionSignals" parent="main"]
-script = ExtResource("4_qo5bb")
 
 [node name="expansive_tilemap" type="TileMap" parent="main"]
 tile_set = SubResource("TileSet_kwdps")
@@ -308,7 +295,6 @@ offset_bottom = 80.0
 [node name="controlpanel" type="Control" parent="main"]
 layout_mode = 3
 anchors_preset = 0
-script = ExtResource("3_w5n1r")
 
 [node name="progressbar" type="ProgressBar" parent="main/controlpanel"]
 layout_mode = 0

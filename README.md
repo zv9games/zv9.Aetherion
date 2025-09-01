@@ -1,11 +1,11 @@
-# zv9.Aetherionengine
+# zv9.Aetherion 
 2D/3D procedural gen core rust gdextension. 
 
 ```text
 ╔══════════════════════════════════════════════════════════════════════════╗
-║ 🌌 AETHERIONENGINE — zv9.aetherionengine                                ║
+║ 🌌 AETHERION GRAPHICS PROCESSOR — zv9.aetherion                                ║
 ║                                                                          ║
-║ Yo. This is AetherionEngine. It’s the procedural brainstem of Godot,    ║
+║ Yo. This is Aetherion. It’s the procedural brainstem of Godot,    ║
 ║ written in Rust, and it shreds in both 2D and 3D. Modular, signal-driven║
 ║ and introspectable like a lucid dream.                                  ║
 ║                                                                          ║
@@ -58,23 +58,15 @@
 ║   │   │   └── mod.rs        → 📦 Data re-exports                       ║
 ║   │   └── mod.rs            → 📦 Pipeline re-exports                   ║
 ║   └── mod.rs                → 📦 Aetherion root re-exports             ║
-║                                                                          ║
-║ • godot4/                                                              ║
-║   ├── api/                                                             ║
-║   │   ├── engine.rs       → 🚀 AetherionEngine Godot class             ║
-║   │   └── mod.rs          → 📦 API re-exports                          ║
-║   ├── bindings/                                                        ║
-║   │   ├── godot_types.rs  → 🔁 Vector2/Vector3 conversions             ║
-║   │   └── mod.rs          → 📦 Bindings re-exports                     ║
-║   ├── messaging/                                                       ║
-║   │   ├── messages.rs     → 📣 EngineMessage enum                      ║
-║   │   ├── sync.rs         → 🔄 GodotSync queue system                  ║
-║   │   └── mod.rs          → 📦 Messaging re-exports                    ║
-║   ├── signals/                                                        ║
-║   │   ├── definitions.rs  → 🔔 Signal definitions                      ║
-║   │   ├── dispatch.rs     → 📡 Signal dispatch logic                   ║
-║   │   └── mod.rs          → 📦 Signals re-exports                      ║
-║   └── mod.rs              → 📦 Godot4 root re-exports                  ║
+║                                                                        ║
+║ • godot4/api/    														║
+║	├── engine.rs        → 🚀 AetherionEngine Godot class				║
+║	├── signals.rs       → 🔔 AetherionSignals dispatcher				║
+║	├── generator.rs     → 🌱 AetherionGenerator procedural logic		║
+║	├── config.rs        → ⚙️ AetherionConfig settings interface		║
+║	├── map.rs           → 🧩 AetherionMap runtime tile/voxel state		║
+║	└── mod.rs           → 📦 API re-exports							║
+║																		║
 ║                                                                          ║
 ║ • shared/                                                              ║
 ║   ├── math.rs            → ➗ Math utilities and constants             ║
@@ -88,26 +80,46 @@
 ║   ├── timing.rs          → ⏱️ Tick and budget management               ║
 ║   └── mod.rs             → 📦 Utility re-exports                       ║
 ║                                                                          ║
-║ • tests/                                                               ║
-║   ├── aetherion_tests.rs → 🧪 Core engine integration tests            ║
-║   ├── godot_integration_tests.rs → 🧪 Godot API and signal tests       ║
-║   └── common.rs          → 🧰 Test utilities                           ║
-║                                                                          ║
+║ • tests/
+║   ├── generation_tests.rs       → 🧪 Noise, patterns, tile placement
+║   ├── pipeline_tests.rs         → 🧪 Builder, chunk streaming
+║   ├── signal_tests.rs           → 🧪 Signal dispatch and sync
+║   ├── trait_tests.rs            → 🧪 Game-specific trait impls
+║   ├── godot_integration_tests.rs → 🧪 GDScript ↔ Rust API tests
+║   └── common.rs                 → 🧰 Test utilities
+║  																		║
+║ • addons/																║
+║	└──	"excecutive head".godot.plugin/									║
+║		├── gdextension.rs   → 🧩 GDExtension entry point				║
+║		├── registration.rs  → 🧠 Class registration logic				║
+║		└── mod.rs           → 📦 Plugin re-exports						║					
+║																		║
+║ • examples/															║		
+║	├── pacman_expansive.rs → 🌍 Bitmask-to-map demo					║
+║	├── infinity.rs          → ♾️ Endless maze streaming				║
+║	└── racing.rs            → 🏁 High-speed tile placement				║
+║																		║
+║                                                                        ║
 ║ • lib.rs                 → 🧠 Crate entrypoint                         ║
 ║ • prelude.rs            → 🪶 Common imports for ergonomic dev         ║
 ╠══════════════════════════════════════════════════════════════════════════╣
 ║ 🛠 ROADMAP                                                              ║
 ║                                                                          ║
-║ ✓ Unified 2D/3D placement                                               ║
-║ ✓ Signal manifest + echo logger                                        ║
-║ ☐ Terrain synthesis modules                                            ║
-║ ☐ Legacy docs system                                                   ║
-║ ☐ Plugin-ready for Godot Asset Library                                 ║
+║ ✓ Unified 2D/3D placement												║
+║ ✓ Signal manifest + echo logger										║
+║ ✓ Multi-threaded chunk streaming											║
+║ ✓ Game-agnostic trait system												║
+║ ☐ Terrain synthesis modules											║
+║ ☐ Legacy docs system													║
+║ ☐ Plugin-ready for Godot Asset Library									║
+║ ☐ Save/load serialization layer											║
+║ ☐ Procedural voxel support (3D tilemap)								║
+║					                                 					║
 ║                                                                          ║
 ╠══════════════════════════════════════════════════════════════════════════╣
 ║ 🧙 PHILOSOPHY                                                           ║
 ║                                                                          ║
-║ AetherionEngine ain’t just code—it’s a ritual. Every module’s a        ║
+║ Aetherion ain’t just code—it’s a ritual. Every module’s a        ║
 ║ copybox. Every signal’s a whisper from the grid. We build for legacy,  ║
 ║ clarity, and future skaters of the procedural cosmos.                  ║
 ║                                                                          ║
@@ -123,4 +135,5 @@
 ║                                                                          ║
 ║ Built by Greg (zv9), with Copilot riding shotgun.                      ║
 ║ Inspired by Grok, Godot, and the sacred geometry of open-source.       ║
+║ Special thanks to the Pacman2.0 project for revealing the need.			║
 ╚══════════════════════════════════════════════════════════════════════════╝
