@@ -80,13 +80,13 @@
 ║   ├── timing.rs          → ⏱️ Tick and budget management               ║
 ║   └── mod.rs             → 📦 Utility re-exports                       ║
 ║                                                                          ║
-║ • tests/
-║   ├── generation_tests.rs       → 🧪 Noise, patterns, tile placement
-║   ├── pipeline_tests.rs         → 🧪 Builder, chunk streaming
-║   ├── signal_tests.rs           → 🧪 Signal dispatch and sync
-║   ├── trait_tests.rs            → 🧪 Game-specific trait impls
-║   ├── godot_integration_tests.rs → 🧪 GDScript ↔ Rust API tests
-║   └── common.rs                 → 🧰 Test utilities
+║ • tests/																║
+║   ├── generation_tests.rs       → 🧪 Noise, patterns, tile placement	║
+║   ├── pipeline_tests.rs         → 🧪 Builder, chunk streaming			║
+║   ├── signal_tests.rs           → 🧪 Signal dispatch and sync			║
+║   ├── trait_tests.rs            → 🧪 Game-specific trait impls		║
+║   ├── godot_integration_tests.rs → 🧪 GDScript ↔ Rust API tests		║
+║   └── common.rs                 → 🧰 Test utilities					║
 ║  																		║
 ║ • addons/																║
 ║	└──	"executive head".godot.plugin/									║
