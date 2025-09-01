@@ -79,8 +79,8 @@
 ║	│   └── mod.rs             # 📦 API re-exports			          		║
 ║	│																        ║
 ║	├── bindings/              # Rust ↔ Godot type conversions		        ║
-║	│   ├── godot_types.rs     # 🔁 Vector2/Vector3 conversions	            ║
-║	│   └── mod.rs             # 📦 Bindings re-exports			            ║
+║	│   ├── godot_types.rs     # 🔁 Vector2/Vector3 conversions	          ║
+║	│   └── mod.rs             # 📦 Bindings re-exports			          ║
 ║	│																        ║
 ║	├── messaging/             # Async communication				        ║
 ║	│   ├── messages.rs        # 📣 EngineMessage enum				        ║
