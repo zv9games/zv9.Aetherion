@@ -109,19 +109,19 @@
 ║   └── mod.rs             → 📦 Utility re-exports                   	    ║
 ║                                                                           ║
 ║ • tests/																    ║
-║   ├── generation_tests.rs       → 🧪 Noise, patterns, tile placement	    ║
-║   ├── pipeline_tests.rs         → 🧪 Builder, chunk streaming				║
-║   ├── signal_tests.rs           → 🧪 Signal dispatch and sync				║
-║   ├── trait_tests.rs            → 🧪 Game-specific trait impls			║
+║   ├── generation_tests.rs        → 🧪 Noise, patterns, tile placement	    ║
+║   ├── pipeline_tests.rs          → 🧪 Builder, chunk streaming			║
+║   ├── signal_tests.rs            → 🧪 Signal dispatch and sync			║
+║   ├── trait_tests.rs             → 🧪 Game-specific trait impls			║
 ║   ├── godot_integration_tests.rs → 🧪 GDScript ↔ Rust API tests			║
-║   └── common.rs                 → 🧰 Test utilities						║
+║   └── common.rs                  → 🧰 Test utilities						║
 ║  																			║
 ║ • addons/	🔧 Godot plugins: (must be inside your project directory)		║
 ║	└──	"executive head".godot.plugin/										║
-		├── Aetherion.gd	  	→ 🚙 Core Aetherion system script 	        ║
-║		├── S2O.godot.gdextension   → 🧩 Native GDExtension entry point		║
-║		├── S2O.plugin.gd  		→ 🧠 Class registration logic				║
-║		└── plugin.cfg           → 📦 Plugin manifest						║		   				
+		├── Aetherion.gd	  	   → 🚙 Core Aetherion system script  	    ║
+║		├── S2O.godot.gdextension  → 🧩 Native GDExtension entry point		║
+║		├── S2O.plugin.gd  		   → 🧠 Class registration logic			║
+║		└── plugin.cfg             → 📦 Plugin manifest						║		   				
 ║																			║
 ║ • examples/																║		  	
 ║	├── pacman_expansive.rs → 🌍 Bitmask-to-map demo						║
