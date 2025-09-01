@@ -42,7 +42,9 @@
 ║   │   ├── lifecycle.rs     → 🔄 Procedural transitions and hooks       ║
 ║   │   ├── runtime.rs       → ⚙️ Engine runtime and tick logic          ║
 ║   │   └── mod.rs           → 📦 Core re-exports                        ║
-║   ├── generator/                                                       ║
+║   ├── generator/
+║   │   ├── pattern_type.rs
+║   │   ├── noise_config.rs                                                 ║
 ║   │   ├── noise.rs         → 🌫️ Noise generation (Perlin, Simplex)     ║
 ║   │   ├── patterns.rs      → 🧵 Pattern logic and spatial rules        ║
 ║   │   └── mod.rs           → 📦 Generator re-exports                   ║
@@ -51,7 +53,10 @@
 ║   │   │   ├── builder.rs    → 🏗️ Map builder logic                     ║
 ║   │   │   ├── threaded.rs   → 🧵 Threaded generation routines          ║
 ║   │   │   └── mod.rs        → 📦 Builder re-exports                    ║
-║   │   ├── data/                                                        ║
+║   │   ├── data/
+║   │   │   ├── vector.rs
+║   │   │   ├── map_build_options.rs
+║   │   │   ├── data.rs                                                        ║
 ║   │   │   ├── chunk.rs      → 🧩 MapDataChunk struct                   ║
 ║   │   │   ├── tile.rs       → 🧱 TileInfo struct                       ║
 ║   │   │   ├── options.rs    → ⚙️ MapBuildOptions config                ║
@@ -59,13 +64,31 @@
 ║   │   └── mod.rs            → 📦 Pipeline re-exports                   ║
 ║   └── mod.rs                → 📦 Aetherion root re-exports             ║
 ║                                                                        ║
-║ • godot4/api/    														║
-║	├── engine.rs        → 🚀 AetherionEngine Godot class				║
-║	├── signals.rs       → 🔔 AetherionSignals dispatcher				║
-║	├── generator.rs     → 🌱 AetherionGenerator procedural logic		║
-║	├── config.rs        → ⚙️ AetherionConfig settings interface		║
-║	├── map.rs           → 🧩 AetherionMap runtime tile/voxel state		║
-║	└── mod.rs           → 📦 API re-exports							║
+║ • godot4/
+║	├── api/                               # Public Godot-facing classes
+║	│   ├── engine.rs                      # 🚀 AetherionEngine Godot class
+║	│   ├── signals.rs                     # 🔔 AetherionSignals dispatcher
+║	│   ├── generator.rs                   # 🌱 AetherionGenerator procedural logic
+║	│   ├── config.rs                      # ⚙️ AetherionConfig settings interface
+║	│   ├── map.rs                         # 🧩 AetherionMap runtime tile/voxel state
+║	│   └── mod.rs                         # 📦 API re-exports
+║	│
+║	├── bindings/                          # Rust ↔ Godot type conversions
+║	│   ├── godot_types.rs                 # 🔁 Vector2/Vector3 conversions
+║	│   └── mod.rs                         # 📦 Bindings re-exports
+║	│
+║	├── messaging/                         # Async communication
+║	│   ├── messages.rs                    # 📣 EngineMessage enum
+║	│   ├── sync.rs                        # 🔄 GodotSync queue system
+║	│   └── mod.rs                         # 📦 Messaging re-exports
+║	│
+║	├── signals/                           # Signal definitions and dispatch
+║	│   ├── definitions.rs                 # 🔔 Signal definitions
+║	│   ├── dispatch.rs                    # 📡 Signal dispatch logic
+║	│   └── mod.rs                         # 📦 Signals re-exports
+║	│
+║	└── mod.rs                             # 📦 Godot4 root re-exports
+║
 ║																		║
 ║                                                                          ║
 ║ • shared/                                                              ║
