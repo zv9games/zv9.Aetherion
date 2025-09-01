@@ -9,86 +9,86 @@ lexicon: ├── └── │
 
 
 c:/zv9/zv9.aetherion/rust/src/
-├── aetherion/                             # 🧠 Core procedural engine
-│   ├── core/                              # Engine lifecycle and runtime control
-│   │   ├── dimension.rs
-│   │   ├── lifecycle.rs
-│   │   ├── runtime.rs
-│   │   └── mod.rs
+├── aetherion/                             # 🧠 Core engine modules for procedural generation and runtime orchestration
+│   ├── core/                              # Lifecycle state, runtime ticks, and dimensional context
+│   │   ├── dimension.rs                   # 2D/3D abstraction and switching logic
+│   │   ├── lifecycle.rs                   # Engine state transitions and signal hooks
+│   │   ├── runtime.rs                     # Tick progression and frame budget tracking
+│   │   └── mod.rs                         # Core module exports
 │   │
-│   ├── generator/                         # Procedural generation logic
-│   │   ├── noise.rs                       # Perlin, Simplex, etc.
-│   │   ├── patterns.rs                    # Pattern-based placement
-│   │   ├── noise_config.rs               # Configurable noise settings
-│   │   └── mod.rs
+│   ├── generator/                         # Procedural content generation and configuration
+│   │   ├── noise.rs                       # Noise algorithms (Basic, Cellular Automata, etc.)
+│   │   ├── patterns.rs                    # Pattern overlays and spatial logic
+│   │   ├── noise_config.rs               # Grid generation parameters and evolution rules
+│   │   └── mod.rs                         # Generator module exports
 │   │
-│   ├── pipeline/                          # Map building and data flow
-│   │   ├── builder/
-│   │   │   ├── builder.rs                # Generic Builder trait
-│   │   │   ├── threaded.rs              # Threaded build execution
+│   ├── pipeline/                          # Map construction, chunk streaming, and builder orchestration
+│   │   ├── builder/                       # Builder trait and threaded execution
+│   │   │   ├── builder.rs                # Map builder logic and grid-to-chunk conversion
+│   │   │   ├── threaded.rs              # Threaded builder dispatch with signal streaming
 │   │   │   └── mod.rs
-│   │   ├── data/
-│   │   │   ├── chunk.rs                 # MapDataChunk
-│   │   │   ├── tile.rs                  # TileInfo
-│   │   │   ├── options.rs               # MapBuildOptions
+│   │   ├── data/                          # Map data structures and build options
+│   │   │   ├── chunk.rs                 # MapDataChunk container
+│   │   │   ├── tile.rs                  # TileInfo metadata
+│   │   │   ├── options.rs               # MapBuildOptions and GodotNoiseType
 │   │   │   └── mod.rs
-│   │   └── mod.rs
+│   │   └── mod.rs                         # Pipeline module exports
 │   │
-│   └── mod.rs                            # Re-exports core, generator, pipeline
+│   └── mod.rs                             # Re-exports core, generator, and pipeline modules
 │
-├── godot4/                                # 🎮 Godot integration layer
-│   ├── api/                               # Public Godot-facing classes
-│   │   ├── engine.rs                     # AetherionEngine
-│   │   ├── signals.rs                    # AetherionSignals
-│   │   ├── generator.rs                  # AetherionGenerator (exposes noise/patterns)
-│   │   ├── config.rs                     # AetherionConfig (tile size, seed, etc.)
-│   │   ├── map.rs                        # AetherionMap (runtime tile/voxel state)
+├── godot4/                                # 🎮 Godot engine integration and runtime bridge
+│   ├── api/                               # Public-facing Godot classes and engine interface
+│   │   ├── engine.rs                     # AetherionEngine lifecycle and control
+│   │   ├── signals.rs                    # AetherionSignals for Godot dispatch
+│   │   ├── generator.rs                  # AetherionGenerator exposing procedural logic
+│   │   ├── config.rs                     # AetherionConfig for runtime parameters
+│   │   ├── map.rs                        # AetherionMap for tile/voxel state
 │   │   └── mod.rs
 │   │
-│   ├── bindings/                          # Rust ↔ Godot type conversions
-│   │   ├── godot_types.rs
+│   ├── bindings/                          # Type conversion between Rust and Godot
+│   │   ├── godot_types.rs                # Serializable Godot-compatible types
 │   │   └── mod.rs
 │   │
-│   ├── messaging/                         # Async communication
-│   │   ├── messages.rs                   # EngineMessage enum
-│   │   ├── sync.rs                       # GodotSync queue
+│   ├── messaging/                         # Signal queue and engine message definitions
+│   │   ├── messages.rs                   # EngineMessage enum for status and progress
+│   │   ├── sync.rs                       # GodotSync queue for async dispatch
 │   │   └── mod.rs
 │   │
-│   ├── signals/                           # Signal definitions and dispatch
-│   │   ├── definitions.rs
-│   │   ├── dispatch.rs
+│   ├── signals/                           # Signal definitions and dispatch logic
+│   │   ├── definitions.rs                # Signal metadata and identifiers
+│   │   ├── dispatch.rs                   # Signal routing and emission
 │   │   └── mod.rs
 │   │
+│   └── mod.rs                             # Godot integration exports
+│
+├── util/                                  # 🛠 Internal utilities and diagnostics
+│   ├── config.rs                         # Internal config structs and helpers
+│   ├── logging.rs                        # Logging macros and tracing utilities
+│   ├── timing.rs                         # Tick budget and time management
 │   └── mod.rs
 │
-├── util/                                  # 🛠 Utility library
-│   ├── config.rs                         # Internal config structs
-│   ├── logging.rs                        # Logging macros/utilities
-│   ├── timing.rs                         # Tick/budget management
+├── shared/                                # 🧬 Shared types, traits, and math utilities
+│   ├── math.rs                           # Vector math and spatial calculations
+│   ├── types.rs                          # Common type aliases and primitives
+│   ├── traits.rs                         # Core traits (Builder, Generator, etc.)
 │   └── mod.rs
 │
-├── shared/                                # Common types and traits
-│   ├── math.rs
-│   ├── types.rs
-│   ├── traits.rs                         # Builder, Generator, etc.
+├── plugin/                                # 🧩 Godot plugin registration and entry point
+│   ├── gdextension.rs                    # GDExtension entry point for Godot
+│   ├── registration.rs                  # Class registration via add_class::<T>()
 │   └── mod.rs
 │
-├── plugin/                                # 🧩 Godot plugin registration
-│   ├── gdextension.rs                    # GDExtension entry point
-│   ├── registration.rs                  # add_class::<T>() calls
-│   └── mod.rs
+├── tests/                                 # 🧪 Integration and unit tests
+│   ├── generation_tests.rs              # Noise, pattern, and tile placement tests
+│   ├── pipeline_tests.rs                # Builder logic, chunk streaming, threading
+│   ├── data_tests.rs                    # MapDataChunk, TileInfo, and serialization
+│   ├── signal_tests.rs                  # EngineMessage and GodotSync behavior
+│   ├── trait_tests.rs                   # Custom trait implementations (e.g., maze builders)
+│   └── common.rs                        # Shared test utilities and fixtures
 │
-├── tests/
-│	├── generation_tests.rs         # Noise, patterns, tile placement
-│	├── pipeline_tests.rs           # Builder, chunk streaming, threading
-│	├── data_tests.rs               # MapDataChunk, TileInfo, serialization
-│	├── signal_tests.rs             # EngineMessage, GodotSync
-│	├── trait_tests.rs              # Custom trait impls (e.g., PacmanMazeBuilder)
-│	└── common.rs                   # Shared test utilities
-│
-│
-├── lib.rs                                 # Entry point
-└── prelude.rs                             # Common imports
+├── lib.rs                                 # 🚪 Crate entry point and module wiring
+└── prelude.rs                             # 🌌 Common imports for ergonomic access
+                  
 
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║ 🧪 AETHERION TESTER — Ritual Interface Blueprint                         ║

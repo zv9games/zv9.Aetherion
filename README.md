@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="./assets/godot_aetherion.jpg" alt="Godot Aetherion Poster" width="600"/>
+</p>
+
+
 # zv9.Aetherion 
 2D/3D procedural gen core rust gdextension. 
 

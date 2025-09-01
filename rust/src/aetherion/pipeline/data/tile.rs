@@ -11,7 +11,7 @@ pub struct TileInfo {
     /// Coordinates in the atlas (e.g. tile index).
     pub atlas_coords: SerializableVector2i,
 
-    /// Optional alternate ID for visual variation or animation.
+    /// Alternate ID for visual variation or animation.
     pub alternate_id: i32,
 
     /// Rotation in 90° steps (0–3).
@@ -25,20 +25,11 @@ pub struct TileInfo {
 }
 
 /// Bitmask flags for tile behavior and rendering.
-/// Use bitwise OR to combine multiple flags.
+/// Combine using bitwise OR.
 pub mod tile_flags {
-    /// Tile blocks movement or physics.
-    pub const COLLIDABLE: u32 = 0b0001;
-
-    /// Tile is visible in the current layer.
-    pub const VISIBLE: u32 = 0b0010;
-
-    /// Tile can be interacted with (e.g. clicked, triggered).
-    pub const INTERACTIVE: u32 = 0b0100;
-
-    /// Tile emits light or affects lighting.
-    pub const EMISSIVE: u32 = 0b1000;
-
-    /// Tile is part of a dynamic system (e.g. animated, destructible).
-    pub const DYNAMIC: u32 = 0b10000;
+    pub const COLLIDABLE: u32     = 0b00001;
+    pub const VISIBLE: u32        = 0b00010;
+    pub const INTERACTIVE: u32    = 0b00100;
+    pub const EMISSIVE: u32       = 0b01000;
+    pub const DYNAMIC: u32        = 0b10000;
 }

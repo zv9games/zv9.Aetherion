@@ -1,38 +1,43 @@
-use crate::aetherion::generator::noise::NoiseType;
+use godot::prelude::*;
+use crate::aetherion::generator::noise::{NoiseType};
 use crate::aetherion::generator::noise_config::NoiseConfig;
 use super::vector::SerializableVector2i;
-use godot::prelude::*;
-/// Configuration options for procedural map generation.
-/// Wraps noise parameters, visual settings, and tile palette.
-#[derive(Debug, Clone)]
-pub struct MapBuildOptions {
-    /// Grid width in tiles.
-    pub width: i32,
 
-    /// Grid height in tiles.
-    pub height: i32,
-
-    /// Seed for deterministic generation.
-    pub seed: u64,
-
-    /// Noise generation mode.
-    #[export]
-	pub mode: GodotNoiseType,
-
-
-    /// Whether to animate tile placement.
-    pub animate: bool,
-
-    /// Atlas coordinates for "black" tile.
-    pub black: Vector2i,
-
-    /// Atlas coordinates for "blue" tile.
-    pub blue: Vector2i,
+/// Editor-safe wrapper for exposing noise types to GDScript.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GodotNoiseType {
+    Basic,
+    CellularAutomata,
 }
 
+impl GodotNoiseType {
+    pub fn to_internal(self) -> NoiseType {
+        match self {
+            Self::Basic => NoiseType::Basic,
+            Self::CellularAutomata => NoiseType::CellularAutomata,
+        }
+    }
+}
 
+impl GodotConvert for GodotNoiseType {
+    type Via = String;
 
-/// Godot-facing configuration for procedural map generation.
+    fn to_godot(self) -> Self::Via {
+        match self {
+            Self::Basic => "basic".into(),
+            Self::CellularAutomata => "automata".into(),
+        }
+    }
+
+    fn from_godot(value: Self::Via) -> Self {
+        match value.as_str() {
+            "automata" => Self::CellularAutomata,
+            _ => Self::Basic,
+        }
+    }
+}
+
+/// Configuration options for procedural map generation.
 /// Used in the editor and passed into the engine from GDScript.
 #[derive(Debug, Clone)]
 pub struct MapBuildOptions {
@@ -99,40 +104,5 @@ impl MapBuildOptions {
     /// Returns true if animation is enabled.
     pub fn is_animated(&self) -> bool {
         self.animate
-    }
-}
-
-/// Editor-safe wrapper for exposing noise types to GDScript.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum GodotNoiseType {
-    Basic,
-    CellularAutomata,
-}
-
-impl GodotConvert for GodotNoiseType {
-    type Via = String;
-
-    fn to_godot(self) -> Self::Via {
-        match self {
-            GodotNoiseType::Basic => "basic".into(),
-            GodotNoiseType::CellularAutomata => "automata".into(),
-        }
-    }
-
-    fn from_godot(value: Self::Via) -> Self {
-        match value.as_str() {
-            "automata" => GodotNoiseType::CellularAutomata,
-            _ => GodotNoiseType::Basic,
-        }
-    }
-}
-
-impl GodotNoiseType {
-    /// Converts to internal noise type used by the generator.
-    pub fn to_internal(self) -> NoiseType {
-        match self {
-            GodotNoiseType::Basic => NoiseType::Basic,
-            GodotNoiseType::CellularAutomata => NoiseType::CellularAutomata,
-        }
     }
 }

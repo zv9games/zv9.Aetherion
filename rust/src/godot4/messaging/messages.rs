@@ -4,16 +4,9 @@ use godot::prelude::*;
 /// These drive procedural feedback, status updates, and completion signals.
 #[derive(Clone, Debug)]
 pub enum EngineMessage {
-    /// Signals the start of a map generation process.
     Start,
-
-    /// Reports progress as a percentage (0–100).
     Progress(i32),
-
-    /// Sends a status message (e.g. "Building map").
     Status(String),
-
-    /// Signals completion with metadata.
     Complete {
         width: i32,
         height: i32,

@@ -1,5 +1,5 @@
-/// 📡 Aetherion Signal Definitions — Centralized list for dynamic access and tooling.
-/// This module does not define the signal node itself, but supports reflection, connection, and diagnostics.
+// 📡 Aetherion Signal Definitions — Centralized list for dynamic access and tooling.
+// This module does not define the signal node itself, but supports reflection, connection, and diagnostics.
 
 /// List of all signal names emitted by `AetherionSignals`.
 /// Useful for dynamic connection, logging, or editor tooling.

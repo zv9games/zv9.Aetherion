@@ -14,8 +14,7 @@ use godot::prelude::*;
 use godot_macros::gdextension;
 
 use godot4::api::engine::AetherionEngine;
-use godot4::signals::AetherionSignals;
-
+use crate::godot4::api::AetherionSignals;
 /// 🚀 Entry point for the Aetherion GDExtension.
 /// Hooks into Godot's lifecycle. Class registration is handled automatically.
 struct AetherionExtension;

@@ -2,13 +2,12 @@ use godot::prelude::*;
 use godot::classes::TileMap;
 use godot::global::Error;
 
-use crate::godot4::signals::AetherionSignals;
+use crate::godot4::api::AetherionSignals;
 use crate::godot4::messaging::{GodotSync, EngineMessage};
 use crate::aetherion::pipeline::data::{MapDataChunk, TileInfo, MapBuildOptions};
 use crate::aetherion::pipeline::builder::threaded::spawn_builder_thread;
 
-/// The main Godot-facing engine node.
-/// Exposes procedural generation and signal dispatch to GDScript.
+/// Godot-facing engine node for procedural generation and signal dispatch.
 #[derive(GodotClass)]
 #[class(init, base = Node)]
 pub struct AetherionEngine {
@@ -86,7 +85,7 @@ impl AetherionEngine {
 
     #[func]
     fn build_map(
-		&mut self,
+        &mut self,
         width: i32,
         height: i32,
         seed: i64,
@@ -110,7 +109,6 @@ impl AetherionEngine {
         };
 
         spawn_builder_thread(self.sync.clone(), config);
-
     }
 
     #[func]
