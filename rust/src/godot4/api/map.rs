@@ -1,42 +1,76 @@
 use godot::prelude::*;
-use crate::aetherion::pipeline::data::{MapDataChunk, TileInfo};
+use godot::builtin::{Array, Dictionary, Vector2i};
+use godot::classes::Node;
 
-/// Godot-facing node for exposing runtime tile/voxel state.
+use crate::aetherion::pipeline::data::{MapDataChunk, TileInfo, SerializableVector2i};
+
 #[derive(GodotClass)]
-#[class(base = Node)]
+#[class(init, base = Node)]
 pub struct AetherionMap {
     pub chunk: Option<MapDataChunk>,
 }
 
 #[godot_api]
 impl AetherionMap {
+    fn init(_base: Base<Node>) -> Self {
+        Self { chunk: None }
+    }
+
     #[func]
     fn _ready(&self) {
         godot_print!("🧩 AetherionMap initialized.");
     }
 
-    /// Loads a chunk from raw tile data passed as an array of dictionaries.
+    /// Loads a chunk from raw tile data, skipping invalid entries.
     #[func]
-    fn load_chunk(&mut self, tiles: Array) {
-        let mut tile_vec = Vec::new();
+    fn load_chunk(&mut self, tiles: Array<Variant>) {
+        let mut chunk = MapDataChunk::new();
 
-        for tile in tiles.iter_shared() {
-            if let Some(dict) = tile.try_to::<Dictionary>() {
-                let id = dict.get("id").try_to::<i32>().unwrap_or(0);
-                let meta = dict.get("meta").try_to::<String>().unwrap_or_default();
-                let visible = dict.get("visible").try_to::<bool>().unwrap_or(true);
-                let layer = dict.get("layer").try_to::<i32>().unwrap_or(0);
+        for (i, tile_variant) in tiles.iter_shared().enumerate() {
+            if let Ok(dict) = tile_variant.try_to::<Dictionary>() {
+                let source_id = dict
+                    .get("source_id")
+                    .and_then(|v| v.try_to::<i32>().ok())
+                    .unwrap_or(0);
 
-                tile_vec.push(TileInfo {
-                    id,
-                    meta,
-                    visible,
+                let atlas_coords = dict
+                    .get("atlas_coords")
+                    .and_then(|v| v.try_to::<Vector2i>().ok())
+                    .unwrap_or(Vector2i::ZERO)
+                    .into();
+
+                let alternate_id = dict
+                    .get("alternate_id")
+                    .and_then(|v| v.try_to::<i32>().ok())
+                    .unwrap_or(0);
+
+                let rotation = dict
+                    .get("rotation")
+                    .and_then(|v| v.try_to::<i32>().ok())
+                    .map(|v| v.clamp(0, u8::MAX as i32) as u8)
+                    .unwrap_or(0);
+
+                let layer = dict
+                    .get("layer")
+                    .and_then(|v| v.try_to::<i32>().ok())
+                    .map(|v| v.clamp(0, u8::MAX as i32) as u8)
+                    .unwrap_or(0);
+
+                let tile = TileInfo {
+                    source_id,
+                    atlas_coords,
+                    alternate_id,
+                    rotation,
                     layer,
-                });
+                    flags: 0,
+                };
+
+                let key = SerializableVector2i::from(Vector2i::new(i as i32, 0));
+                chunk.tiles.insert(key, tile);
             }
         }
 
-        self.chunk = Some(MapDataChunk::from_tiles(tile_vec));
+        self.chunk = Some(chunk);
     }
 
     /// Retrieves tile info at the given index.
@@ -45,20 +79,26 @@ impl AetherionMap {
         let mut dict = Dictionary::new();
 
         if let Some(chunk) = &self.chunk {
-            if let Some(tile) = chunk.tiles.get(index as usize) {
-                dict.insert("id", tile.id);
-                dict.insert("meta", tile.meta.clone());
-                dict.insert("visible", tile.visible);
+            let key = SerializableVector2i::from(Vector2i::new(index, 0));
+            if let Some(tile) = chunk.tiles.get(&key) {
+                dict.insert("source_id", tile.source_id);
+                dict.insert("atlas_coords", Vector2i::from(tile.atlas_coords));
+                dict.insert("alternate_id", tile.alternate_id);
+                dict.insert("rotation", tile.rotation);
                 dict.insert("layer", tile.layer);
+            } else {
+                godot_warn!("No tile found at index {}", index);
             }
+        } else {
+            godot_warn!("No chunk loaded when requesting tile {}", index);
         }
 
         dict
     }
 
-    /// Clears the current chunk.
     #[func]
     fn clear_chunk(&mut self) {
         self.chunk = None;
+        godot_print!("Chunk cleared.");
     }
 }

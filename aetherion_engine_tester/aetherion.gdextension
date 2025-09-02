@@ -1,9 +1,0 @@
-[configuration]
-entry_symbol = "godot_rust_init"
-compatibility_minimum = "4.2"
-
-[libraries]
-windows.x86_64 = "res://Aetherion_Engine.dll"
-
-[initialization]
-level = "scene"

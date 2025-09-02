@@ -1,8 +1,9 @@
+use rand::Rng;
 use godot::prelude::*;
 
 /// Configuration node for exposing procedural engine settings to Godot.
 #[derive(GodotClass)]
-#[class(base = Node)]
+#[class(init, base = Node)]
 pub struct AetherionConfig {
     #[export]
     pub tile_size: i32,
@@ -22,6 +23,16 @@ pub struct AetherionConfig {
 
 #[godot_api]
 impl AetherionConfig {
+    fn init(_base: Base<Node>) -> Self {
+        Self {
+            tile_size: 16,
+            chunk_width: 8,
+            chunk_height: 8,
+            seed: rand::thread_rng().gen_range(0..=i64::MAX),
+            enable_voxel_mode: false,
+        }
+    }
+
     #[func]
     fn _ready(&self) {
         godot_print!("⚙️ AetherionConfig loaded.");
@@ -34,6 +45,6 @@ impl AetherionConfig {
 
     #[func]
     fn regenerate_seed(&mut self) {
-        self.seed = godot4::api::engine::random::rand_range(0, i64::MAX);
+        self.seed = rand::thread_rng().gen_range(0..=i64::MAX);
     }
 }

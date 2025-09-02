@@ -3,11 +3,15 @@ use crate::aetherion::pipeline::data::TileInfo;
 
 /// Godot-facing generator node for procedural tile creation.
 #[derive(GodotClass)]
-#[class(base = Node)]
+#[class(init, base = Node)]
 pub struct AetherionGenerator;
 
 #[godot_api]
 impl AetherionGenerator {
+    fn init(_base: Base<Node>) -> Self {
+        Self
+    }
+
     #[func]
     fn _ready(&self) {
         godot_print!("🌱 AetherionGenerator ready.");
@@ -30,9 +34,10 @@ impl AetherionGenerator {
     /// Converts a TileInfo into a Godot Dictionary.
     fn tile_to_dict(tile: TileInfo) -> Dictionary {
         let mut dict = Dictionary::new();
-        dict.insert("id", tile.id);
-        dict.insert("meta", tile.meta);
-        dict.insert("visible", tile.visible);
+        dict.insert("source_id", tile.source_id);
+        dict.insert("atlas_coords", Vector2i::from(tile.atlas_coords)); // Convert to Godot-native type
+        dict.insert("alternate_id", tile.alternate_id);
+        dict.insert("rotation", tile.rotation);
         dict.insert("layer", tile.layer);
         dict
     }
@@ -41,19 +46,23 @@ impl AetherionGenerator {
 /// Generates a tile using noise at the given coordinates.
 pub fn generate_noise_tile(x: f32, y: f32, seed: i64) -> TileInfo {
     TileInfo {
-        id: format!("noise_{}_{}", x, y),
-        meta: seed.to_string(),
-        visible: true,
+        source_id: 0,
+        atlas_coords: Vector2i::new(x as i32, y as i32).into(), // Convert to SerializableVector2i
+        alternate_id: 0,
+        rotation: 0,
         layer: 0,
+        flags: 0,
     }
 }
 
 /// Generates a tile using a named pattern.
 pub fn generate_pattern_tile(pattern_name: &str, x: i32, y: i32) -> TileInfo {
     TileInfo {
-        id: format!("pattern_{}_{}_{}", pattern_name, x, y),
-        meta: "pattern".into(),
-        visible: true,
+        source_id: 1,
+        atlas_coords: Vector2i::new(x, y).into(),
+        alternate_id: 0,
+        rotation: 0,
         layer: 1,
+        flags: 0,
     }
 }

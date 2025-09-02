@@ -12,13 +12,19 @@ fn main() {
         panic!("Unsupported OS");
     };
 
-    let source = PathBuf::from("target/release").join(dll_name);
-    let dest = PathBuf::from("../Aetherion_Engine_Tester/bin").join(dll_name);
+    let source = PathBuf::from(
+        r"C:\zv9\zv9.aetherion\rust\target\x86_64-pc-windows-msvc\release"
+    ).join(dll_name);
+
+    let dest = PathBuf::from(
+        r"C:\zv9\zv9.aetherion\aetherion_engine_tester\addons\S2O_godot_plugin\bin"
+    ).join(dll_name);
 
     println!("🔄 Copying {:?} → {:?}", source, dest);
 
-    match fs::copy(&source, &dest) {
-        Ok(_) => println!("✅ Copied successfully."),
-        Err(e) => println!("⚠️ Copy failed: {}", e),
+    if let Err(e) = fs::copy(&source, &dest) {
+        eprintln!("⚠️ Copy failed: {}", e);
+    } else {
+        println!("✅ Copied successfully.");
     }
 }
