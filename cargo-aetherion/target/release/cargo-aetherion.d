@@ -1,1 +1,1 @@
-C:\zv9\zv9.aetherionengine\cargo-aetherion\target\release\cargo-aetherion.exe: C:\zv9\zv9.aetherionengine\cargo-aetherion\src\main.rs
+C:\zv9\zv9.aetherion\cargo-aetherion\target\release\cargo-aetherion.exe: C:\zv9\zv9.aetherion\cargo-aetherion\src\main.rs

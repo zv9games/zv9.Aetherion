@@ -10,7 +10,7 @@ config_version=5
 
 [aetherion]
 
-plugin_enabled=false
+plugin_enabled=true
 
 [application]
 
@@ -22,6 +22,10 @@ config/icon="res://icon.svg"
 [autoload]
 
 GlobalLogger="*res://root_scripts/logger.gd"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/S2O_godot_plugin/plugin.cfg")
 
 [gdextension]
 
