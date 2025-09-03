@@ -1,30 +1,30 @@
 extends Node
 
-func initialize(scenemap: Dictionary, main: Node):
-	#print("🧠 logicinitializer starting...")
-	
-	for node_name in scenemap.keys():
-		var node_path = scenemap[node_name]
-		var node = get_node(node_path)
-		if node:
-			#print("✅ node ready: %s at %s" % [node_name, node_path])
-			_autowire(node_name, node, main)
-		else:
-			print("⚠️ node missing: %s" % node_name)
+var initialized_nodes: Array = []
 
-	print("🚀 all nodes online. aetherion system is ready.")
+func initialize():
+	print("\n🎶 Init: Commencing recursive scene scan...")
+	initialized_nodes.clear()
 
+	var root_node := get_tree().get_root()
+	if root_node == null:
+		push_error("❌ Init: Could not access scene root. Ritual aborted.")
+		return
 
-func _autowire(name: String, node: Node, main: Node):
-	match name:
-		"ignition":
-			if node.has_signal("pressed"):
-				node.pressed.connect(main._on_ignition_pressed)
-		"seedlineedit":
-			if node.has_method("set_text"):
-				node.set_text("ready")
-		"clocktimer":
-			node.start()
-		_:
-			# Optional: log or ignore
-			pass
+	_recursive_initialize(root_node)
+
+	var tester := root_node.get_node("aetheriontester")
+	if tester == null:
+		push_error("❌ Init: AetherionTester node not found. No one to receive the scroll.")
+		return
+
+	print("\n📜 Init: Scroll prepared. Delivering to AetherionTester...")
+	tester.call("report_initialized", initialized_nodes)
+
+func _recursive_initialize(node: Node) -> void:
+	print("✨ Init: Blessing node → %s" % node.name)
+	initialized_nodes.append(node)
+
+	for child in node.get_children():
+		if child is Node:
+			_recursive_initialize(child)

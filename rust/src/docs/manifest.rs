@@ -303,3 +303,123 @@ Example:
   map.load_chunk(tiles)
   var tile_data = map.get_tile(0)
   print(tile_data)
+
+Godot Engine v4.5.beta7.official.4ebf67c12 - https://godotengine.org
+Vulkan 1.4.312 - Forward Mobile - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4070 Laptop GPU
+
+🚀 Aetherion classes auto-registered.
+AetherionTester: Launching initialization sequence...
+
+🧭 Scene Tree Snapshot:
+ ┖╴root
+    ┠╴GlobalLogger
+    ┖╴aetheriontester
+       ┠╴main
+       ┃  ┠╴AetherionOracle
+       ┃  ┠╴expansive_tilemap
+       ┃  ┃  ┖╴Layer0
+       ┃  ┠╴tilemap
+       ┃  ┃  ┠╴Layer0
+       ┃  ┃  ┠╴clocktimer
+       ┃  ┃  ┖╴clocklabel
+       ┃  ┠╴controlpanel
+       ┃  ┃  ┠╴progressbar
+       ┃  ┃  ┠╴menutitle
+       ┃  ┃  ┠╴gridwidthlabel
+       ┃  ┃  ┠╴gridwidthspinbox
+       ┃  ┃  ┃  ┠╴@SpinBoxLineEdit@22
+       ┃  ┃  ┃  ┃  ┖╴@PopupMenu@9
+       ┃  ┃  ┃  ┃     ┠╴@PanelContainer@4
+       ┃  ┃  ┃  ┃     ┃  ┖╴@ScrollContainer@5
+       ┃  ┃  ┃  ┃     ┃     ┠╴@Control@6
+       ┃  ┃  ┃  ┃     ┃     ┠╴_h_scroll
+       ┃  ┃  ┃  ┃     ┃     ┠╴_v_scroll
+       ┃  ┃  ┃  ┃     ┃     ┖╴_focus
+       ┃  ┃  ┃  ┃     ┠╴@Timer@7
+       ┃  ┃  ┃  ┃     ┠╴@Timer@8
+       ┃  ┃  ┃  ┃     ┠╴@PopupMenu@20
+       ┃  ┃  ┃  ┃     ┃  ┠╴@PanelContainer@10
+       ┃  ┃  ┃  ┃     ┃  ┃  ┖╴@ScrollContainer@11
+       ┃  ┃  ┃  ┃     ┃  ┃     ┠╴@Control@12
+       ┃  ┃  ┃  ┃     ┃  ┃     ┠╴_h_scroll
+       ┃  ┃  ┃  ┃     ┃  ┃     ┠╴_v_scroll
+       ┃  ┃  ┃  ┃     ┃  ┃     ┖╴_focus
+       ┃  ┃  ┃  ┃     ┃  ┠╴@Timer@13
+       ┃  ┃  ┃  ┃     ┃  ┖╴@Timer@14
+       ┃  ┃  ┃  ┃     ┖╴@PopupMenu@21
+       ┃  ┃  ┃  ┃        ┠╴@PanelContainer@15
+       ┃  ┃  ┃  ┃        ┃  ┖╴@ScrollContainer@16
+       ┃  ┃  ┃  ┃        ┃     ┠╴@Control@17
+       ┃  ┃  ┃  ┃        ┃     ┠╴_h_scroll
+       ┃  ┃  ┃  ┃        ┃     ┠╴_v_scroll
+       ┃  ┃  ┃  ┃        ┃     ┖╴_focus
+       ┃  ┃  ┃  ┃        ┠╴@Timer@18
+       ┃  ┃  ┃  ┃        ┖╴@Timer@19
+       ┃  ┃  ┃  ┖╴@Timer@23
+       ┃  ┃  ┠╴gridheightlabel
+       ┃  ┃  ┠╴gridheightspinbox
+       ┃  ┃  ┃  ┠╴@SpinBoxLineEdit@42
+       ┃  ┃  ┃  ┃  ┖╴@PopupMenu@29
+       ┃  ┃  ┃  ┃     ┠╴@PanelContainer@24
+       ┃  ┃  ┃  ┃     ┃  ┖╴@ScrollContainer@25
+       ┃  ┃  ┃  ┃     ┃     ┠╴@Control@26
+       ┃  ┃  ┃  ┃     ┃     ┠╴_h_scroll
+       ┃  ┃  ┃  ┃     ┃     ┠╴_v_scroll
+       ┃  ┃  ┃  ┃     ┃     ┖╴_focus
+       ┃  ┃  ┃  ┃     ┠╴@Timer@27
+       ┃  ┃  ┃  ┃     ┠╴@Timer@28
+       ┃  ┃  ┃  ┃     ┠╴@PopupMenu@40
+       ┃  ┃  ┃  ┃     ┃  ┠╴@PanelContainer@30
+       ┃  ┃  ┃  ┃     ┃  ┃  ┖╴@ScrollContainer@31
+       ┃  ┃  ┃  ┃     ┃  ┃     ┠╴@Control@32
+       ┃  ┃  ┃  ┃     ┃  ┃     ┠╴_h_scroll
+       ┃  ┃  ┃  ┃     ┃  ┃     ┠╴_v_scroll
+       ┃  ┃  ┃  ┃     ┃  ┃     ┖╴_focus
+       ┃  ┃  ┃  ┃     ┃  ┠╴@Timer@33
+       ┃  ┃  ┃  ┃     ┃  ┖╴@Timer@34
+       ┃  ┃  ┃  ┃     ┖╴@PopupMenu@41
+       ┃  ┃  ┃  ┃        ┠╴@PanelContainer@35
+       ┃  ┃  ┃  ┃        ┃  ┖╴@ScrollContainer@36
+       ┃  ┃  ┃  ┃        ┃     ┠╴@Control@37
+       ┃  ┃  ┃  ┃        ┃     ┠╴_h_scroll
+       ┃  ┃  ┃  ┃        ┃     ┠╴_v_scroll
+       ┃  ┃  ┃  ┃        ┃     ┖╴_focus
+       ┃  ┃  ┃  ┃        ┠╴@Timer@38
+       ┃  ┃  ┃  ┃        ┖╴@Timer@39
+       ┃  ┃  ┃  ┖╴@Timer@43
+       ┃  ┃  ┠╴seedlabel
+       ┃  ┃  ┠╴seedlineedit
+       ┃  ┃  ┠╴tiletypelabel
+       ┃  ┃  ┠╴tiletypeoptionbutton
+       ┃  ┃  ┃  ┖╴@PopupMenu@49
+       ┃  ┃  ┃     ┠╴@PanelContainer@44
+       ┃  ┃  ┃     ┃  ┖╴@ScrollContainer@45
+       ┃  ┃  ┃     ┃     ┠╴@Control@46
+       ┃  ┃  ┃     ┃     ┠╴_h_scroll
+       ┃  ┃  ┃     ┃     ┠╴_v_scroll
+       ┃  ┃  ┃     ┃     ┖╴_focus
+       ┃  ┃  ┃     ┠╴@Timer@47
+       ┃  ┃  ┃     ┖╴@Timer@48
+       ┃  ┃  ┠╴placementlabel
+       ┃  ┃  ┠╴placementoptionbutton
+       ┃  ┃  ┃  ┖╴@PopupMenu@55
+       ┃  ┃  ┃     ┠╴@PanelContainer@50
+       ┃  ┃  ┃     ┃  ┖╴@ScrollContainer@51
+       ┃  ┃  ┃     ┃     ┠╴@Control@52
+       ┃  ┃  ┃     ┃     ┠╴_h_scroll
+       ┃  ┃  ┃     ┃     ┠╴_v_scroll
+       ┃  ┃  ┃     ┃     ┖╴_focus
+       ┃  ┃  ┃     ┠╴@Timer@53
+       ┃  ┃  ┃     ┖╴@Timer@54
+       ┃  ┃  ┠╴animatecheckbox
+       ┃  ┃  ┠╴billboard
+       ┃  ┃  ┠╴ignition
+       ┃  ┃  ┖╴toggleterminalbutton
+       ┃  ┠╴cameras
+       ┃  ┃  ┠╴camera1
+       ┃  ┃  ┖╴camera2
+       ┃  ┖╴scenescanner
+       ┖╴init
+
+🧭 End of Snapshot
+

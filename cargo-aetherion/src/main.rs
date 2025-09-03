@@ -1,53 +1,30 @@
-use std::fs;
-use std::path::PathBuf;
-use std::process::Command;
+use std::{fs, path::PathBuf, process::Command};
 
 fn main() {
     let rust_dir = PathBuf::from(r"C:\zv9\zv9.aetherion\rust");
-    let target_triple = "x86_64-pc-windows-msvc"; // keep in one place
-    let dll_name = "Aetherion_Engine.dll";
+    let target = "x86_64-pc-windows-msvc";
+    let dll = "Aetherion_Engine.dll";
 
-    println!("🔨 Building AetherionEngine…");
-
-    let build_status = Command::new("cargo")
-        .args(&[
-			"build",
-			"--release",
-			"--features", "macros",
-			"--target", target_triple,
-		])
-
+    let status = Command::new("cargo")
+        .args(["+nightly", "build", "--release", "--target", target, "--lib"])
         .current_dir(&rust_dir)
         .status()
-        .expect("Failed to run cargo build");
+        .expect("Build failed");
 
-    if !build_status.success() {
-        eprintln!("❌ Build failed.");
+    if !status.success() {
+        eprintln!("❌ Build failed");
         std::process::exit(1);
     }
 
-    // Build output path is always relative to rust_dir
-    let source = rust_dir
-        .join("target")
-        .join(target_triple)
-        .join("release")
-        .join(dll_name);
-
-    let dest_dir = PathBuf::from(
-        r"C:\zv9\zv9.aetherion\aetherion_engine_tester\addons\S2O_godot_plugin\bin"
-    );
-    fs::create_dir_all(&dest_dir).expect("Failed to create destination directory");
-
-    let dest = dest_dir.join(dll_name);
-
-    println!("🔍 Source: {:?}", source);
-    println!("📁 Destination: {:?}", dest);
-
-    if source.exists() {
-        fs::copy(&source, &dest).expect("Failed to copy DLL");
-        println!("✅ Sync complete");
-    } else {
-        eprintln!("⚠️ DLL not found at {:?}", source);
+    let src = rust_dir.join("target").join(target).join("release").join(dll);
+    if !src.exists() {
+        eprintln!("⚠️ DLL not found: {:?}", src);
         std::process::exit(1);
     }
+
+    let dst = PathBuf::from(r"C:\zv9\zv9.aetherion\aetherion_engine_tester\addons\S2O_godot_plugin\bin").join(dll);
+    fs::create_dir_all(dst.parent().unwrap()).expect("Failed to create bin dir");
+    fs::copy(&src, &dst).expect("Failed to copy DLL");
+
+    println!("✅ Build and copy complete");
 }
