@@ -1,0 +1,10 @@
+                deserialize_json:  159 ms
+                   build_context:   69 ms
+               map_domain_models:  178 ms
+           generate_central_file:   43 ms
+         generate_utilities_file:   10 ms
+            generate_class_files: 4944 ms
+    generate_builtin_class_files:  152 ms
+generate_native_structures_files:   17 ms
+-----------------------------------------
+                           total: 5575 ms

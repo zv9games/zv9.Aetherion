@@ -4,7 +4,7 @@ use godot::global::Error;
 
 use crate::godot4::api::AetherionSignals;
 use crate::godot4::messaging::{GodotSync, EngineMessage};
-use crate::aetherion::pipeline::data::{MapDataChunk, TileInfo, MapBuildOptions};
+use crate::aetherion::pipeline::data::{MapBuildOptions, TileInfo};
 use crate::aetherion::pipeline::builder::threaded::spawn_builder_thread;
 
 /// Godot-facing engine node for procedural generation and signal dispatch.
@@ -34,16 +34,18 @@ impl AetherionEngine {
     }
 
     fn ready(&mut self) {
-        godot_print!("📡 AetherionEngine is ready.");
+        godot_print!("⚙️ AetherionEngine online. Systems nominal.");
         self.base.to_init_gd().set_process(true);
     }
 
     fn process(&mut self, _delta: f64) {
-        let chunks = self.sync.drain_chunks();
-        let signals = self.sync.drain_signals();
+        self.apply_chunks_to_tilemap();
+        self.emit_pending_signals();
+    }
 
-        if let Some(mut tilemap) = self.target_tilemap.as_mut() {
-            for chunk in chunks {
+    fn apply_chunks_to_tilemap(&mut self) {
+        if let Some(tilemap) = self.target_tilemap.as_mut() {
+            for chunk in self.sync.drain_chunks() {
                 for (pos, tile_info) in chunk.tiles {
                     tilemap.set_cell_ex(0, pos.into())
                         .source_id(tile_info.source_id)
@@ -53,9 +55,11 @@ impl AetherionEngine {
                 }
             }
         }
+    }
 
-        if let Some(mut signals_node) = self.signals_node.as_mut() {
-            for signal_msg in signals {
+    fn emit_pending_signals(&mut self) {
+        if let Some(signals_node) = self.signals_node.as_mut() {
+            for signal_msg in self.sync.drain_signals() {
                 let result = match signal_msg {
                     EngineMessage::Start => signals_node.emit_signal("build_map_start", &[]),
                     EngineMessage::Progress(percent) => signals_node.emit_signal("generation_progress", &[percent.to_variant()]),
@@ -72,7 +76,7 @@ impl AetherionEngine {
                 };
 
                 if result != Error::OK {
-                    godot_warn!("Signal emission failed: {:?}", result);
+                    godot_warn!("⚠️ Engine: Signal emission failed: {:?}", result);
                 }
             }
         }
@@ -80,11 +84,12 @@ impl AetherionEngine {
 
     #[func]
     pub fn aetherionoracle(&mut self) {
+        godot_print!("⚙️ Engine: Oracle pulse received. Processing...");
         self.process(0.0);
     }
 
     #[func]
-    fn build_map(
+    pub fn build_map(
         &mut self,
         width: i32,
         height: i32,
@@ -108,12 +113,14 @@ impl AetherionEngine {
             blue,
         };
 
+        godot_print!("⚙️ Engine: Launching map build thread...");
         spawn_builder_thread(self.sync.clone(), config);
     }
 
     #[func]
     pub fn set_tilemap(&mut self, tilemap: Gd<TileMap>) {
         self.target_tilemap = Some(tilemap);
+        godot_print!("⚙️ Engine: TileMap target assigned.");
     }
 
     #[func]
@@ -124,6 +131,14 @@ impl AetherionEngine {
                 .atlas_coords(Vector2i::new(14, 13))
                 .alternative_tile(0)
                 .done();
+            godot_print!("⚙️ Engine: Debug tile placed at ({}, {}).", x, y);
+        } else {
+            godot_warn!("⚠️ Engine: No TileMap assigned. Cannot place debug tile.");
         }
+    }
+
+    #[func]
+    pub fn ping(&self) {
+        godot_print!("⚙️ Engine: Ping received. Standing by.");
     }
 }

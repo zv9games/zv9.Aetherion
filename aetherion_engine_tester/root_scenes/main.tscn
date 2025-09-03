@@ -1,10 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://d330x0xxio1qa"]
+[gd_scene load_steps=10 format=3 uid="uid://d330x0xxio1qa"]
 
+[ext_resource type="Script" uid="uid://dkplcbu18pnn0" path="res://root_scripts/root.gd" id="1_3lhfi"]
+[ext_resource type="Script" uid="uid://bcht0rdvkoh5t" path="res://root_scripts/main.gd" id="2_kvte3"]
 [ext_resource type="Texture2D" uid="uid://cvfsmomwng22s" path="res://Tileset_atlas_final.png" id="2_y374o"]
+[ext_resource type="Script" uid="uid://h0raajy2xukh" path="res://root_scripts/control_panel.gd" id="4_3lhfi"]
 [ext_resource type="TileSet" uid="uid://b6ts3mi2pbpvq" path="res://pacman_tilemap.tres" id="4_al6xd"]
-[ext_resource type="Script" uid="uid://bq063osd4j4ja" path="res://root_scripts/cameras.gd" id="5_3lhfi"]
-[ext_resource type="Script" uid="uid://dgittl2ub82iy" path="res://root_scripts/camera_2.gd" id="5_al6xd"]
-[ext_resource type="Script" uid="uid://5tkm04wdelm8" path="res://root_scripts/init.gd" id="9_qo5bb"]
+[ext_resource type="Script" uid="uid://bq063osd4j4ja" path="res://root_scripts/cameras.gd" id="5_6byaw"]
+[ext_resource type="Script" uid="uid://5tkm04wdelm8" path="res://root_scripts/init.gd" id="6_ragr5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w5n1r"]
 texture = ExtResource("2_y374o")
@@ -269,10 +271,14 @@ texture = ExtResource("2_y374o")
 sources/0 = SubResource("TileSetAtlasSource_w5n1r")
 
 [node name="aetheriontester" type="Node2D"]
-
-[node name="scenescanner" type="Node" parent="."]
+script = ExtResource("1_3lhfi")
 
 [node name="main" type="Node2D" parent="."]
+script = ExtResource("2_kvte3")
+
+[node name="AetherionEngine" type="AetherionEngine" parent="main"]
+
+[node name="AetherionOracle" type="AetherionOracle" parent="main"]
 
 [node name="expansive_tilemap" type="TileMap" parent="main"]
 tile_set = SubResource("TileSet_kwdps")
@@ -295,6 +301,7 @@ offset_bottom = 80.0
 [node name="controlpanel" type="Control" parent="main"]
 layout_mode = 3
 anchors_preset = 0
+script = ExtResource("4_3lhfi")
 
 [node name="progressbar" type="ProgressBar" parent="main/controlpanel"]
 layout_mode = 0
@@ -420,14 +427,15 @@ offset_bottom = 224.0
 text = "HIDE"
 
 [node name="cameras" type="Node" parent="main"]
-script = ExtResource("5_3lhfi")
+script = ExtResource("5_6byaw")
 
 [node name="camera1" type="Camera2D" parent="main/cameras"]
 anchor_mode = 0
 
 [node name="camera2" type="Camera2D" parent="main/cameras"]
 position = Vector2(552, 304)
-script = ExtResource("5_al6xd")
+
+[node name="scenescanner" type="Node" parent="main"]
 
 [node name="init" type="Node" parent="."]
-script = ExtResource("9_qo5bb")
+script = ExtResource("6_ragr5")

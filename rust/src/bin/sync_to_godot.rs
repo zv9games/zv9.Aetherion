@@ -13,8 +13,9 @@ fn main() {
     };
 
     let source = PathBuf::from(
-        r"C:\zv9\zv9.aetherion\rust\target\x86_64-pc-windows-msvc\release"
-    ).join(dll_name);
+		r"C:\zv9\zv9.aetherion\rust\target\x86_64-pc-windows-msvc\release"
+	).join(dll_name);
+
 
     let dest = PathBuf::from(
         r"C:\zv9\zv9.aetherion\aetherion_engine_tester\addons\S2O_godot_plugin\bin"
