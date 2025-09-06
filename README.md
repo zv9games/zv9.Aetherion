@@ -128,7 +128,7 @@
 ║	├── infinity.rs          → ♾️ Endless maze streaming					║
 ║	└── racing.rs            → 🏁 High-speed tile placement				║
 ║																			║
-║                                                                        	║
+║ • aetherion_binary.rs     → 🎮 Engine entrypoint and terminal interface   ║
 ║ • lib.rs                 → 🧠 Crate entrypoint                         	║
 ║ • prelude.rs            → 🪶 Common imports for ergonomic dev         	║
 ╠═══════════════════════════════════════════════════════════════════════════╣
