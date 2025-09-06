@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/aetherion/pipeline/data/tile.rs
+
 use serde::{Deserialize, Serialize};
 use super::vector::SerializableVector2i;
 
@@ -33,3 +35,5 @@ pub mod tile_flags {
     pub const EMISSIVE: u32       = 0b01000;
     pub const DYNAMIC: u32        = 0b10000;
 }
+
+//end tile.rs

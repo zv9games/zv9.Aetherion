@@ -1,8 +1,6 @@
-// infinity.rs
-
 use godot::prelude::*;
-use crate::map::{MapGrid, TileType};
-use crate::utils::{Position, Direction};
+use crate::aetherion::pipeline::data::{MapGrid, TileType};
+use crate::util::{Position, Direction};
 
 /// ♾️ Infinity — Handles infinite map expansion and recursive simulation.
 /// Used for procedural generation, streaming terrain, or unbounded logic.
@@ -21,29 +19,32 @@ impl Infinity {
         }
     }
 
-    /// Expands the map outward from the origin in all directions.
+    /// Expands the map outward from the origin in all cardinal directions.
     pub fn expand(&mut self, grid: &mut MapGrid) {
         let directions = Direction::all();
+        let mut new_chunks = Vec::new();
 
         for chunk in &self.active_chunks {
             for dir in &directions {
                 let next = chunk.step(*dir);
                 if grid.is_within_bounds(next) && grid.get_tile(next) == TileType::Empty {
                     grid.set_tile(next, TileType::Chunk);
-                    self.active_chunks.push(next);
+                    new_chunks.push(next);
                 }
             }
         }
+
+        self.active_chunks.extend(new_chunks);
     }
 
-    /// Simulates infinite ticks or steps.
+    /// Simulates multiple expansion steps.
     pub fn tick(&mut self, grid: &mut MapGrid, steps: usize) {
         for _ in 0..steps {
             self.expand(grid);
         }
     }
 
-    /// Returns the current bounds of the infinite system.
+    /// Returns the bounding box of all active chunks.
     pub fn bounds(&self) -> (Position, Position) {
         let min = self.active_chunks.iter().fold(self.origin, |acc, p| acc.min(*p));
         let max = self.active_chunks.iter().fold(self.origin, |acc, p| acc.max(*p));

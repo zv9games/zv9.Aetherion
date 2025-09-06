@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/godot4/api/config.rs
+
 use rand::Rng;
 use godot::prelude::*;
 
@@ -48,3 +50,5 @@ impl AetherionConfig {
         self.seed = rand::thread_rng().gen_range(0..=i64::MAX);
     }
 }
+
+//end config.rs

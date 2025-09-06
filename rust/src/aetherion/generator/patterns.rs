@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/aetherion/generator/patterns.rs
+
 //! Pattern-based generation logic for tile placement and terrain shaping.
 //! Includes checkerboard, symmetry, fractals, and stripe-based patterns.
 
@@ -31,3 +33,5 @@ pub fn vertical_stripes(x: i32, stripe_width: i32) -> bool {
 pub fn horizontal_stripes(y: i32, stripe_height: i32) -> bool {
     (y / stripe_height) % 2 == 0
 }
+
+//end patterns.rs

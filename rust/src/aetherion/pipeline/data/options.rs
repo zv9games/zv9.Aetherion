@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/aetherion/pipeline/data/options.rs
+
 use godot::prelude::*;
 use crate::aetherion::generator::noise::{NoiseType};
 use crate::aetherion::generator::noise_config::NoiseConfig;
@@ -106,3 +108,5 @@ impl MapBuildOptions {
         self.animate
     }
 }
+
+//end options.rs

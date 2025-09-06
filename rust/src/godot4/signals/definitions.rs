@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/godot4/signals/definitions.rs
+
 // 📡 Aetherion Signal Definitions — Centralized list for dynamic access and tooling.
 // This module does not define the signal node itself, but supports reflection, connection, and diagnostics.
 
@@ -30,3 +32,5 @@ pub const SIGNALS: &[&str] = &[
     "map_build_duration",
     "rust_extension_ready",
 ];
+
+//end definitions.rs

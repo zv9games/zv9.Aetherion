@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/aetherion/generator/noise_config.rs
+
 use crate::aetherion::generator::noise::NoiseType;
 
 // Configuration for procedural noise generation.
@@ -67,3 +69,4 @@ pub fn generate_grid_from_config(config: &NoiseConfig, mode: NoiseType) -> Vec<V
 
 }
 
+//end noise_config.rs

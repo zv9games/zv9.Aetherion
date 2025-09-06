@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/godot4/api/map.rs
+
 use godot::prelude::*;
 use godot::builtin::{Array, Dictionary, Vector2i};
 use godot::classes::Node;
@@ -102,3 +104,5 @@ impl AetherionMap {
         godot_print!("Chunk cleared.");
     }
 }
+
+//end map.rs

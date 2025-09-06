@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/aetherion/core/dimension.rs
+
 //! Handles abstraction between 2D and 3D dimensions.
 //! Will evolve to support dynamic switching, shared logic, and editor integration.
 
@@ -52,3 +54,6 @@ impl fmt::Display for Dimension {
         write!(f, "{}", self.as_str())
     }
 }
+
+
+//end dimension.rs

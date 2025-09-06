@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/aetherion/pipeline/data/chunk.rs
+
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use super::{tile::TileInfo, vector::SerializableVector2i};
@@ -52,3 +54,5 @@ impl MapDataChunk {
         self.tiles.get(pos)
     }
 }
+
+//end chunk.rs

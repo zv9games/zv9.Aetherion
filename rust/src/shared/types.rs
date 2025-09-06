@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/shared/types.rs
+
 //! Common type aliases and primitive wrappers used across Aetherion.
 //! These types provide semantic clarity and lightweight abstraction.
 
@@ -23,3 +25,5 @@ impl EntityId {
         EntityId(id)
     }
 }
+
+//end types.rs

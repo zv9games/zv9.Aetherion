@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/godot4/messaging/sync.rs
+
 use godot::prelude::*;
 use std::sync::{Arc, Mutex};
 
@@ -72,3 +74,5 @@ impl GodotSync {
         }
     }
 }
+
+//end sync.rs

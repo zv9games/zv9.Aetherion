@@ -1,3 +1,4 @@
+//C:/ZV9/zv9.aetherion/rust/src/util/time.rs
 //! Tick and budget management utilities for Aetherion.
 //! Provides timing control for fixed-rate updates and runtime profiling.
 
@@ -40,3 +41,5 @@ impl TickTimer {
         self.tick_rate
     }
 }
+
+//end time.rs
