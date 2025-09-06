@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/aetherion/generator/noise.rs
+
 //! Noise generation algorithms for procedural terrain and patterns.
 //! Supports Perlin, Simplex, Cellular, and Cellular Automata.
 
@@ -126,3 +128,5 @@ fn count_alive_neighbors(grid: &[Vec<u8>], x: usize, y: usize) -> u8 {
 
     count
 }
+
+//end noise.rs

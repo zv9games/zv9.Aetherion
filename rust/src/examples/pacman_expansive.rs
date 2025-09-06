@@ -1,8 +1,8 @@
 // pacman_expansive.rs
 
 use godot::prelude::*;
-use crate::map::{TileType, MapGrid};
-use crate::utils::{Direction, Position};
+use crate::aetherion::pipeline::data::{TileType, MapGrid};
+use crate::util::{Direction, Position};
 
 /// 🟡 PacmanExpansive — Expands map regions in a Pac-Man-like fashion.
 /// Used during procedural generation to simulate corridor growth or AI pathing.

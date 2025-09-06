@@ -1,8 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://d330x0xxio1qa"]
+[gd_scene load_steps=11 format=3 uid="uid://d330x0xxio1qa"]
 
 [ext_resource type="Script" uid="uid://dkplcbu18pnn0" path="res://root_scripts/root.gd" id="1_3lhfi"]
 [ext_resource type="Script" uid="uid://bcht0rdvkoh5t" path="res://root_scripts/main.gd" id="2_kvte3"]
 [ext_resource type="Texture2D" uid="uid://cvfsmomwng22s" path="res://Tileset_atlas_final.png" id="2_y374o"]
+[ext_resource type="Script" uid="uid://6nvbnwjrmqf1" path="res://root_scripts/engine_monitor.gd" id="3_6byaw"]
 [ext_resource type="Script" uid="uid://h0raajy2xukh" path="res://root_scripts/control_panel.gd" id="4_3lhfi"]
 [ext_resource type="TileSet" uid="uid://b6ts3mi2pbpvq" path="res://pacman_tilemap.tres" id="4_al6xd"]
 [ext_resource type="Script" uid="uid://bq063osd4j4ja" path="res://root_scripts/cameras.gd" id="5_6byaw"]
@@ -276,7 +277,12 @@ script = ExtResource("1_3lhfi")
 [node name="main" type="Node2D" parent="."]
 script = ExtResource("2_kvte3")
 
+[node name="AetherionSignals" type="AetherionSignals" parent="main"]
+
 [node name="AetherionEngine" type="AetherionEngine" parent="main"]
+
+[node name="EngineMonitor" type="Node" parent="main/AetherionEngine"]
+script = ExtResource("3_6byaw")
 
 [node name="AetherionOracle" type="AetherionOracle" parent="main"]
 
@@ -293,10 +299,13 @@ layer_0/tile_data = PackedInt32Array(0, 0, 14, 27, 786432, 14, 65537, 917504, 13
 autostart = true
 
 [node name="clocklabel" type="Label" parent="main/tilemap"]
-offset_left = 344.0
-offset_top = 48.0
-offset_right = 456.0
-offset_bottom = 80.0
+offset_left = 403.0
+offset_top = 47.0
+offset_right = 515.0
+offset_bottom = 79.0
+text = "SYSTEM"
+
+[node name="oracletimer" type="Timer" parent="main/tilemap"]
 
 [node name="controlpanel" type="Control" parent="main"]
 layout_mode = 3
@@ -425,6 +434,16 @@ offset_top = 184.0
 offset_right = 464.0
 offset_bottom = 224.0
 text = "HIDE"
+
+[node name="enginetimer" type="Timer" parent="main/controlpanel"]
+
+[node name="enginetimerlabel" type="Label" parent="main/controlpanel"]
+layout_mode = 0
+offset_left = 407.0
+offset_top = 74.0
+offset_right = 519.0
+offset_bottom = 106.0
+text = "ENGINE"
 
 [node name="cameras" type="Node" parent="main"]
 script = ExtResource("5_6byaw")

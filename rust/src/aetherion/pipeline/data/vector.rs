@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/aetherion/pipeline/data/vector.rs
+
 use godot::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -14,3 +16,5 @@ impl From<Vector2i> for SerializableVector2i {
         Self { x: v.x, y: v.y }
     }
 }
+
+//end vector.rs

@@ -1,7 +1,7 @@
 // racing.rs
 
 use godot::prelude::*;
-use crate::utils::{Position, Velocity, Timer};
+use crate::util::{Position, Velocity, Timer};
 
 /// 🏁 Racing — Manages racer movement, lap tracking, and race state.
 pub struct Racer {

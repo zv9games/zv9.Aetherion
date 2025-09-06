@@ -1,5 +1,5 @@
-// shared/grid_bounds.rs
-use crate::shared::vector::SerializableVector2i;
+//C:/ZV9/zv9.aetherion/rust/src/shared/grid_bounds.rs
+use crate::aetherion::pipeline::data::vector::SerializableVector2i;
 
 #[derive(Debug, Clone, Copy)]
 pub struct GridBounds {
@@ -15,3 +15,5 @@ impl GridBounds {
         rel_x >= 0 && rel_y >= 0 && rel_x < self.width && rel_y < self.height
     }
 }
+
+//end grid_bounds.rs

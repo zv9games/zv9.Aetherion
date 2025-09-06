@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/godot4/api/generator.rs
+
 use godot::prelude::*;
 use crate::aetherion::pipeline::data::TileInfo;
 
@@ -66,3 +68,5 @@ pub fn generate_pattern_tile(pattern_name: &str, x: i32, y: i32) -> TileInfo {
         flags: 0,
     }
 }
+
+//end generator.rs 

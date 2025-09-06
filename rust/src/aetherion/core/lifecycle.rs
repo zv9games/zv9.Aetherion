@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/aetherion/core/lifecycle.rs
+
 //! Manages engine startup, shutdown, and lifecycle transitions.
 //! Tracks the current state and provides hooks for signal dispatch and diagnostics.
 
@@ -73,3 +75,5 @@ impl Lifecycle {
         matches!(self.state, LifecycleState::Terminated)
     }
 }
+
+//end lifecycle.rs

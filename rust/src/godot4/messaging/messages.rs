@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/godot4/messaging/messages.rs
+
 use godot::prelude::*;
 
 /// Messages sent from Rust threads to Godot for signal dispatch.
@@ -20,3 +22,5 @@ pub enum EngineMessage {
     // Error(String),
     // ChunkReady(MapDataChunk),
 }
+
+//end messages.rs

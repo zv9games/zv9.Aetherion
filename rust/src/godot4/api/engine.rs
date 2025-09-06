@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/godot4/api/engine.rs
+
 use godot::prelude::*;
 use godot::classes::TileMap;
 use godot::global::Error;
@@ -20,6 +22,8 @@ pub struct AetherionEngine {
 
     #[export]
     target_tilemap: Option<Gd<TileMap>>,
+
+    current_status: String, // Tracks engine status for external queries
 }
 
 #[godot_api]
@@ -30,6 +34,7 @@ impl AetherionEngine {
             sync: GodotSync::init(),
             signals_node: None,
             target_tilemap: None,
+            current_status: "Uninitialized".into(),
         }
     }
 
@@ -63,7 +68,10 @@ impl AetherionEngine {
                 let result = match signal_msg {
                     EngineMessage::Start => signals_node.emit_signal("build_map_start", &[]),
                     EngineMessage::Progress(percent) => signals_node.emit_signal("generation_progress", &[percent.to_variant()]),
-                    EngineMessage::Status(status) => signals_node.emit_signal("map_building_status", &[GString::from(status).to_variant()]),
+                    EngineMessage::Status(status) => {
+                        self.current_status = status.clone(); // Store status for external access
+                        signals_node.emit_signal("map_building_status", &[GString::from(status).to_variant()])
+                    }
                     EngineMessage::Complete { width, height, mode, animate, duration } => {
                         let mut dict = Dictionary::new();
                         dict.insert("width", width);
@@ -141,4 +149,11 @@ impl AetherionEngine {
     pub fn ping(&self) {
         godot_print!("⚙️ Engine: Ping received. Standing by.");
     }
+
+    #[func]
+    pub fn get_status(&self) -> String {
+        self.current_status.clone()
+    }
 }
+
+//end engine.rs 

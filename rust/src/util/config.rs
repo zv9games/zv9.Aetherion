@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/util/config.rs
+
 //! Engine configuration structs and logic.
 //! Defines runtime parameters for tick rate, threading, and diagnostics.
 
@@ -38,3 +40,4 @@ impl EngineConfig {
         self.max_threads > 1
     }
 }
+//end config.rs

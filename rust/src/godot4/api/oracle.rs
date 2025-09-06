@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/godot4/api/oracle.rs
+
 use godot::prelude::*;
 use crate::godot4::api::engine::AetherionEngine;
 
@@ -48,3 +50,5 @@ impl AetherionOracle {
         godot_print!("🔮 Oracle: Ping received. I am awake.");
     }
 }
+
+//end oracle.rs

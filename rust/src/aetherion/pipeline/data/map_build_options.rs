@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/aetherion/pipeline/data/map_build_options.rs
+
 use godot::prelude::*;
 use crate::aetherion::generator::noise::{NoiseType};
 use crate::aetherion::generator::noise_config::NoiseConfig;
@@ -88,3 +90,5 @@ impl MapBuildOptions {
         GodotNoiseType::from_str(self.mode.to_string().as_str()).to_internal()
     }
 }
+
+//end map_build_options.rs

@@ -1,8 +1,17 @@
+//C:/ZV9/zv9.aetherion/rust/src/lib.rs
 use godot::prelude::*;
 use godot_macros::gdextension;
 
+pub mod aetherion;
+pub mod util;
+
 mod godot4;
-mod aetherion;
+mod tests;
+mod shared;
+mod examples;
+
+
+
 
 struct AetherionEXT;
 
@@ -14,3 +23,5 @@ unsafe impl ExtensionLibrary for AetherionEXT {
         }
     }
 }
+
+//end lib.rs

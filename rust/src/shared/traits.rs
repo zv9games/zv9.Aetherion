@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/shared/traits.rs
+
 //! Shared traits used across Aetherion modules.
 //! These define core behaviors like ticking and serialization.
 
@@ -19,3 +21,4 @@ pub trait Serializable {
     where
         Self: Sized;
 }
+//end traits.rs

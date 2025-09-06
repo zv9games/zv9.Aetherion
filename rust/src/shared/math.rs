@@ -1,9 +1,8 @@
+//C:/ZV9/zv9.aetherion/rust/src/shared/math.rs
+
 //! Math utilities and constants shared across Aetherion.
 //! Includes vector math, matrix transforms, interpolation, and core constants.
 
-pub mod vector;
-pub mod matrix;
-pub mod interpolation;
 
 /// Full circle constant (τ = 2π).
 pub const TAU: f64 = std::f64::consts::PI * 2.0;
@@ -26,3 +25,4 @@ pub fn clamp<T: PartialOrd>(val: T, min: T, max: T) -> T {
         val
     }
 }
+//end math.rs

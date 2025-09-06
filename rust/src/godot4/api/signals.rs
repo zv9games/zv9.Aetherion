@@ -1,3 +1,5 @@
+//C:/ZV9/zv9.aetherion/rust/src/godot4/api/signals.rs
+
 use godot::prelude::*;
 
 /// 🛰️ AetherionSignals — Godot-facing signal node for engine events.
@@ -85,3 +87,5 @@ impl AetherionSignals {
     #[signal]
     fn rust_extension_ready();
 }
+
+//end signals.rs
