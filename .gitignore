@@ -1,4 +1,10 @@
-/target
-**/*.rlib
-**/*.rmeta
-Cargo.lock
+# Rust build artifacts
+/target/
+/rust/target/
+*.pdb
+*.bin
+*.rlib
+*.rmeta
+*.o
+*.bc
+*.lock
