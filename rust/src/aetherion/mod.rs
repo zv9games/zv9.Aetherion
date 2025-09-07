@@ -6,9 +6,7 @@ pub mod pipeline;
 pub mod interaction;
 pub mod structure;
 
-pub fn test_fn() {
-    println!("✅ Aetherion module is visible.");
-}
+
 
 
 //end mod.rs

@@ -2,13 +2,17 @@
 use godot::prelude::*;
 use godot_macros::gdextension;
 
-pub mod aetherion;
+pub mod aetherion {
+    pub mod codegen;
+    // other modules...
+}
 pub mod util;
+pub mod tests;
+pub mod shared;
+pub mod examples;
+pub mod godot4;
+pub mod trailkeeper;
 
-mod godot4;
-mod tests;
-mod shared;
-mod examples;
 
 
 

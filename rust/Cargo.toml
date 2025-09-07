@@ -49,7 +49,7 @@ strip = "symbols"
 # path = "src/bin/sync_to_godot.rs"
 
 name = "aetherion_binary"
-path = "src/aetherion_binary.rs"
+path = "src/bin/aetherion_binary.rs"
 
 # [[bin]]
 # name = "debugger"

@@ -3,6 +3,7 @@
 pub mod dimension;
 pub mod lifecycle;
 pub mod runtime;
+pub mod conductor;
 
 pub use dimension::Dimension;
 pub use lifecycle::Lifecycle;
