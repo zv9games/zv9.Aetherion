@@ -12,7 +12,7 @@
 ║                                                                           ║
 ║ Yo. This is Aetherion. It’s the procedural brainstem of Godot,            ║
 ║ written in Rust, and it shreds in both 2D and 3D. Modular, signal-driven  ║
-║ and introspectable like a corvette.                                    ║
+║ and introspectable like a corvette.                                       ║
 ║                                                                           ║
 ║ > “Every tile’s a glyph. Every signal’s a chant. Aetherion listens.”      ║
 ║                                                                          	║
@@ -148,12 +148,29 @@
 ║   ├── traits.rs                   # Core traits                           ║
 ║   └── types.rs                    # Type aliases                          ║
 ║                                                                           ║
-║ ├── tests/                        # 🧪 Unit + integration tests    	    ║
-║   ├── core/                       # Core module tests                     ║
-║   ├── godot4/                     # Godot integration tests               ║
-║   ├── pipeline/                   # Pipeline tests                        ║
-║   ├── shared/                     # Shared logic tests                    ║
-║   ├── util/                       # Utility tests                         ║
+║ 	├── tests/                      # 🧪 Integration and unit tests    	    ║
+║	│   ├── core/                   # Tests for core engine modules         ║
+║	│   │   ├── conductor_tests.rs                                          ║
+║	│   │   ├── dimension_tests.rs                                          ║
+║	│   │   ├── lifecycle_tests.rs                                          ║
+║	│   │   ├── mod.rs                                                      ║
+║	│   │   └── runtime_tests.rs                                            ║
+║	│   ├── godot4/                 # Tests for Godot integration           ║
+║	│   │   ├── signal_tests.rs                                             ║
+║	│   │   └── sync_tests.rs                                               ║
+║	│   ├── pipeline/               # Tests for pipeline and builder logic  ║
+║	│   │   ├── chunk_tests.rs                                              ║
+║	│   │   ├── grid_tests.rs                                               ║
+║	│   │   └── map_build_tests.rs                                          ║
+║	│   ├── shared/                 # Tests for shared math and traits      ║
+║	│   │   ├── math_tests.rs                                               ║
+║	│   │   ├── traits_tests.rs                                             ║
+║	│   │   └── types_tests.rs                                              ║
+║	│   ├── util/                   # Tests for utility modules             ║
+║	│   │   ├── logging_tests.rs                                            ║
+║	│   │   ├── profiling_tests.rs                                          ║
+║	│   │   └── timer_tests.rs                                              ║
+║	│   │                                                                   ║
 ║   ├── common.rs                   # Test fixtures                         ║
 ║   ├── generation_tests.rs         # Noise + pattern tests                 ║
 ║   ├── godot_integration_tests.rs  # Full Godot stack tests                ║
