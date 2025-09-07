@@ -4,6 +4,8 @@ use godot::prelude::*;
 use crate::aetherion::generator::noise::{NoiseType};
 use crate::aetherion::generator::noise_config::NoiseConfig;
 use super::vector::SerializableVector2i;
+use godot::builtin::GString;
+
 
 /// Editor-safe wrapper for exposing noise types to GDScript.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -21,23 +23,25 @@ impl GodotNoiseType {
     }
 }
 
-impl GodotConvert for GodotNoiseType {
-    type Via = String;
 
-    fn to_godot(self) -> Self::Via {
-        match self {
-            Self::Basic => "basic".into(),
-            Self::CellularAutomata => "automata".into(),
-        }
-    }
-
-    fn from_godot(value: Self::Via) -> Self {
-        match value.as_str() {
-            "automata" => Self::CellularAutomata,
-            _ => Self::Basic,
+impl From<GodotNoiseType> for GString {
+    fn from(value: GodotNoiseType) -> Self {
+        match value {
+            GodotNoiseType::Basic => "basic".into(),
+            GodotNoiseType::CellularAutomata => "automata".into(),
         }
     }
 }
+
+impl From<GString> for GodotNoiseType {
+    fn from(value: GString) -> Self {
+        match value.to_string().as_str() {
+            "automata" => GodotNoiseType::CellularAutomata,
+            _ => GodotNoiseType::Basic,
+        }
+    }
+}
+
 
 /// Configuration options for procedural map generation.
 /// Used in the editor and passed into the engine from GDScript.
@@ -53,7 +57,6 @@ pub struct MapBuildOptions {
     pub seed: u64,
 
     /// Noise generation mode (editor-safe wrapper).
-    #[export]
     pub mode: GodotNoiseType,
 
     /// Whether to animate tile placement.

@@ -1,10 +1,12 @@
 //C:/ZV9/zv9.aetherion/rust/src/aetherion/pipeline/data/mod.rs
 
 pub mod chunk;
-pub mod tile;
-pub mod vector; // Assuming you'll add vector.rs soon
-pub mod map_build_options;
+pub mod data;
 pub mod grid;
+pub mod map_build_options;
+pub mod options;
+pub mod tile;
+pub mod vector; 
 
 
 pub use chunk::MapDataChunk;

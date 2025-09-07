@@ -4,8 +4,13 @@ use godot_macros::gdextension;
 
 pub mod aetherion {
     pub mod codegen;
-    // other modules...
+    pub mod core;
+    pub mod generator;
+    pub mod interaction;
+    pub mod pipeline;
+    pub mod structure;
 }
+
 pub mod util;
 pub mod tests;
 pub mod shared;
