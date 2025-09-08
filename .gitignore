@@ -8,3 +8,23 @@
 *.o
 *.bc
 *.lock
+
+# BFG tool (cleanup utility)
+bfg*.jar
+
+# Godot build artifacts (if applicable)
+*.import
+*.converted.*
+*.translation
+*.godot
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor configs
+*.swp
+*.swo
+*.bak
+*.tmp
+
