@@ -230,6 +230,6 @@
 ║ 🌀 CREDITS                                                              	║
 ║                                                                          	║
 ║ Built by Greg. (zv9games)                                              	║
-║ Inspired by Copilot, Grok, Godot, and the sacred geometry of open-source.       	║
+║ Inspired by Copilot, Grok, Godot, and the sacred geometry of open-source.	║
 ║ Special thanks to the Pacman2.0 project for revealing the need.			║
 ╚═══════════════════════════════════════════════════════════════════════════╝
