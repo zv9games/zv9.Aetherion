@@ -1,14 +1,17 @@
-//C:/ZV9/zv9.aetherion/rust/src/aetherion/pipeline/data/options.rs
+use serde::{Serialize, Deserialize};
 
 use godot::prelude::*;
-use crate::aetherion::generator::noise::{NoiseType};
-use crate::aetherion::generator::noise_config::NoiseConfig;
-use super::vector::SerializableVector2i;
 use godot::builtin::GString;
 
+use crate::aetherion::generator::noise::NoiseType;
+use crate::aetherion::generator::noise_config::NoiseConfig;
+use super::vector::SerializableVector2i;
 
-/// Editor-safe wrapper for exposing noise types to GDScript.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+//
+// ─── Noise Type Wrapper ────────────────────────────────────────────────────────
+//
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum GodotNoiseType {
     Basic,
     CellularAutomata,
@@ -22,7 +25,6 @@ impl GodotNoiseType {
         }
     }
 }
-
 
 impl From<GodotNoiseType> for GString {
     fn from(value: GodotNoiseType) -> Self {
@@ -42,35 +44,22 @@ impl From<GString> for GodotNoiseType {
     }
 }
 
+//
+// ─── Map Build Options ─────────────────────────────────────────────────────────
+//
 
-/// Configuration options for procedural map generation.
-/// Used in the editor and passed into the engine from GDScript.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MapBuildOptions {
-    /// Grid width in tiles.
     pub width: i32,
-
-    /// Grid height in tiles.
     pub height: i32,
-
-    /// Seed for deterministic generation.
     pub seed: u64,
-
-    /// Noise generation mode (editor-safe wrapper).
     pub mode: GodotNoiseType,
-
-    /// Whether to animate tile placement.
     pub animate: bool,
-
-    /// Atlas coordinates for "black" tile.
-    pub black: Vector2i,
-
-    /// Atlas coordinates for "blue" tile.
-    pub blue: Vector2i,
+    pub black: SerializableVector2i,
+    pub blue: SerializableVector2i,
 }
 
 impl MapBuildOptions {
-    /// Creates a default checkerboard-style map using CellularAutomata.
     pub fn default(width: i32, height: i32, seed: u64) -> Self {
         Self {
             width,
@@ -78,12 +67,11 @@ impl MapBuildOptions {
             seed,
             mode: GodotNoiseType::CellularAutomata,
             animate: false,
-            black: Vector2i::new(0, 0),
-            blue: Vector2i::new(1, 1),
+            black: SerializableVector2i { x: 0, y: 0 },
+            blue: SerializableVector2i { x: 1, y: 1 },
         }
     }
 
-    /// Converts this struct into a NoiseConfig for internal use.
     pub fn to_noise_config(&self) -> NoiseConfig {
         NoiseConfig {
             width: self.width as usize,
@@ -96,20 +84,19 @@ impl MapBuildOptions {
         }
     }
 
-    /// Converts Godot-facing config into internal noise type.
     pub fn noise_type(&self) -> NoiseType {
         self.mode.to_internal()
     }
 
-    /// Returns the total number of tiles.
     pub fn total_tiles(&self) -> usize {
         (self.width * self.height) as usize
     }
 
-    /// Returns true if animation is enabled.
     pub fn is_animated(&self) -> bool {
         self.animate
     }
-}
 
-//end options.rs
+    pub fn godot_tile_coords(&self) -> (Vector2i, Vector2i) {
+        (self.black.into(), self.blue.into())
+    }
+}

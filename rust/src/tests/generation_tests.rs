@@ -3,7 +3,9 @@
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::code_generator::{generate_code, Config};
+    use crate::aetherion::codegen::emitter::{generate_code};
+	use crate::aetherion::codegen::config::Config;
+
 
     #[test]
     fn test_basic_generation() {

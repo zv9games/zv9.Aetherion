@@ -10,163 +10,163 @@ lexicon: ├── └── │
 
 c:/zv9/zv9.aetherion/rust/src/
 
-├── aetherion/                             # 🧠 Core engine modules for procedural generation and runtime orchestration
-│   ├── codegen/                           # 🛠 DSL parsing and Rust code emission for procedural entities
-│   │   ├── config.rs                      # Configuration options for code generation
-│   │   ├── dsl.rs                         # DSL syntax definitions and parsing logic
-│   │   ├── emitter.rs                     # Emits Rust code from parsed DSL structures
-│   │   ├── mod.rs                         # Codegen module exports
-│   │   └── parser.rs                      # Parses DSL into intermediate representations
+├── aetherion/                             
+│   ├── codegen/                           
+│   │   ├── config.rs                      
+│   │   ├── dsl.rs                         
+│   │   ├── emitter.rs                     
+│   │   ├── mod.rs                         
+│   │   └── parser.rs                      
 │   │
-│   ├── core/                              # ⏱ Runtime state, lifecycle, and orchestration
-│   │   ├── conductor.rs                   # 🎼 Procedural command queue and orchestration logic
-│   │   ├── dimension.rs                   # 2D/3D abstraction and switching logic
-│   │   ├── lifecycle.rs                   # Engine state transitions and signal hooks
-│   │   ├── mod.rs                         # Core module exports
-│   │   └── runtime.rs                     # Tick progression and frame budget tracking
+│   ├── core/                              
+│   │   ├── conductor.rs                   
+│   │   ├── dimension.rs                   
+│   │   ├── lifecycle.rs                   
+│   │   ├── mod.rs                         
+│   │   └── runtime.rs                     
 │   │
-│   ├── generator/                         # ⚙️ Procedural content generation and configuration
-│   │   ├── mod.rs                         # Generator module exports
-│   │   ├── noise.rs                       # Noise algorithms (Basic, Cellular Automata, etc.)
-│   │   ├── noise_config.rs                # Grid generation parameters and evolution rules
-│   │   ├── pattern_type.rs                # Enum/type definitions for pattern overlays
-│   │   └── patterns.rs                    # Pattern overlays and spatial logic
+│   ├── generator/                         
+│   │   ├── mod.rs                         
+│   │   ├── noise.rs                       
+│   │   ├── noise_config.rs                
+│   │   ├── pattern_type.rs                
+│   │   └── patterns.rs                    
 │   │
-│   ├── interaction/                       # ✏️ In-game editing, modifiers, and tooling
-│   │   ├── mod.rs                         # Interaction module exports
-│   │   ├── modifiers.rs                   # Tile toggling, layer editing, and runtime mutation
-│   │   └── tools.rs                       # Brush types, selection logic, and paint modes
+│   ├── interaction/                       
+│   │   ├── mod.rs                         
+│   │   ├── modifiers.rs                   
+│   │   └── tools.rs                       
 │   │ 
-│   ├── pipeline/                          # 🚚 Map construction, chunk streaming, and builder orchestration
-│   │   ├── builder/                       # Builder trait and threaded execution
-│   │   │   ├── builder.rs                 # Map builder logic and grid-to-chunk conversion
-│   │   │   ├── mod.rs                     # Builder module exports
-│   │   │   ├── streamer.rs                # 🧠 Smart chunk pacing, throttling, and prioritization
-│   │   │   └── threaded.rs                # Threaded builder dispatch with signal streaming
+│   ├── pipeline/                          
+│   │   ├── builder/                       
+│   │   │   ├── builder.rs                 
+│   │   │   ├── mod.rs                     
+│   │   │   ├── streamer.rs                
+│   │   │   └── threaded.rs                
 │   │   │
-│   │   ├── data/                          # Map data structures and build options
-│   │   │   ├── chunk.rs                   # MapDataChunk container
-│   │   │   ├── data.rs                    # Core map data logic
-│   │   │   ├── grid.rs                    # Grid layout and spatial indexing
-│   │   │   ├── map_build_options.rs       # Build options for procedural generation
-│   │   │   ├── mod.rs                     # Data module exports
-│   │   │   ├── options.rs                 # MapBuildOptions and GodotNoiseType
-│   │   │   ├── tile.rs                    # TileInfo metadata and structure
-│   │   │   └── vector.rs                  # Vector math and spatial utilities
-│   │   └── mod.rs                         # Pipeline module exports
+│   │   ├── data/                          
+│   │   │   ├── chunk.rs                   
+│   │   │   ├── data.rs                    
+│   │   │   ├── grid.rs                    
+│   │   │   ├── map_build_options.rs       
+│   │   │   ├── mod.rs                     
+│   │   │   ├── options.rs                 
+│   │   │   ├── tile.rs                    
+│   │   │   └── vector.rs                  
+│   │   └── mod.rs                         
 │   │
-│   ├── structure/                         # 🧩 Spatial structures and placement logic
-│   │   ├── generation.rs                  # Maze, dungeon, and grid structure algorithms
-│   │   ├── mod.rs                         # Structure module exports
-│   │   └── placement.rs                   # Structure-to-tilemap conversion and overlays
-│   └── mod.rs                             # Re-exports core, generator, pipeline, structure, and interaction
+│   ├── structure/                         
+│   │   ├── generation.rs                  
+│   │   ├── mod.rs                         
+│   │   └── placement.rs                   
+│   └── mod.rs                             
 │      
-├── bin/                                   # 🖥️ Executable entry points and CLI tools
-│   ├── mod.rs                             # Binary module exports
-│   ├── aetherion_binary.rs                # Dev console and runtime diagnostics
-│   ├── sync_audit.rs                      # Audit tool for sync state
-│   └── sync_to_godot.rs                   # Sync bridge to Godot runtime
+├── bin/                                   
+│   ├── mod.rs                             
+│   ├── aetherion_binary.rs                
+│   ├── sync_audit.rs                      
+│   └── sync_to_godot.rs                   
 │   
-├── docs/                                  # 📚 Internal documentation and manifest definitions
-│   ├── manifest.rs                        # Engine manifest and metadata
-│   └── mod.rs                             # Docs module exports
+├── docs/                                  
+│   ├── manifest.rs                        
+│   └── mod.rs                             
 │
-├── examples/                              # 🧪 Example projects and engine demos
-│   ├── infinity.rs                        # Infinite terrain demo
-│   ├── mod.rs                             # Examples module exports
-│   ├── expansive.rs                       # Expansive map generation demo
-│   └── racing.rs                          # Racer movement and physics demo
+├── examples/                              
+│   ├── infinity.rs                        
+│   ├── mod.rs                             
+│   ├── expansive.rs                       
+│   └── racing.rs                          
 │
-├── godot4/                                # 🎮 Godot engine integration and runtime bridge
-│   ├── api/                               # Public-facing Godot classes and engine interface
-│   │   ├── config.rs                      # AetherionConfig for runtime parameters
-│   │   ├── engine.rs                      # AetherionEngine lifecycle and control
-│   │   ├── generator.rs                   # AetherionGenerator exposing procedural logic
-│   │   ├── map.rs                         # AetherionMap for tile/voxel state
-│   │   ├── mod.rs                         # API module exports
-│   │   ├── oracle.rs                      # Runtime query interface
-│   │   └── signals.rs                     # AetherionSignals for Godot dispatch
+├── godot4/                                
+│   ├── api/                               
+│   │   ├── config.rs                      
+│   │   ├── engine.rs                      
+│   │   ├── generator.rs                   
+│   │   ├── map.rs                         
+│   │   ├── mod.rs                         
+│   │   ├── oracle.rs                      
+│   │   └── signals.rs                     
 │   │
-│   ├── bindings/                          # 🔗 Type conversion between Rust and Godot
-│   │   ├── godot_types.rs                 # Serializable Godot-compatible types
-│   │   └── mod.rs                         # Bindings module exports
+│   ├── bindings/                          
+│   │   ├── godot_types.rs                 
+│   │   └── mod.rs                         
 │   │
-│   ├── interface/                         # 🧭 Godot-facing UI components and debug overlays
-│   │   ├── controls.rs                    # UI toggles for in-game editing and runtime interaction
-│   │   ├── diagnostics.rs                 # Real-time metrics, chunk flow, and engine status
-│   │   └── mod.rs                         # Interface module exports
+│   ├── interface/                         
+│   │   ├── controls.rs                    
+│   │   ├── diagnostics.rs                 
+│   │   └── mod.rs                         
 │   │
-│   ├── messaging/                         # 📡 Signal queue and engine message definitions
-│   │   ├── messages.rs                    # EngineMessage enum for status and progress
-│   │   ├── mod.rs                         # Messaging module exports
-│   │   └── sync.rs                        # GodotSync queue for async dispatch
+│   ├── messaging/                         
+│   │   ├── messages.rs                    
+│   │   ├── mod.rs                         
+│   │   └── sync.rs                        
 │   │
-│   ├── signals/                           # 📢 Signal definitions and dispatch logic
-│   │   ├── definitions.rs                 # Signal metadata and identifiers
-│   │   ├── dispatch.rs                    # Signal routing and emission
-│   │   └── mod.rs                         # Signals module exports
+│   ├── signals/                           
+│   │   ├── definitions.rs                 
+│   │   ├── dispatch.rs                    
+│   │   └── mod.rs                         
 │   │
-│   └── mod.rs                             # Godot integration exports
+│   └── mod.rs                             
 │
-├── shared/                                # 🧬 Shared types, traits, and math utilities
-│   ├── grid_bounds.rs                     # Grid boundary logic and region math
-│   ├── grid2d.rs                          # 2D grid utilities
-│   ├── math.rs                            # Vector math and spatial calculations
-│   ├── mod.rs                             # Shared module exports
-│   ├── spatial.rs                         # 📐 Adjacency, bounds, region logic, and pathfinding stubs
-│   ├── traits.rs                          # Core traits (Builder, Generator, etc.)
-│   └── types.rs                           # Common type aliases and primitives
+├── shared/                                
+│   ├── grid_bounds.rs                     
+│   ├── grid2d.rs                          
+│   ├── math.rs                            
+│   ├── mod.rs                             
+│   ├── spatial.rs                         
+│   ├── traits.rs                          
+│   └── types.rs                           
 │
-├── tests/                                 # 🧪 Integration and unit tests
-│   ├── core/                              # Tests for core engine modules
+├── tests/                                 
+│   ├── core/                              
 │   │   ├── conductor_tests.rs
 │   │   ├── dimension_tests.rs
 │   │   ├── lifecycle_tests.rs
 │   │   ├── mod.rs
 │   │   └── runtime_tests.rs
-│   ├── godot4/                            # Tests for Godot integration
+│   ├── godot4/                            
 │   │   ├── signal_tests.rs
 │   │   └── sync_tests.rs
-│   ├── pipeline/                          # Tests for pipeline and builder logic
+│   ├── pipeline/                          
 │   │   ├── chunk_tests.rs
 │   │   ├── grid_tests.rs
 │   │   └── map_build_tests.rs
-│   ├── shared/                            # Tests for shared math and traits
+│   ├── shared/                            
 │   │   ├── math_tests.rs
 │   │   ├── traits_tests.rs
 │   │   └── types_tests.rs
-│   ├── util/                              # Tests for utility modules
+│   ├── util/                              
 │   │   ├── logging_tests.rs
 │   │   ├── profiling_tests.rs
 │   │   └── timer_tests.rs
 │   │
-│   ├── common.rs                          # Shared test utilities and fixtures
-│   ├── generation_tests.rs                # Noise, pattern, and tile placement tests
-│   ├── godot_integration_tests.rs         # Full-stack Godot engine integration tests
-│   ├── mod.rs                             # Test module exports
-│   ├── pipeline_tests.rs                  # Builder logic, chunk streaming, threading
-│   ├── signal_tests.rs                    # EngineMessage and GodotSync behavior
-│   └── trait_tests.rs                     # Custom trait implementations and trait object behavior
+│   ├── common.rs                          
+│   ├── generation_tests.rs                
+│   ├── godot_integration_tests.rs         
+│   ├── mod.rs                             
+│   ├── pipeline_tests.rs                  
+│   ├── signal_tests.rs                    
+│   └── trait_tests.rs                     
 │
-├── trailkeeper/                           # 📘 Architectural ledger and in-code logging system
-│   ├── entry.rs                           # TrailEntry struct and TrailStatus enum (Committed, Pending, Abandoned)
-│   ├── macros.rs                          # log_entry! macro for structured in-code annotations
-│   └── registry.rs                        # Optional: runtime collector or static ledger of entries
+├── trailkeeper/                           
+│   ├── entry.rs                           
+│   ├── macros.rs                          
+│   └── registry.rs                        
 │
-├── util/                                  # 🛠 Internal utilities and diagnostics
-│   ├── config.rs                          # Internal config structs and helpers
-│   ├── logging.rs                         # Logging macros and tracing utilities
-│   ├── time.rs                            # Tick budget and time management
-│   ├── profiling.rs                       # ⏱ Chunk throughput and performance diagnostics
-│   ├── position.rs                        # Spatial position helpers
-│   ├── direction.rs                       # Directional logic and orientation helpers
-│   ├── timer.rs                           # Runtime timers and tick counters
-│   ├── velocity.rs                        # Movement and physics helpers
-│   └── mod.rs                             # Utility module exports
+├── util/                                  
+│   ├── config.rs                          
+│   ├── logging.rs                         
+│   ├── time.rs                            
+│   ├── profiling.rs                       
+│   ├── position.rs                        
+│   ├── direction.rs                       
+│   ├── timer.rs                           
+│   ├── velocity.rs                        
+│   └── mod.rs                             
 │
-├── api.rs                                 # 🌐 External API surface (optional entry point for engine consumers)
-├── lib.rs                                 # 🚪 Crate entry point and module wiring
-└── prelude.rs                             # 🌐 Common imports and trait re-exports for ergonomic use
+├── api.rs                                 
+├── lib.rs                                 
+└── prelude.rs                             
 
 
 ╔══════════════════════════════════════════════════════════════════════════╗
@@ -502,3 +502,359 @@ AetherionTester: Launching initialization sequence...
 
 🧭 End of Snapshot
 
+crate Aetherion_Engine
+├── struct AetherionEXT: pub(crate)
+│   └── fn on_level_init: pub(crate)
+├── mod aetherion: pub
+│   ├── mod codegen: pub
+│   │   ├── mod config: pub
+│   │   │   └── struct Config: pub
+│   │   ├── mod dsl: pub
+│   │   ├── mod emitter: pub
+│   │   │   └── fn generate_code: pub
+│   │   └── mod parser: pub
+│   ├── mod core: pub
+│   │   ├── mod conductor: pub
+│   │   │   ├── struct Conductor: pub
+│   │   │   │   ├── fn enqueue: pub
+│   │   │   │   ├── fn has_pending: pub
+│   │   │   │   ├── fn new: pub
+│   │   │   │   ├── fn queue_len: pub
+│   │   │   │   └── fn tick: pub
+│   │   │   └── enum ProcCommand: pub
+│   │   ├── mod dimension: pub
+│   │   │   └── enum Dimension: pub
+│   │   │       ├── fn as_str: pub
+│   │   │       ├── fn flipped: pub
+│   │   │       ├── fn is_2d: pub
+│   │   │       └── fn is_3d: pub
+│   │   ├── mod lifecycle: pub
+│   │   │   ├── struct Lifecycle: pub
+│   │   │   │   ├── fn initialize: pub
+│   │   │   │   ├── fn is_active: pub
+│   │   │   │   ├── fn is_shutting_down: pub
+│   │   │   │   ├── fn is_terminated: pub
+│   │   │   │   ├── fn mark_running: pub
+│   │   │   │   ├── fn new: pub
+│   │   │   │   ├── fn shutdown: pub
+│   │   │   │   └── fn terminate: pub
+│   │   │   └── enum LifecycleState: pub
+│   │   └── mod runtime: pub
+│   │       └── struct RuntimeState: pub
+│   │           ├── fn average_tick_duration: pub
+│   │           ├── fn budget: pub
+│   │           ├── fn has_tick_listener: pub
+│   │           ├── fn is_budget_exceeded: pub
+│   │           ├── fn new: pub
+│   │           ├── fn set_frame_budget: pub
+│   │           ├── fn set_tick_listener: pub
+│   │           ├── fn tick: pub
+│   │           ├── fn ticks: pub
+│   │           └── fn time_since_last_tick: pub
+│   ├── mod generator: pub
+│   │   ├── mod noise: pub
+│   │   │   ├── enum NoiseType: pub
+│   │   │   │   ├── fn as_str: pub
+│   │   │   │   └── fn is_available: pub
+│   │   │   ├── fn basic_noise: pub
+│   │   │   ├── fn cellular_automata: pub
+│   │   │   ├── fn count_alive_neighbors: pub(self)
+│   │   │   ├── fn generate_grid_noise: pub
+│   │   │   └── fn generate_noise: pub
+│   │   ├── mod noise_config: pub
+│   │   │   ├── struct NoiseConfig: pub
+│   │   │   └── fn generate_grid_from_config: pub
+│   │   ├── mod pattern_type: pub
+│   │   │   ├── enum PatternType: pub
+│   │   │   └── fn blend_noise_and_pattern: pub
+│   │   └── mod patterns: pub
+│   │       ├── fn checkerboard: pub
+│   │       ├── fn horizontal_stripes: pub
+│   │       ├── fn radial: pub
+│   │       ├── fn vertical_stripes: pub
+│   │       └── fn xor_fractal: pub
+│   ├── mod interaction: pub
+│   │   ├── mod modifiers: pub
+│   │   │   ├── struct PaintTile: pub
+│   │   │   │   └── fn apply: pub(self)
+│   │   │   ├── trait TileModifier: pub
+│   │   │   └── struct ToggleTile: pub
+│   │   │       └── fn apply: pub(self)
+│   │   └── mod tools: pub
+│   ├── mod pipeline: pub
+│   │   ├── mod builder: pub
+│   │   │   ├── mod builder: pub
+│   │   │   │   └── fn spawn_map_builder: pub
+│   │   │   ├── mod streamer: pub
+│   │   │   │   └── struct ChunkStreamer: pub
+│   │   │   │       ├── fn enqueue_chunk: pub
+│   │   │   │       ├── fn has_pending: pub
+│   │   │   │       ├── fn new: pub
+│   │   │   │       ├── fn pause: pub
+│   │   │   │       ├── fn queue_len: pub
+│   │   │   │       ├── fn resume: pub
+│   │   │   │       ├── fn sync: pub
+│   │   │   │       ├── fn sync_mut: pub
+│   │   │   │       └── fn try_deliver: pub
+│   │   │   └── mod threaded: pub
+│   │   │       └── fn spawn_builder_thread: pub
+│   │   └── mod data: pub
+│   │       ├── mod chunk: pub
+│   │       │   └── struct MapDataChunk: pub
+│   │       │       ├── fn get: pub
+│   │       │       ├── fn insert: pub
+│   │       │       ├── fn into_inner: pub
+│   │       │       ├── fn is_empty: pub
+│   │       │       ├── fn iter: pub
+│   │       │       ├── fn len: pub
+│   │       │       ├── fn merge: pub
+│   │       │       └── fn new: pub
+│   │       ├── mod data: pub
+│   │       ├── mod grid: pub
+│   │       │   ├── struct MapGrid: pub
+│   │       │   │   ├── fn get_tile: pub
+│   │       │   │   ├── fn is_within_bounds: pub
+│   │       │   │   ├── fn new: pub
+│   │       │   │   └── fn set_tile: pub
+│   │       │   └── enum TileType: pub
+│   │       ├── mod map_build_options: pub
+│   │       │   ├── enum GodotNoiseType: pub
+│   │       │   │   ├── fn as_str: pub
+│   │       │   │   ├── fn from_str: pub
+│   │       │   │   └── fn to_internal: pub
+│   │       │   └── struct MapBuildOptions: pub
+│   │       │       ├── fn init: pub(self)
+│   │       │       ├── fn noise_type: pub
+│   │       │       └── fn to_noise_config: pub
+│   │       ├── mod options: pub
+│   │       │   ├── enum GodotNoiseType: pub
+│   │       │   │   └── fn to_internal: pub
+│   │       │   └── struct MapBuildOptions: pub
+│   │       │       ├── fn default: pub
+│   │       │       ├── fn is_animated: pub
+│   │       │       ├── fn noise_type: pub
+│   │       │       ├── fn to_noise_config: pub
+│   │       │       └── fn total_tiles: pub
+│   │       ├── mod tile: pub
+│   │       │   ├── struct TileInfo: pub
+│   │       │   └── mod tile_flags: pub
+│   │       └── mod vector: pub
+│   │           └── struct SerializableVector2i: pub
+│   └── mod structure: pub
+│       └── mod generation: pub
+│           ├── struct RecursiveMaze: pub
+│           │   └── fn generate: pub(self)
+│           ├── struct RoomGrid: pub
+│           │   └── fn generate: pub(self)
+│           └── trait StructureGenerator: pub
+├── mod examples: pub
+│   ├── mod infinity: pub
+│   │   └── struct Infinity: pub
+│   │       ├── fn bounds: pub
+│   │       ├── fn expand: pub
+│   │       ├── fn new: pub
+│   │       └── fn tick: pub
+│   ├── mod pacman_expansive: pub
+│   │   └── struct PacmanExpansive: pub
+│   │       ├── fn expand: pub
+│   │       ├── fn new: pub
+│   │       ├── fn run: pub
+│   │       └── fn try_turn: pub
+│   └── mod racing: pub
+│       ├── struct Racer: pub
+│       │   ├── fn boost: pub
+│       │   ├── fn new: pub
+│       │   └── fn update: pub
+│       └── struct Track: pub
+│           └── fn is_lap_complete: pub
+├── mod godot4: pub
+│   ├── mod api: pub
+│   │   ├── mod config: pub
+│   │   │   └── struct AetherionConfig: pub
+│   │   │       ├── fn _ready: pub(self)
+│   │   │       ├── fn get_chunk_area: pub(self)
+│   │   │       ├── fn init: pub(self)
+│   │   │       └── fn regenerate_seed: pub(self)
+│   │   ├── mod engine: pub
+│   │   │   └── struct AetherionEngine: pub
+│   │   │       ├── fn aetherionoracle: pub
+│   │   │       ├── fn apply_chunks_to_tilemap: pub(self)
+│   │   │       ├── fn build_map: pub
+│   │   │       ├── fn debug_place_tile: pub
+│   │   │       ├── fn emit_pending_signals: pub(self)
+│   │   │       ├── fn get_status: pub
+│   │   │       ├── fn init: pub(self)
+│   │   │       ├── fn ping: pub
+│   │   │       ├── fn process: pub(self)
+│   │   │       ├── fn ready: pub(self)
+│   │   │       └── fn set_tilemap: pub
+│   │   ├── mod generator: pub
+│   │   │   ├── struct AetherionGenerator: pub
+│   │   │   │   ├── fn _ready: pub(self)
+│   │   │   │   ├── fn generate_noise: pub(self)
+│   │   │   │   ├── fn generate_pattern: pub(self)
+│   │   │   │   ├── fn init: pub(self)
+│   │   │   │   └── fn tile_to_dict: pub(self)
+│   │   │   ├── fn generate_noise_tile: pub
+│   │   │   └── fn generate_pattern_tile: pub
+│   │   ├── mod map: pub
+│   │   │   └── struct AetherionMap: pub
+│   │   │       ├── fn _ready: pub(self)
+│   │   │       ├── fn clear_chunk: pub(self)
+│   │   │       ├── fn get_tile: pub(self)
+│   │   │       ├── fn init: pub(self)
+│   │   │       └── fn load_chunk: pub(self)
+│   │   ├── mod oracle: pub
+│   │   │   └── struct AetherionOracle: pub
+│   │   │       ├── fn init: pub(self)
+│   │   │       ├── fn ping: pub
+│   │   │       ├── fn ready: pub(self)
+│   │   │       ├── fn set_engine: pub
+│   │   │       └── fn tick: pub
+│   │   └── mod signals: pub
+│   │       └── struct AetherionSignals: pub
+│   │           ├── fn build_map_start: pub(self)
+│   │           ├── fn engine_init_start: pub(self)
+│   │           ├── fn engine_initialized: pub(self)
+│   │           ├── fn frame_budget_exceeded: pub(self)
+│   │           ├── fn generation_complete: pub(self)
+│   │           ├── fn generation_progress: pub(self)
+│   │           ├── fn map_build_cancelled: pub(self)
+│   │           ├── fn map_build_duration: pub(self)
+│   │           ├── fn map_build_failed: pub(self)
+│   │           ├── fn map_building_status: pub(self)
+│   │           ├── fn map_chunk_ready: pub(self)
+│   │           ├── fn pipeline_complete: pub(self)
+│   │           ├── fn pipeline_start: pub(self)
+│   │           ├── fn rust_error: pub(self)
+│   │           ├── fn rust_extension_ready: pub(self)
+│   │           ├── fn sync_required: pub(self)
+│   │           ├── fn tick_completed: pub(self)
+│   │           ├── fn tick_started: pub(self)
+│   │           ├── fn tilemap_sync_complete: pub(self)
+│   │           └── fn tilemap_updated: pub(self)
+│   ├── mod bindings: pub
+│   │   └── mod godot_types: pub
+│   ├── mod messaging: pub
+│   │   ├── mod messages: pub
+│   │   │   └── enum EngineMessage: pub
+│   │   └── mod sync: pub
+│   │       ├── struct GodotSync: pub
+│   │       │   ├── fn add_chunk: pub
+│   │       │   ├── fn add_signal: pub
+│   │       │   ├── fn drain_chunks: pub
+│   │       │   ├── fn drain_signals: pub
+│   │       │   ├── fn has_pending: pub
+│   │       │   └── fn init: pub
+│   │       └── struct GodotSyncInner: pub(self)
+│   └── mod signals: pub
+│       ├── mod definitions: pub
+│       └── mod dispatch: pub
+│           └── fn emit_from_message: pub
+├── mod shared: pub
+│   ├── mod grid2d: pub
+│   │   └── struct Grid2D: pub
+│   │       ├── fn filled: pub
+│   │       ├── fn get: pub
+│   │       └── fn set: pub
+│   ├── mod grid_bounds: pub
+│   │   └── struct GridBounds: pub
+│   │       └── fn contains: pub
+│   ├── mod math: pub
+│   │   └── fn clamp: pub
+│   ├── mod spatial: pub
+│   │   ├── fn all_neighbors: pub
+│   │   ├── fn cardinal_neighbors: pub
+│   │   └── fn in_bounds: pub
+│   ├── mod traits: pub
+│   │   ├── trait Serializable: pub
+│   │   └── trait Tickable: pub
+│   └── mod types: pub
+│       ├── type Coord: pub
+│       ├── struct EntityId: pub
+│       │   ├── fn from_raw: pub
+│       │   └── fn value: pub
+│       └── type Timestamp: pub
+├── mod tests: pub
+│   ├── mod common: pub
+│   │   ├── struct SignalReceiver: pub
+│   │   │   ├── fn on_progress: pub(self)
+│   │   │   └── fn on_status: pub(self)
+│   │   ├── fn dummy_results: pub
+│   │   └── fn gstr: pub
+│   ├── mod core: pub
+│   │   ├── mod conductor_tests: pub
+│   │   ├── mod dimension_tests: pub
+│   │   ├── mod lifecycle_tests: pub
+│   │   └── mod runtime_tests: pub
+│   ├── mod generation_tests: pub
+│   ├── mod godot_integration_tests: pub
+│   ├── mod pipeline_tests: pub
+│   ├── mod signal_tests: pub
+│   └── mod trait_tests: pub
+├── mod trailkeeper: pub
+│   ├── mod collector: pub
+│   │   ├── struct LOG_REGISTRY: pub(self)
+│   │   │   └── fn initialize: pub(self)
+│   │   └── struct Trailkeeper: pub
+│   │       ├── fn all: pub
+│   │       ├── fn query: pub
+│   │       └── fn record: pub
+│   ├── mod config: pub
+│   │   └── fn check_config_change: pub
+│   ├── mod entry: pub
+│   │   ├── enum EventType: pub
+│   │   ├── struct LogEntry: pub
+│   │   └── enum LogStatus: pub
+│   ├── mod export: pub
+│   │   ├── struct SerializableLogEntry: pub(self)
+│   │   └── fn export_json: pub
+│   ├── mod macros: pub
+│   ├── mod registry: pub
+│   ├── mod scan: pub
+│   │   └── fn scan_git_diff: pub
+│   └── mod watch: pub
+│       └── fn start_file_watch: pub
+└── mod util: pub
+    ├── mod config: pub
+    │   └── struct EngineConfig: pub
+    │       ├── fn is_multithreaded: pub
+    │       └── fn tick_interval: pub
+    ├── mod direction: pub
+    │   └── struct Direction: pub
+    │       ├── fn all: pub
+    │       ├── fn left: pub
+    │       ├── fn reverse: pub
+    │       └── fn right: pub
+    ├── mod logging: pub
+    │   ├── fn init_logging: pub
+    │   ├── fn log_debug: pub
+    │   ├── fn log_error: pub
+    │   ├── fn log_info: pub
+    │   └── fn log_warn: pub
+    ├── mod position: pub
+    │   └── struct Position: pub
+    │       ├── fn distance_to: pub
+    │       ├── fn max: pub
+    │       ├── fn min: pub
+    │       ├── fn new: pub
+    │       └── fn step: pub
+    ├── mod time: pub
+    │   └── struct TickTimer: pub
+    │       ├── fn new: pub
+    │       ├── fn should_tick: pub
+    │       ├── fn tick_interval: pub
+    │       └── fn time_since_last_tick: pub
+    ├── mod timer: pub
+    │   └── struct Timer: pub
+    │       ├── fn elapsed: pub
+    │       ├── fn new: pub
+    │       └── fn reset: pub
+    └── mod velocity: pub
+        └── struct Velocity: pub
+            ├── fn apply: pub
+            ├── fn increase: pub
+            ├── fn new: pub
+            ├── fn scale: pub
+            └── fn zero: pub
+PS C:\zv9\zv9.aetherion\rust>

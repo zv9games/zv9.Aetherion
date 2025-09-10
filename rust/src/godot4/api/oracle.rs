@@ -1,5 +1,3 @@
-//C:/ZV9/zv9.aetherion/rust/src/godot4/api/oracle.rs
-
 use godot::prelude::*;
 use crate::godot4::api::engine::AetherionEngine;
 
@@ -10,6 +8,7 @@ pub struct AetherionOracle {
     #[base]
     base: Base<Node>,
     engine: Option<Gd<AetherionEngine>>,
+    tick_count: u64,
 }
 
 #[godot_api]
@@ -18,6 +17,7 @@ impl AetherionOracle {
         Self {
             base,
             engine: None,
+            tick_count: 0,
         }
     }
 
@@ -36,8 +36,9 @@ impl AetherionOracle {
     pub fn tick(&mut self) {
         match self.engine.as_mut() {
             Some(engine) => {
-                godot_print!("🔮 Oracle: Delivering pulse to engine...");
-                engine.call("aetherionoracle", &[]);
+                godot_print!("🔮 Oracle: Tick {} → Engine", self.tick_count);
+                engine.call("tick", &[Variant::from(self.tick_count)]);
+                self.tick_count += 1;
             }
             None => {
                 godot_warn!("⚠️ Oracle: No engine linked. Tick aborted.");
@@ -49,6 +50,15 @@ impl AetherionOracle {
     pub fn ping(&self) {
         godot_print!("🔮 Oracle: Ping received. I am awake.");
     }
-}
 
-//end oracle.rs
+    #[func]
+    pub fn reset(&mut self) {
+        self.tick_count = 0;
+        godot_print!("🔄 Oracle: Tick counter reset.");
+    }
+
+    #[func]
+    pub fn get_tick(&self) -> u64 {
+        self.tick_count
+    }
+}

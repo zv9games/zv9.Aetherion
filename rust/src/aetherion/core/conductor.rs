@@ -1,5 +1,3 @@
-//C:/ZV9/zv9.aetherion/rust/src/aetherion/core/conductor.rs
-
 //! 🎼 Runtime conductor for procedural orchestration.
 //!
 //! Executes commands, reacts to engine state, and manages flow between terrain,
@@ -42,6 +40,11 @@ impl Conductor {
 
     /// Processes one tick of the conductor loop.
     pub fn tick(&mut self, tick: u64, chunk: &mut MapDataChunk) {
+        // Throttle tick logging to every 60 ticks
+        if tick % 60 == 0 {
+            self.sync.add_signal(EngineMessage::Status(format!("🎼 Tick {} processed", tick)));
+        }
+
         if self.ticks_waiting > 0 {
             self.ticks_waiting -= 1;
             return;
@@ -81,5 +84,3 @@ impl Conductor {
         self.queue.len()
     }
 }
-
-//end conductor.rs

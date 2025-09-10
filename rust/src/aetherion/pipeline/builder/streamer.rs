@@ -1,5 +1,3 @@
-//C:/ZV9/zv9.aetherion/rust/src/aetherion/pipeline/builder/streamer.rs
-
 //! 🚚 Smart chunk streaming and pacing logic.
 //!
 //! Controls how and when chunks are delivered to Godot, ensuring smooth
@@ -55,6 +53,7 @@ impl ChunkStreamer {
         if now.duration_since(self.last_delivery) >= self.delivery_interval {
             if let Some(chunk) = self.queue.pop_front() {
                 self.sync.add_chunk(chunk);
+                self.sync.add_signal(EngineMessage::MapChunkReady);
                 self.last_delivery = now;
             }
         }
@@ -90,5 +89,3 @@ impl ChunkStreamer {
         &mut self.sync
     }
 }
-
-//end streamer.rs

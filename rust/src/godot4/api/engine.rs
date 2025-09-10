@@ -1,13 +1,12 @@
-//C:/ZV9/zv9.aetherion/rust/src/godot4/api/engine.rs
-
 use godot::prelude::*;
 use godot::classes::TileMap;
 use godot::global::Error;
 
 use crate::godot4::api::AetherionSignals;
 use crate::godot4::messaging::{GodotSync, EngineMessage};
-use crate::aetherion::pipeline::data::{MapBuildOptions, TileInfo};
+use crate::aetherion::pipeline::data::{MapBuildOptions, MapDataChunk};
 use crate::aetherion::pipeline::builder::threaded::spawn_builder_thread;
+use crate::aetherion::core::conductor::Conductor;
 
 /// Godot-facing engine node for procedural generation and signal dispatch.
 #[derive(GodotClass)]
@@ -23,21 +22,33 @@ pub struct AetherionEngine {
     #[export]
     target_tilemap: Option<Gd<TileMap>>,
 
-    current_status: String, // Tracks engine status for external queries
+    current_status: String,
+
+    conductor: Option<Conductor>,
+    chunk: Option<MapDataChunk>,
 }
+
+
+
+
 
 #[godot_api]
 impl AetherionEngine {
+	#[allow(dead_code)]
     fn init(base: Base<Node>) -> Self {
-        Self {
-            base,
-            sync: GodotSync::init(),
-            signals_node: None,
-            target_tilemap: None,
-            current_status: "Uninitialized".into(),
-        }
-    }
+		let sync = GodotSync::init();
+		Self {
+			base,
+			sync: sync.clone(),
+			signals_node: None,
+			target_tilemap: None,
+			current_status: "Uninitialized".into(),
+			conductor: Some(Conductor::new(sync)),
+			chunk: Some(MapDataChunk::new()),
+		}
+	}
 
+	#[allow(dead_code)]
     fn ready(&mut self) {
         godot_print!("⚙️ AetherionEngine online. Systems nominal.");
         self.base.to_init_gd().set_process(true);
@@ -67,9 +78,11 @@ impl AetherionEngine {
             for signal_msg in self.sync.drain_signals() {
                 let result = match signal_msg {
                     EngineMessage::Start => signals_node.emit_signal("build_map_start", &[]),
-                    EngineMessage::Progress(percent) => signals_node.emit_signal("generation_progress", &[percent.to_variant()]),
+                    EngineMessage::Progress(percent) => {
+                        signals_node.emit_signal("generation_progress", &[percent.to_variant()])
+                    }
                     EngineMessage::Status(status) => {
-                        self.current_status = status.clone(); // Store status for external access
+                        self.current_status = status.clone();
                         signals_node.emit_signal("map_building_status", &[GString::from(status).to_variant()])
                     }
                     EngineMessage::Complete { width, height, mode, animate, duration } => {
@@ -81,6 +94,7 @@ impl AetherionEngine {
                         dict.insert("duration", duration);
                         signals_node.emit_signal("generation_complete", &[dict.to_variant()])
                     }
+                    EngineMessage::MapChunkReady => signals_node.emit_signal("map_chunk_ready", &[]),
                 };
 
                 if result != Error::OK {
@@ -91,10 +105,16 @@ impl AetherionEngine {
     }
 
     #[func]
-    pub fn aetherionoracle(&mut self) {
-        godot_print!("⚙️ Engine: Oracle pulse received. Processing...");
-        self.process(0.0);
-    }
+	pub fn tick(&mut self, tick: u64) {
+		if let (Some(conductor), Some(chunk)) = (self.conductor.as_mut(), self.chunk.as_mut()) {
+			godot_print!("⚙️ Engine: Tick {} received from Oracle.", tick);
+			conductor.tick(tick, chunk);
+			self.process(0.0);
+		} else {
+			godot_warn!("⚠️ Engine: Tick ignored. Conductor or chunk not initialized.");
+		}
+	}
+
 
     #[func]
     pub fn build_map(
@@ -155,5 +175,3 @@ impl AetherionEngine {
         self.current_status.clone()
     }
 }
-
-//end engine.rs 

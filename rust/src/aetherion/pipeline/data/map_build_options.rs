@@ -1,7 +1,5 @@
-//C:/ZV9/zv9.aetherion/rust/src/aetherion/pipeline/data/map_build_options.rs
-
 use godot::prelude::*;
-use crate::aetherion::generator::noise::{NoiseType};
+use crate::aetherion::generator::noise::NoiseType;
 use crate::aetherion::generator::noise_config::NoiseConfig;
 
 /// Editor-safe wrapper for exposing noise types to GDScript.
@@ -62,18 +60,7 @@ pub struct MapBuildOptions {
 
 #[godot_api]
 impl MapBuildOptions {
-    fn init() -> Self {
-        Self {
-            width: 64,
-            height: 64,
-            seed: 42,
-            mode: "automata".into(),
-            animate: false,
-            black: Vector2i::new(0, 0),
-            blue: Vector2i::new(1, 1),
-        }
-    }
-
+    /// Converts this configuration into an internal noise config.
     pub fn to_noise_config(&self) -> NoiseConfig {
         NoiseConfig {
             width: self.width as usize,
@@ -86,9 +73,8 @@ impl MapBuildOptions {
         }
     }
 
+    /// Converts the Godot-facing noise mode into an internal enum.
     pub fn noise_type(&self) -> NoiseType {
         GodotNoiseType::from_str(self.mode.to_string().as_str()).to_internal()
     }
 }
-
-//end map_build_options.rs

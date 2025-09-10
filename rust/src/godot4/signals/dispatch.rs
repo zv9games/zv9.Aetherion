@@ -1,5 +1,3 @@
-//C:/ZV9/zv9.aetherion/rust/src/godot4/signals/dispath.rs
-
 use godot::prelude::*;
 use godot::global::Error;
 use crate::godot4::api::AetherionSignals;
@@ -28,8 +26,9 @@ pub fn emit_from_message(signals_node: &mut Gd<AetherionSignals>, msg: EngineMes
             dict.insert("duration", duration);
             signals_node.emit_signal("generation_complete", &[dict.to_variant()])
         }
+
+        EngineMessage::MapChunkReady => {
+            signals_node.emit_signal("map_chunk_ready", &[])
+        }
     }
 }
-
-
-//end dispatch.rs

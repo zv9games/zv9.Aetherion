@@ -6,7 +6,6 @@
 //! pacing-aware streamer, and dispatches the map builder thread.
 
 use crate::aetherion::pipeline::data::map_build_options::{MapBuildOptions, GodotNoiseType};
-use crate::aetherion::pipeline::data::SerializableVector2i;
 use crate::aetherion::pipeline::builder::builder::spawn_map_builder;
 use crate::aetherion::pipeline::builder::streamer::ChunkStreamer;
 use crate::godot4::messaging::GodotSync;
@@ -16,7 +15,7 @@ pub fn spawn_builder_thread(sync: GodotSync, options: MapBuildOptions) {
     let config = options.to_noise_config();
 
     // Wrap sync in a pacing-aware chunk streamer (2ms interval)
-    let mut streamer = ChunkStreamer::new(sync, 2);
+    let streamer = ChunkStreamer::new(sync, 2);
 
     spawn_map_builder(
         streamer,
