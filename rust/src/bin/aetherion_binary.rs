@@ -1,10 +1,10 @@
-use Aetherion_Engine::util::logging::{init_logging, log_info};
+use aetherion_engine::util::logging::{init_logging, log_info};
 use crossterm::event::{self, Event, KeyCode};
-use std::{io::{self, Write}, process::Command, thread, time::Duration};
+use std::{process::Command, thread, time::Duration};
 use walkdir::WalkDir;
 
 // Trailkeeper modules
-use Aetherion_Engine::trailkeeper::{
+use aetherion_engine::trailkeeper::{
     collector::Trailkeeper,
     config::check_config_change,
     scan::scan_git_diff,
@@ -91,7 +91,7 @@ fn run_cargo_tests() {
 
 // 🌀 Tick simulation
 fn simulate_tick_flow() {
-    use Aetherion_Engine::{
+    use aetherion_engine::{
         aetherion::core::conductor::{Conductor, ProcCommand},
         aetherion::pipeline::data::MapDataChunk,
         godot4::messaging::GodotSync,
@@ -116,7 +116,7 @@ fn simulate_tick_flow() {
 
 // 📋 Queue inspection
 fn inspect_pending_queue() {
-    use Aetherion_Engine::{
+    use aetherion_engine::{
         aetherion::core::conductor::{Conductor, ProcCommand},
         godot4::messaging::GodotSync,
     };

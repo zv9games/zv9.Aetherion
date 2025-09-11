@@ -8,6 +8,7 @@ pub struct AetherionGenerator;
 
 #[godot_api]
 impl AetherionGenerator {
+	#[allow(dead_code)]
     fn init(_base: Base<Node>) -> Self {
         Self
     }
@@ -33,14 +34,15 @@ impl AetherionGenerator {
 
     /// Converts a TileInfo into a Godot Dictionary.
     fn tile_to_dict(tile: TileInfo) -> Dictionary {
-        let mut dict = Dictionary::new();
-        dict.insert("source_id", tile.source_id);
-        dict.insert("atlas_coords", Vector2i::from(tile.atlas_coords));
-        dict.insert("alternate_id", tile.alternate_id);
-        dict.insert("rotation", tile.rotation);
-        dict.insert("layer", tile.layer);
-        dict
-    }
+		let mut dict = Dictionary::new();
+		let _ = dict.insert("source_id", tile.source_id);
+		let _ = dict.insert("atlas_coords", Vector2i::from(tile.atlas_coords));
+		let _ = dict.insert("alternate_id", tile.alternate_id);
+		let _ = dict.insert("rotation", tile.rotation);
+		let _ = dict.insert("layer", tile.layer);
+		dict
+	}
+
 }
 
 /// Generates a tile using noise at the given coordinates and seed.

@@ -1,5 +1,5 @@
 [package]
-name = "Aetherion_Engine"
+name = "aetherion_engine"
 version = "0.1.0"
 edition = "2021"
 
@@ -61,8 +61,8 @@ path = "src/bin/aetherion_binary.rs"
 # name = "debugger"
 # path = "src/bin/debugger.rs"
 
-[alias]
-build-sync = "build --release && run --bin sync_to_godot"
+#[alias]
+# build-sync = "build --release && run --bin sync_to_godot"
 
 [features]
 default = []

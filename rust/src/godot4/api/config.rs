@@ -25,6 +25,7 @@ pub struct AetherionConfig {
 
 #[godot_api]
 impl AetherionConfig {
+	#[allow(dead_code)]
     fn init(_base: Base<Node>) -> Self {
         Self {
             tile_size: 16,

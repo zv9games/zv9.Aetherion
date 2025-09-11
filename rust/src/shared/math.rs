@@ -11,7 +11,7 @@ pub const TAU: f64 = std::f64::consts::PI * 2.0;
 ///
 /// # Examples
 /// ```
-/// use crate::math::clamp;
+/// use crate::aetherion_engine::shared::math::clamp;
 /// let x = clamp(5, 0, 10); // returns 5
 /// let y = clamp(-3, 0, 10); // returns 0
 /// let z = clamp(42, 0, 10); // returns 10

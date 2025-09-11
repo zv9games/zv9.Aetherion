@@ -9,10 +9,11 @@ pub const DEFAULT_DURATION: f64 = 1.23;
 /// Helper to create a dummy Dictionary for signal testing
 pub fn dummy_results() -> Dictionary {
     let mut dict = Dictionary::new();
-    dict.insert("status", "success");
-    dict.insert("chunks", 42);
+    let _ = dict.insert("status", "success");
+    let _ = dict.insert("chunks", 42);
     dict
 }
+
 
 /// Helper to create a GString from &str
 pub fn gstr(text: &str) -> GString {

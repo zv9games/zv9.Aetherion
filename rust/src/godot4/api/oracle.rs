@@ -13,6 +13,7 @@ pub struct AetherionOracle {
 
 #[godot_api]
 impl AetherionOracle {
+	#[allow(dead_code)]
     fn init(base: Base<Node>) -> Self {
         Self {
             base,
@@ -20,18 +21,18 @@ impl AetherionOracle {
             tick_count: 0,
         }
     }
-
+	#[allow(dead_code)]
     fn ready(&mut self) {
         godot_print!("🔮 Oracle is online. I await the ignition.");
         self.base.to_init_gd().set_process(true);
     }
-
+	
     #[func]
     pub fn set_engine(&mut self, engine: Gd<AetherionEngine>) {
         self.engine = Some(engine);
         godot_print!("🔗 Oracle: Engine link established.");
     }
-
+	
     #[func]
     pub fn tick(&mut self) {
         match self.engine.as_mut() {

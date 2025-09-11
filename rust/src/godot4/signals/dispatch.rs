@@ -18,14 +18,15 @@ pub fn emit_from_message(signals_node: &mut Gd<AetherionSignals>, msg: EngineMes
         }
 
         EngineMessage::Complete { width, height, mode, animate, duration } => {
-            let mut dict = Dictionary::new();
-            dict.insert("width", width);
-            dict.insert("height", height);
-            dict.insert("mode", mode);
-            dict.insert("animate", animate);
-            dict.insert("duration", duration);
-            signals_node.emit_signal("generation_complete", &[dict.to_variant()])
-        }
+			let mut dict = Dictionary::new();
+			let _ = dict.insert("width", width);
+			let _ = dict.insert("height", height);
+			let _ = dict.insert("mode", mode);
+			let _ = dict.insert("animate", animate);
+			let _ = dict.insert("duration", duration);
+			signals_node.emit_signal("generation_complete", &[dict.to_variant()])
+		}
+
 
         EngineMessage::MapChunkReady => {
             signals_node.emit_signal("map_chunk_ready", &[])

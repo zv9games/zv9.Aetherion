@@ -14,6 +14,7 @@ pub struct AetherionMap {
 
 #[godot_api]
 impl AetherionMap {
+	#[allow(dead_code)]
     fn init(_base: Base<Node>) -> Self {
         Self { chunk: None }
     }
@@ -78,25 +79,25 @@ impl AetherionMap {
     /// Retrieves tile info at the given index.
     #[func]
     fn get_tile(&self, index: i32) -> Dictionary {
-        let mut dict = Dictionary::new();
+		let mut dict = Dictionary::new();
 
-        if let Some(chunk) = &self.chunk {
-            let key = SerializableVector2i::from(Vector2i::new(index, 0));
-            if let Some(tile) = chunk.tiles.get(&key) {
-                dict.insert("source_id", tile.source_id);
-                dict.insert("atlas_coords", Vector2i::from(tile.atlas_coords));
-                dict.insert("alternate_id", tile.alternate_id);
-                dict.insert("rotation", tile.rotation);
-                dict.insert("layer", tile.layer);
-            } else {
-                godot_warn!("No tile found at index {}", index);
-            }
-        } else {
-            godot_warn!("No chunk loaded when requesting tile {}", index);
-        }
+		if let Some(chunk) = &self.chunk {
+			let key = SerializableVector2i::from(Vector2i::new(index, 0));
+			if let Some(tile) = chunk.tiles.get(&key) {
+				let _ = dict.insert("source_id", tile.source_id);
+				let _ = dict.insert("atlas_coords", Vector2i::from(tile.atlas_coords));
+				let _ = dict.insert("alternate_id", tile.alternate_id);
+				let _ = dict.insert("rotation", tile.rotation);
+				let _ = dict.insert("layer", tile.layer);
+			} else {
+				godot_warn!("No tile found at index {}", index);
+			}
+		} else {
+			godot_warn!("No chunk loaded when requesting tile {}", index);
+		}
 
-        dict
-    }
+		dict
+	}
 
     #[func]
     fn clear_chunk(&mut self) {
