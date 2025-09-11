@@ -1,7 +1,6 @@
-//C:/ZV9/zv9.aetherion/rust/src/aetherion/pipeline/data/chunk.rs
-
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use godot::prelude::*;
 use super::{tile::TileInfo, vector::SerializableVector2i};
 
 /// A chunk of tile data used in procedural generation.
@@ -53,6 +52,20 @@ impl MapDataChunk {
     pub fn get(&self, pos: &SerializableVector2i) -> Option<&TileInfo> {
         self.tiles.get(pos)
     }
-}
 
-//end chunk.rs
+    /// Converts the chunk into a Godot Dictionary for signal dispatch.
+    pub fn to_dictionary(&self) -> Dictionary {
+		let mut dict = Dictionary::new();
+		let mut tile_data = Dictionary::new();
+
+		for (pos, info) in &self.tiles {
+			let _ = tile_data.insert(pos.to_vector2i(), info.to_dictionary());
+		}
+
+		let _ = dict.insert("tile_count", self.len() as i32);
+		let _ = dict.insert("tiles", tile_data);
+
+		dict
+	}
+
+}

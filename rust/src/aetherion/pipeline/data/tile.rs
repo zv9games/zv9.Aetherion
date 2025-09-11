@@ -1,6 +1,5 @@
-//C:/ZV9/zv9.aetherion/rust/src/aetherion/pipeline/data/tile.rs
-
 use serde::{Deserialize, Serialize};
+use godot::prelude::*;
 use super::vector::SerializableVector2i;
 
 /// Metadata for a single tile in the map.
@@ -26,6 +25,21 @@ pub struct TileInfo {
     pub flags: u32,
 }
 
+impl TileInfo {
+    /// Converts tile metadata into a Godot Dictionary.
+    pub fn to_dictionary(&self) -> Dictionary {
+        let mut dict = Dictionary::new();
+        let _ = dict.insert("source_id", self.source_id);
+        let _ = dict.insert("alternate_id", self.alternate_id);
+        let _ = dict.insert("rotation", self.rotation);
+        let _ = dict.insert("layer", self.layer);
+        let _ = dict.insert("flags", self.flags);
+        let _ = dict.insert("atlas_x", self.atlas_coords.x);
+        let _ = dict.insert("atlas_y", self.atlas_coords.y);
+        dict
+    }
+}
+
 /// Bitmask flags for tile behavior and rendering.
 /// Combine using bitwise OR.
 pub mod tile_flags {
@@ -35,5 +49,3 @@ pub mod tile_flags {
     pub const EMISSIVE: u32       = 0b01000;
     pub const DYNAMIC: u32        = 0b10000;
 }
-
-//end tile.rs

@@ -1,18 +1,12 @@
+use crate::aetherion::pipeline::data::MapDataChunk;
 
 /// 📨 EngineMessage — messages sent from Rust to Godot for signal dispatch.
 /// These drive procedural feedback, status updates, and runtime events.
 #[derive(Clone, Debug)]
 pub enum EngineMessage {
-    /// Signals the start of map generation.
+    // ✅ Lifecycle
     Start,
-
-    /// Reports generation progress as a percentage.
-    Progress(i32),
-
-    /// Sends a status update message.
-    Status(String),
-
-    /// Signals completion of map generation with metadata.
+    Cancelled,
     Complete {
         width: i32,
         height: i32,
@@ -21,11 +15,29 @@ pub enum EngineMessage {
         duration: f64,
     },
 
-    /// Signals that a new chunk is ready for placement.
-    MapChunkReady,
+    // 📊 Feedback
+    Progress(i32),
+    Status(String),
+    Warning(String),
+    Error(String),
 
-    // 🔮 Future variants:
-    // Cancelled,
-    // Error(String),
-    // ChunkReady(MapDataChunk),
+    // 🧩 Chunk Delivery
+    MapChunkReady,
+    ChunkReady(MapDataChunk),
+
+    // 🧠 Runtime Signals
+    Paused,
+    Resumed,
+    Retry,
+    Diagnostics {
+        memory_usage: u64,
+        thread_count: usize,
+        tick_rate: f32,
+    },
+
+    // 🧪 Custom Event
+    Custom {
+        name: String,
+        payload: serde_json::Value,
+    },
 }

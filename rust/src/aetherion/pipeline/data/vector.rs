@@ -1,5 +1,3 @@
-//C:/ZV9/zv9.aetherion/rust/src/aetherion/pipeline/data/vector.rs
-
 use godot::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -17,4 +15,9 @@ impl From<Vector2i> for SerializableVector2i {
     }
 }
 
-//end vector.rs
+impl SerializableVector2i {
+    /// Converts this wrapper into a Godot-native `Vector2i`.
+    pub fn to_vector2i(&self) -> Vector2i {
+        Vector2i::new(self.x, self.y)
+    }
+}

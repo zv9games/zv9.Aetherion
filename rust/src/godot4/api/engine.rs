@@ -7,6 +7,8 @@ use crate::godot4::messaging::{GodotSync, EngineMessage};
 use crate::aetherion::pipeline::data::{MapBuildOptions, MapDataChunk};
 use crate::aetherion::pipeline::builder::threaded::spawn_builder_thread;
 use crate::aetherion::core::conductor::Conductor;
+use crate::godot4::signals::dispatch::json_to_variant;
+
 
 /// Godot-facing engine node for procedural generation and signal dispatch.
 #[derive(GodotClass)]
@@ -74,18 +76,22 @@ impl AetherionEngine {
     }
 
     fn emit_pending_signals(&mut self) {
-        if let Some(signals_node) = self.signals_node.as_mut() {
-            for signal_msg in self.sync.drain_signals() {
-                let result = match signal_msg {
-                    EngineMessage::Start => signals_node.emit_signal("build_map_start", &[]),
-                    EngineMessage::Progress(percent) => {
-                        signals_node.emit_signal("generation_progress", &[percent.to_variant()])
-                    }
-                    EngineMessage::Status(status) => {
-                        self.current_status = status.clone();
-                        signals_node.emit_signal("map_building_status", &[GString::from(status).to_variant()])
-                    }
-                    EngineMessage::Complete { width, height, mode, animate, duration } => {
+		if let Some(signals_node) = self.signals_node.as_mut() {
+			for signal_msg in self.sync.drain_signals() {
+				let result = match signal_msg {
+					// ✅ Core generation
+					EngineMessage::Start => signals_node.emit_signal("build_map_start", &[]),
+	
+					EngineMessage::Progress(percent) => {
+						signals_node.emit_signal("generation_progress", &[percent.to_variant()])
+					}
+
+					EngineMessage::Status(status) => {
+						self.current_status = status.clone();
+						signals_node.emit_signal("map_building_status", &[GString::from(status).to_variant()])
+					}
+
+					EngineMessage::Complete { width, height, mode, animate, duration } => {
 						let mut dict = Dictionary::new();
 						let _ = dict.insert("width", width);
 						let _ = dict.insert("height", height);
@@ -94,16 +100,56 @@ impl AetherionEngine {
 						let _ = dict.insert("duration", duration);
 						signals_node.emit_signal("generation_complete", &[dict.to_variant()])
 					}
+	
+					EngineMessage::MapChunkReady => signals_node.emit_signal("map_chunk_ready", &[]),
 
-                    EngineMessage::MapChunkReady => signals_node.emit_signal("map_chunk_ready", &[]),
-                };
+					// 🔁 Chunk delivery
+					EngineMessage::ChunkReady(chunk) => {
+						let dict = chunk.to_dictionary();
+						signals_node.emit_signal("chunk_ready", &[dict.to_variant()])
+					}
 
-                if result != Error::OK {
-                    godot_warn!("⚠️ Engine: Signal emission failed: {:?}", result);
-                }
-            }
-        }
-    }
+					// 🧠 Lifecycle
+					EngineMessage::Cancelled => signals_node.emit_signal("map_build_cancelled", &[]),
+
+					EngineMessage::Diagnostics { memory_usage, thread_count, tick_rate } => {
+						signals_node.emit_signal("diagnostics", &[
+							memory_usage.to_variant(),
+							(thread_count as i32).to_variant(),
+							tick_rate.to_variant(),
+						])
+					}
+
+					// ⚠️ Error & warning
+					EngineMessage::Error(msg) => {
+						signals_node.emit_signal("rust_error", &[GString::from(msg).to_variant()])
+					}
+
+					EngineMessage::Warning(msg) => {
+						signals_node.emit_signal("rust_warning", &[GString::from(msg).to_variant()])
+					}
+
+					// 🧪 Custom hook
+					EngineMessage::Custom { name, payload } => {
+						signals_node.emit_signal("custom_event", &[
+							GString::from(name).to_variant(),
+							json_to_variant(payload),
+						])
+					}
+
+					// 🧭 Optional: Handle Paused, Resumed, Retry if you’ve added them
+					EngineMessage::Paused => signals_node.emit_signal("engine_paused", &[]),
+					EngineMessage::Resumed => signals_node.emit_signal("engine_resumed", &[]),
+					EngineMessage::Retry => signals_node.emit_signal("engine_retry", &[]),
+				};
+
+				if result != Error::OK {
+					godot_warn!("⚠️ Engine: Signal emission failed: {:?}", result);
+				}
+			}
+		}
+	}
+
 
     #[func]
 	pub fn tick(&mut self, tick: u64) {

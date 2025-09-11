@@ -1,5 +1,3 @@
-//C:/ZV9/zv9.aetherion/rust/src/godot4/api/signals.rs
-
 use godot::prelude::*;
 
 /// 🛰️ AetherionSignals — Godot-facing signal node for engine events.
@@ -37,6 +35,21 @@ impl AetherionSignals {
     #[signal]
     fn map_building_status(status_message: GString);
 
+    #[signal]
+    fn map_chunk_ready();
+
+    #[signal]
+    fn chunk_ready(chunk_data: Dictionary); // New: full chunk payload
+
+    #[signal]
+    fn map_build_cancelled();
+
+    #[signal]
+    fn map_build_failed();
+
+    #[signal]
+    fn map_build_duration(duration: f64);
+
     // 🧠 Lifecycle & diagnostics
     #[signal]
     fn tick_started();
@@ -63,12 +76,16 @@ impl AetherionSignals {
     fn sync_required();
 
     #[signal]
-    fn rust_error();
+    fn diagnostics(memory_usage: i64, thread_count: i32, tick_rate: f64); // New
 
-    // 🔁 Tilemap & map events
+    // ⚠️ Error & warning signals
     #[signal]
-    fn map_chunk_ready();
+    fn rust_error(message: GString); // Updated to include message
 
+    #[signal]
+    fn rust_warning(message: GString); // New
+
+    // 🔁 Tilemap & sync events
     #[signal]
     fn tilemap_updated();
 
@@ -76,16 +93,9 @@ impl AetherionSignals {
     fn tilemap_sync_complete();
 
     #[signal]
-    fn map_build_cancelled();
-
-    #[signal]
-    fn map_build_failed();
-
-    #[signal]
-    fn map_build_duration(duration: f64);
-
-    #[signal]
     fn rust_extension_ready();
-}
 
-//end signals.rs
+    // 🧪 Custom & extensible hooks
+    #[signal]
+    fn custom_event(name: GString, payload: Variant); // New
+}
