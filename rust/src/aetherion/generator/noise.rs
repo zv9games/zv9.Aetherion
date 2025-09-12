@@ -1,5 +1,39 @@
 //C:/ZV9/zv9.aetherion/rust/src/aetherion/generator/noise.rs
 
+/// ✅ Suggestions for aetherion/generator/noise.rs
+
+// 🔧 Implement missing noise types:
+//     - Perlin, Simplex, and Cellular noise are currently stubs
+//     - Consider using crates like `noise`, `fastnoise`, or writing custom algorithms
+
+// 🧩 Add normalization and scaling:
+//     - Clamp or scale output of `generate_noise()` to [0.0, 1.0] range
+//     - Useful for blending, thresholding, or visual previews
+
+// 🚦 Add seed-based determinism to `basic_noise()`:
+//     - Currently stateless — consider injecting seed or offset for reproducibility
+
+// 📚 Document noise characteristics:
+//     - Describe expected visual output or use cases for each noise type
+//     - Could include ASCII previews or sample grid dumps
+
+// 🧪 Add unit tests for `generate_grid_noise()` and `cellular_automata()`:
+//     - Validate grid dimensions, fill ratios, and evolution behavior
+
+// 🧼 Optional: Add trait abstraction for noise generators:
+//     - e.g. `trait NoiseFn { fn sample(x: f32, y: f32) -> f32 }`
+//     - Enables dynamic dispatch or plugin-style extensibility
+
+// 🚀 Future: Add multi-channel or layered noise:
+//     - e.g. `Vec<Vec<f32>>` for grayscale maps or biome blending
+//     - Could integrate with terrain heightmaps or structure overlays
+
+// 🧠 Consider exposing evolution parameters externally:
+//     - Let `generate_grid_noise()` accept `steps`, `birth_limit`, `survival_limit`
+//     - Improves configurability and reuse
+
+
+
 //! Noise generation algorithms for procedural terrain and patterns.
 //! Supports Perlin, Simplex, Cellular, and Cellular Automata.
 

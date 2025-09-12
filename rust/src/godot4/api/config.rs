@@ -1,5 +1,39 @@
 //C:/ZV9/zv9.aetherion/rust/src/godot4/api/config.rs
 
+/// ✅ Suggestions for godot4/api/config.rs
+
+// 🔧 Add validation and clamping:
+//     - Ensure `tile_size`, `chunk_width`, and `chunk_height` are positive
+//     - Prevent zero or negative values that could break generation
+
+// 🧩 Add support for saving/loading config:
+//     - `fn to_dict() -> Dictionary` and `fn from_dict(dict: Dictionary)`
+//     - Enables persistence, presets, or editor integration
+
+// 🚦 Add voxel mode configuration:
+//     - If `enable_voxel_mode` is true, expose additional fields like `voxel_resolution`, `depth_layers`
+//     - Useful for hybrid 2D/3D terrain systems
+
+// 📚 Document intended usage in Godot:
+//     - Clarify how this node feeds into the engine pipeline
+//     - Note whether it's meant for runtime tweaking or static setup
+
+// 🧪 Add unit tests or GDScript integration tests:
+//     - Validate seed regeneration, area calculation, and export behavior
+
+// 🧼 Optional: Add debug summary or display method:
+//     - `fn describe_config() -> String`
+//     - Useful for logging or editor overlays
+
+// 🚀 Future: Add support for config presets:
+//     - e.g. “small map”, “large map”, “voxel test”
+//     - Could expose `fn apply_preset(name: GString)`
+
+// 🧠 Consider exposing config as a resource:
+//     - Convert to `AetherionConfigResource` for use in scenes or inspector
+//     - Improves modularity and reuse across projects
+
+
 use rand::Rng;
 use godot::prelude::*;
 

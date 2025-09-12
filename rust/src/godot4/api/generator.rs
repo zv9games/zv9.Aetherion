@@ -1,3 +1,39 @@
+
+/// ✅ Suggestions for godot4/api/generator.rs
+
+// 🔧 Expand pattern logic:
+//     - Replace placeholder `generate_pattern_tile()` with real pattern definitions
+//     - Consider using a `PatternRegistry` or external config for extensibility
+
+// 🧩 Add support for tile flags and metadata:
+//     - Allow `generate_noise_tile()` and `generate_pattern_tile()` to set flags
+//     - Useful for collision, visibility, or gameplay logic
+
+// 🚦 Add input validation:
+//     - Clamp or sanitize `x`, `y`, and `seed` values
+//     - Emit warnings for unknown pattern names
+
+// 📚 Document expected usage from GDScript:
+//     - Clarify how to call `generate_noise()` and `generate_pattern()`
+//     - Note what the returned dictionary contains and how to use it
+
+// 🧪 Add unit tests for tile generation:
+//     - Validate alternate ID hashing, pattern mapping, and dictionary conversion
+//     - Ensure consistency across seeds and coordinates
+
+// 🧼 Optional: Add tile preview or debug output:
+//     - `fn describe_tile(tile: &TileInfo) -> String`
+//     - Useful for logging or editor overlays
+
+// 🚀 Future: Add support for batch generation:
+//     - `fn generate_grid(...) -> Array<Dictionary>`
+//     - Enables procedural map creation directly from GDScript
+
+// 🧠 Consider exposing generation presets:
+//     - e.g. `fn generate_tile_by_profile(profile: GString, x: i32, y: i32)`
+//     - Useful for biome-aware or theme-based generation
+
+
 use godot::prelude::*;
 use crate::aetherion::pipeline::data::TileInfo;
 

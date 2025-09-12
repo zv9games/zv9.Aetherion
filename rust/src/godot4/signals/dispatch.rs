@@ -1,3 +1,38 @@
+/// ✅ Suggestions for godot4/messaging/dispatch.rs
+
+// 🔧 Expand `json_to_variant()` support:
+//     - Handle arrays (`Value::Array`) and objects (`Value::Object`) recursively
+//     - Enables richer custom event payloads and structured data
+
+// 🧩 Add signal emission logging or tracing:
+//     - Log signal name and payload for debugging or profiling
+//     - Could integrate with a diagnostics overlay or telemetry system
+
+// 🚦 Add fallback or retry logic for failed emissions:
+//     - If `emit_signal()` returns non-OK, optionally retry or queue for later
+//     - Prevents silent failures in high-load scenarios
+
+// 📚 Document signal mappings clearly:
+//     - Include a table or comment block mapping `EngineMessage` variants to signal names
+//     - Improves maintainability and onboarding for contributors
+
+// 🧪 Add unit tests for dispatch logic:
+//     - Validate correct signal emission for each `EngineMessage` variant
+//     - Ensure `json_to_variant()` handles edge cases and malformed input
+
+// 🧼 Optional: Add helper for batch dispatch:
+//     - `fn emit_all(signals_node: &mut Gd<AetherionSignals>, messages: &[EngineMessage])`
+//     - Useful for draining queues or replaying events
+
+// 🚀 Future: Add signal filtering or routing:
+//     - e.g. `fn emit_filtered(...)` with predicate or category
+//     - Enables selective dispatch based on runtime state
+
+// 🧠 Consider exposing dispatch metadata:
+//     - e.g. `fn describe_message(msg: &EngineMessage) -> String`
+//     - Useful for debugging, logging, or UI overlays
+
+
 use godot::prelude::*;
 use godot::global::Error;
 use crate::godot4::api::AetherionSignals;

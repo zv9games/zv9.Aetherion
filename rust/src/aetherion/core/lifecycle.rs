@@ -1,5 +1,38 @@
 //C:/ZV9/zv9.aetherion/rust/src/aetherion/core/lifecycle.rs
 
+/// ✅ Suggestions for aetherion/core/lifecycle.rs
+
+// 🔧 Add intermediate states if needed:
+//     - Paused: for gameplay freeze or menu overlays
+//     - Error: for unrecoverable runtime faults
+//     - Restarting: for hot reload or engine reset
+
+// 🧩 Consider adding timestamps or durations:
+//     - Track when each state was entered
+//     - Useful for diagnostics, profiling, or analytics
+
+// 🚦 Add transition validation:
+//     - Prevent invalid transitions (e.g. Terminated → Running)
+//     - Consider a method like `can_transition_to(target: LifecycleState) -> bool`
+
+// 📡 Integrate with signal system:
+//     - Emit signals on state changes (already commented)
+//     - Could hook into AetherionSignals or RuntimeState
+
+// 🧪 Add unit tests:
+//     - Validate state transitions
+//     - Ensure lifecycle behaves predictably under edge cases
+
+// 🧼 Optional: Add display or logging helpers:
+//     - `fn status_string(&self) -> &str`
+//     - `fn log_transition(&self, from: LifecycleState, to: LifecycleState)`
+
+// 🚀 Future: Add lifecycle hooks or callbacks:
+//     - `on_initialize`, `on_shutdown`, etc.
+//     - Useful for modular subsystems or plugin architecture
+
+
+
 //! Manages engine startup, shutdown, and lifecycle transitions.
 //! Tracks the current state and provides hooks for signal dispatch and diagnostics.
 

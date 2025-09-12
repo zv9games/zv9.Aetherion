@@ -1,3 +1,39 @@
+
+/// ✅ Suggestions for aetherion/godot4/signals.rs
+
+// 🔧 Add signal grouping or categorization:
+//     - e.g. `#[signal(group = "generation")]` or prefix conventions
+//     - Helps organize signals in GDScript and editor tooling
+
+// 🧩 Add signal documentation:
+//     - Inline comments for each signal explaining when and why it fires
+//     - Improves clarity for GDScript consumers and plugin authors
+
+// 🚦 Add signal throttling or deduplication:
+//     - Prevent flooding with `generation_progress` or `tick_*` signals
+//     - Could use internal counters or timestamps
+
+// 📚 Document signal lifecycle:
+//     - Clarify which signals fire during init, build, sync, and teardown
+//     - Could include a signal flow diagram in module-level docs
+
+// 🧪 Add integration tests for signal dispatch:
+//     - Validate that signals are emitted correctly during terrain generation
+//     - Ensure payloads match expected formats
+
+// 🧼 Optional: Add signal introspection or logging:
+//     - Emit debug logs when signals are fired
+//     - Useful for diagnostics and runtime tracing
+
+// 🚀 Future: Add signal subscription API:
+//     - e.g. `fn subscribe(signal: &str, callback: Callable)`
+//     - Enables dynamic hook registration from GDScript or Rust
+
+// 🧠 Consider exposing signal metadata:
+//     - e.g. `fn all_signals() -> Vec<&'static str>`
+//     - Useful for editor UIs, debugging, or plugin systems
+
+
 use godot::prelude::*;
 
 /// 🛰️ AetherionSignals — Godot-facing signal node for engine events.

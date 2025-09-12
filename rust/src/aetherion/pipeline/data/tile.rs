@@ -1,3 +1,40 @@
+
+/// ✅ Suggestions for aetherion/pipeline/data/tile.rs
+
+// 🔧 Add helper methods for flag manipulation:
+//     - `fn has_flag(&self, flag: u32) -> bool`
+//     - `fn set_flag(&mut self, flag: u32)`
+//     - `fn clear_flag(&mut self, flag: u32)`
+//     - Improves ergonomics for gameplay and editor logic
+
+// 🧩 Add support for tile variants or animations:
+//     - e.g. `variant_id`, `frame_count`, `animation_speed`
+//     - Useful for animated tiles or visual diversity
+
+// 🚦 Add validation or clamping:
+//     - Ensure `rotation` is within 0–3
+//     - Optionally validate `layer` or `alternate_id` ranges
+
+// 📚 Document flag usage and conventions:
+//     - Clarify how each bitmask flag affects rendering or interaction
+//     - Could include examples or usage notes
+
+// 🧪 Add unit tests for `to_dictionary()` and flag logic:
+//     - Validate dictionary contents and flag combinations
+
+// 🧼 Optional: Add display or debug summary:
+//     - `fn describe(&self) -> String`
+//     - Useful for logging, diagnostics, or editor overlays
+
+// 🚀 Future: Add serialization to/from GDScript objects:
+//     - e.g. `fn from_dictionary(dict: &Dictionary) -> TileInfo`
+//     - Enables round-trip editing and runtime mutation
+
+// 🧠 Consider exposing tile identity or type:
+//     - e.g. `fn tile_type(&self) -> TileType`
+//     - Could be inferred from `source_id` or `flags`
+
+
 use serde::{Deserialize, Serialize};
 use godot::prelude::*;
 use super::vector::SerializableVector2i;

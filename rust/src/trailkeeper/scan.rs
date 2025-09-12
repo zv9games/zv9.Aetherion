@@ -1,3 +1,38 @@
+/// ✅ Suggestions for trailkeeper/git_diff.rs
+
+// 🔧 Add support for staged or unstaged diffs:
+//     - e.g. `"git diff --cached"` or `"git diff HEAD"`
+//     - Enables broader change tracking across commit boundaries
+
+// 🧩 Add filtering or file type awareness:
+//     - Only log changes to `.rs`, `.toml`, or config files
+     - Reduces noise and improves relevance
+
+// 🚦 Improve error handling:
+//     - Use `Result` instead of `expect()` for better resilience
+     - Log stderr output if `git diff` fails
+
+// 📚 Document assumptions about diff format:
+//     - Clarify that this parses unified diff headers and hunks
+     - Note that line numbers are approximate and may vary
+
+// 🧪 Add unit tests with mock diff output:
+//     - Validate file extraction, line parsing, and log entry creation
+     - Ensure robustness against malformed or partial diffs
+
+// 🧼 Optional: Add change type classification:
+//     - e.g. `Added`, `Modified`, `Deleted` based on diff markers
+     - Could extend `EventType` or add a `change_kind` field
+
+// 🚀 Future: Add support for diff summary or metrics:
+//     - Count lines changed, files affected, or diff size
+     - Useful for dashboards or commit impact analysis
+
+// 🧠 Consider batching log entries:
+//     - Collect all entries and submit as a group to `Trailkeeper`
+     - Reduces overhead and enables grouped reporting
+
+
 use crate::trailkeeper::entry::{LogEntry, EventType, LogStatus};
 use crate::trailkeeper::collector::Trailkeeper;
 use chrono::Utc;

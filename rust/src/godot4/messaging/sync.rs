@@ -1,5 +1,40 @@
 //C:/ZV9/zv9.aetherion/rust/src/godot4/messaging/sync.rs
 
+/// ✅ Suggestions for godot4/messaging/sync.rs
+
+// 🔧 Add non-blocking or timeout-based access:
+//     - e.g. `try_drain_chunks_with_timeout(duration: Duration)`
+//     - Prevents stalls in high-load scenarios or debugging loops
+
+// 🧩 Add queue size introspection:
+//     - `fn chunk_count() -> usize`, `fn signal_count() -> usize`
+//     - Useful for diagnostics, pacing logic, or UI overlays
+
+// 🚦 Improve error reporting:
+//     - Include context in `godot_warn!` (e.g. which thread or operation failed)
+//     - Optionally emit `EngineMessage::Warning` for lock failures
+
+// 📚 Document threading expectations:
+//     - Clarify that this is safe for multi-threaded use and drained in `_process()`
+//     - Note that `Arc<Mutex<...>>` is used for interior mutability across threads
+
+// 🧪 Add unit tests for queue behavior:
+//     - Validate chunk and signal enqueue/dequeue logic
+//     - Ensure thread safety and lock recovery
+
+// 🧼 Optional: Add signal prioritization or tagging:
+//     - e.g. `add_signal_with_priority(signal, priority: u8)`
+//     - Enables smarter dispatch or filtering
+
+// 🚀 Future: Add support for event batching:
+//     - e.g. `drain_signals_grouped_by_type()`
+//     - Useful for reducing overhead in signal-heavy pipelines
+
+// 🧠 Consider exposing sync state snapshot:
+//     - `fn snapshot() -> Dictionary` with counts and flags
+//     - Enables runtime introspection or debugging
+
+
 use godot::prelude::*;
 use std::sync::{Arc, Mutex};
 

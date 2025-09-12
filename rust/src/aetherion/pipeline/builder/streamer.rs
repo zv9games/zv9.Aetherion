@@ -1,3 +1,37 @@
+/// ✅ Suggestions for aetherion/pipeline/builder/streamer.rs
+
+// 🔧 Add dynamic pacing adjustment:
+//     - Adapt `delivery_interval` based on runtime load or frame budget
+//     - Could integrate with `RuntimeState::average_tick_duration()`
+
+// 🧩 Add delivery prioritization:
+//     - Support tagging chunks with priority levels
+//     - e.g. urgent overlays vs background terrain
+
+// 🚦 Add delivery feedback or retry logic:
+//     - Confirm chunk was successfully received by Godot
+//     - Optionally requeue failed deliveries
+
+// 📚 Document delivery guarantees:
+//     - Clarify whether chunks are guaranteed to arrive in order
+//     - Note behavior under pause/resume or frame spikes
+
+// 🧪 Add unit tests for pacing and queue behavior:
+//     - Validate delivery timing, pause/resume, and queue length tracking
+
+// 🧼 Optional: Add delivery metrics:
+//     - Track total delivered chunks, average delivery rate, etc.
+//     - Useful for diagnostics or performance tuning
+
+// 🚀 Future: Add streaming modes:
+//     - e.g. burst mode, lazy mode, or frame-synced mode
+//     - Could expose `set_mode(StreamMode)` API
+
+// 🧠 Consider exposing chunk preview or peek:
+//     - `fn peek_next_chunk(&self) -> Option<&MapDataChunk>`
+//     - Useful for debugging or editor overlays
+
+
 //! 🚚 Smart chunk streaming and pacing logic.
 //!
 //! Controls how and when chunks are delivered to Godot, ensuring smooth

@@ -1,4 +1,39 @@
 //! 🎼 Runtime conductor for procedural orchestration.
+
+/// ✅ Suggestions for aetherion/core/conductor.rs
+
+// 🔧 Add support for command chaining or conditional execution:
+//     - e.g. `IfTerrainGeneratedThen(OverlayStructure)`
+//     - Could use a richer enum or command graph
+
+// 🧩 Add command metadata or tagging:
+//     - Useful for debugging, profiling, or filtering
+//     - e.g. `ProcCommand::EmitSignal { tag: "init", message: String }`
+
+// 🚦 Add error handling or fallback logic:
+//     - Handle failed modifiers or invalid state transitions
+//     - Emit warning signals if command execution fails
+
+// 🧪 Add unit tests for tick behavior and queue processing:
+//     - Validate tick throttling, wait logic, and command execution order
+
+// 📚 Document expected command flow and lifecycle:
+//     - Clarify how conductor interacts with terrain, overlays, and modifiers
+//     - Could include examples or diagrams in external docs
+
+// 🧼 Add logging or tracing hooks:
+//     - Optional: emit debug logs for each command execution
+//     - Useful for runtime introspection or editor integration
+
+// 🚀 Future: Support async commands or deferred execution:
+//     - e.g. `ProcCommand::RunAsync(Box<dyn Future<Output = ()>>)`
+//     - Could integrate with async terrain generation or external services
+
+// 🧠 Consider exposing conductor state externally:
+//     - e.g. `fn current_command(&self) -> Option<&ProcCommand>`
+//     - Useful for UI overlays or debugging tools
+
+
 //!
 //! Executes commands, reacts to engine state, and manages flow between terrain,
 //! structure overlays, modifiers, and signal dispatch.

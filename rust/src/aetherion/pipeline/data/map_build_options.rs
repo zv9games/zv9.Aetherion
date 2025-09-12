@@ -1,3 +1,39 @@
+
+/// ✅ Suggestions for aetherion/pipeline/data/map_build_options.rs
+
+// 🔧 Expand `GodotNoiseType` to support more variants:
+//     - Add Perlin, Simplex, Cellular, etc. for parity with internal `NoiseType`
+//     - Update `from_str()` and `as_str()` accordingly
+
+// 🧩 Make `to_noise_config()` fully configurable:
+//     - Expose `fill_ratio`, `steps`, `birth_limit`, and `survival_limit` as `#[export]` fields
+//     - Enables full control from GDScript or editor UI
+
+// 🚦 Add validation or clamping:
+//     - Ensure `width`, `height`, and `seed` are within safe bounds
+//     - Clamp `fill_ratio` to [0.0, 1.0] if exposed
+
+// 📚 Document expected usage in editor:
+//     - Clarify how this struct is used to trigger terrain generation
+//     - Note any assumptions about `black` and `blue` tile roles
+
+// 🧪 Add unit tests for conversion logic:
+//     - Validate `to_noise_config()` and `noise_type()` mappings
+//     - Ensure `GodotNoiseType::from_str()` handles edge cases
+
+// 🧼 Optional: Add helper methods for preview or summary:
+//     - `fn describe(&self) -> String`
+//     - Useful for logging or UI overlays
+
+// 🚀 Future: Add support for presets or profiles:
+//     - e.g. “island”, “cave”, “plains” with pre-filled config values
+//     - Could expose `fn preset(name: &str) -> Self`
+
+// 🧠 Consider exposing tile styling as a struct:
+//     - Replace `black` and `blue` with `TileStyle { land: Vector2i, water: Vector2i }`
+//     - Improves clarity and extensibility
+
+
 use godot::prelude::*;
 use crate::aetherion::generator::noise::NoiseType;
 use crate::aetherion::generator::noise_config::NoiseConfig;

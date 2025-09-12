@@ -1,3 +1,39 @@
+ /// ✅ Suggestions for map_build_options.rs
+
+// 🔧 Expand `GodotNoiseType` to match full internal `NoiseType`:
+//     - Add Perlin, Simplex, Cellular, etc.
+//     - Update `From<GString>` and `Into<GString>` to support all variants
+//     - Prevent silent fallback to Basic on unknown strings
+
+// 🧩 Make `MapBuildOptions::to_noise_config()` fully configurable:
+//     - Expose `fill_ratio`, `steps`, `birth_limit`, and `survival_limit` as fields
+//     - Enables full procedural control from GDScript or editor UI
+
+// 🚦 Add validation and clamping:
+//     - Ensure `width`, `height`, and `seed` are within safe bounds
+//     - Clamp `fill_ratio` to [0.0, 1.0] if exposed
+
+// 📚 Document integration expectations:
+//     - Clarify how this struct is used by the engine and editor
+//     - Note assumptions about `black` and `blue` tile roles (e.g. land vs water)
+
+/// 🧪 Add unit tests for conversion logic:
+//     - Validate `to_noise_config()` and `noise_type()` mappings
+//     - Ensure `default()` produces expected values
+
+// 🧼 Optional: Add helper methods for display or logging:
+//     - `fn describe(&self) -> String`
+//     - Useful for debugging, diagnostics, or editor overlays
+
+// 🚀 Future: Add support for presets or profiles:
+//     - e.g. “island”, “cave”, “plains” with pre-filled config values
+//     - Could expose `fn preset(name: &str) -> Self`
+
+// 🧠 Consider exposing tile styling as a struct:
+//     - Replace `black` and `blue` with `TileStyle { land: Vector2i, water: Vector2i }`
+//     - Improves clarity and extensibility
+
+
 // 🧭 Map generation configuration for Godot integration and internal engine use.
 
 use serde::{Serialize, Deserialize};

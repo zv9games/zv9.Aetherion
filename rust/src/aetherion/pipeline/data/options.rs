@@ -1,3 +1,38 @@
+/// ✅ Suggestions for aetherion/pipeline/data/map_build_options.rs
+
+// 🔧 Expand `GodotNoiseType` to match full internal `NoiseType` enum:
+//     - Add Perlin, Simplex, Cellular, etc.
+//     - Update `From<GString>` and `Into<GString>` to handle all variants
+
+// 🧩 Make `MapBuildOptions::to_noise_config()` fully configurable:
+//     - Expose `fill_ratio`, `steps`, `birth_limit`, and `survival_limit` as fields
+//     - Enables fine-tuning from GDScript or editor UI
+
+// 🚦 Add validation logic:
+//     - Clamp `width`, `height`, and `fill_ratio` to safe ranges
+//     - Emit warnings or fallback to defaults if values are out of bounds
+
+// 📚 Document intended usage in Godot:
+//     - Clarify how this struct is used to trigger terrain generation
+//     - Note assumptions about `black` and `blue` tile roles
+
+// 🧪 Add unit tests for conversion and default logic:
+//     - Validate `to_noise_config()` and `noise_type()` mappings
+//     - Ensure `default()` produces expected values
+
+// 🧼 Optional: Add helper methods for debugging or display:
+//     - `fn describe(&self) -> String`
+//     - Useful for logging or editor overlays
+
+// 🚀 Future: Add support for presets or profiles:
+//     - e.g. “cave”, “island”, “plains” with pre-filled config values
+//     - Could expose `fn preset(name: &str) -> Self`
+
+// 🧠 Consider exposing tile styling as a struct:
+//     - Replace `black` and `blue` with `TileStyle { land: Vector2i, water: Vector2i }`
+//     - Improves clarity and extensibility
+
+
 use serde::{Serialize, Deserialize};
 
 use godot::prelude::*;

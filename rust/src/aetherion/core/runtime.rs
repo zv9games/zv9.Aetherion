@@ -1,5 +1,40 @@
 //C:/ZV9/zv9.aetherion/rust/src/aetherion/core/runtime.rs
 
+/// ✅ Suggestions for aetherion/core/runtime.rs
+
+// 🔧 Add pause/resume support:
+//     - `paused: bool` field
+//     - `pause()`, `resume()`, `is_paused()` methods
+//     - Skip tick advancement if paused
+
+// 📈 Track last tick duration explicitly:
+//     - Add `last_tick_duration: Duration`
+//     - Useful for diagnostics and profiling
+
+// 🧪 Add diagnostics snapshot struct:
+//     - `RuntimeDiagnostics { tick_count, avg_tick_duration, budget, exceeded }`
+//     - Return from `fn diagnostics()`
+
+// 🧩 Support multiple tick listeners:
+//     - Replace `on_tick` with `Vec<Box<dyn Fn(u64, Duration)>>`
+//     - Useful for modular subsystems or plugins
+
+// 🚦 Add tick throttling or adaptive pacing:
+//     - Dynamically adjust `frame_budget` based on load or performance
+
+// 🧼 Add logging or tracing hooks:
+//     - Optional: emit tick metrics to logger or telemetry system
+
+// 📚 Document tick smoothing formula:
+//     - `(avg * 9 + elapsed) / 10` is a simple exponential moving average
+//     - Consider making smoothing factor configurable
+
+// 🚀 Future: Integrate with lifecycle.rs
+//     - Only tick if lifecycle is `Running`
+//     - Emit lifecycle-aware diagnostics
+
+
+
 //! 🕰 Tracks runtime state, tick progression, and frame budget.
 //!
 //! Used for scheduling, diagnostics, and signal emission across the engine.

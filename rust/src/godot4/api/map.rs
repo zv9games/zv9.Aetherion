@@ -1,5 +1,42 @@
 //C:/ZV9/zv9.aetherion/rust/src/godot4/api/map.rs
 
+
+/// ✅ Suggestions for godot4/api/map.rs
+
+// 🔧 Add support for multi-row chunk loading:
+//     - Currently assumes tiles are laid out in a single row (y = 0)
+//     - Consider parsing `x`, `y` from each tile’s dictionary or using a 2D index
+
+// 🧩 Add validation and error reporting:
+//     - Emit warnings for malformed tile dictionaries or missing fields
+     - Could return a result or signal with error count
+
+// 🚦 Add bounds checking for `get_tile()`:
+//     - Prevent out-of-range access or negative indices
+     - Could return `null` or a default tile dictionary
+
+// 📚 Document expected tile format for `load_chunk()`:
+//     - Clarify required keys and types in the input `Array<Variant>`
+//     - Could include a sample dictionary in comments
+
+// 🧪 Add unit tests or GDScript integration tests:
+//     - Validate chunk loading, tile retrieval, and clearing behavior
+     - Ensure dictionary conversion matches `TileInfo::to_dictionary()`
+
+// 🧼 Optional: Add chunk summary or metadata access:
+//     - `fn get_tile_count() -> i32`
+//     - `fn get_bounds() -> Rect2i`
+//     - Useful for editor overlays or diagnostics
+
+// 🚀 Future: Add support for tile mutation or editing:
+//     - `fn set_tile(index: i32, tile: Dictionary)`
+//     - Enables runtime editing or procedural updates
+
+// 🧠 Consider exposing chunk serialization:
+//     - `fn export_chunk() -> Array<Variant>`
+//     - Enables saving, syncing, or debugging tile data
+
+
 use godot::prelude::*;
 use godot::builtin::{Array, Dictionary, Vector2i};
 use godot::classes::Node;
