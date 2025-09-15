@@ -1,0 +1,168 @@
+//C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_generator_noise.rs
+
+// ✅ Suggestions for aetherion/generator/noise.rs
+
+// 🔧 Implement missing noise types:
+//     - Perlin, Simplex, and Cellular noise are currently stubs
+//     - Consider using crates like `noise`, `fastnoise`, or writing custom algorithms
+
+// 🧩 Add normalization and scaling:
+//     - Clamp or scale output of `generate_noise()` to [0.0, 1.0] range
+//     - Useful for blending, thresholding, or visual previews
+
+// 🚦 Add seed-based determinism to `basic_noise()`:
+//     - Currently stateless — consider injecting seed or offset for reproducibility
+
+// 📚 Document noise characteristics:
+//     - Describe expected visual output or use cases for each noise type
+//     - Could include ASCII previews or sample grid dumps
+
+// 🧪 Add unit tests for `generate_grid_noise()` and `cellular_automata()`:
+//     - Validate grid dimensions, fill ratios, and evolution behavior
+
+// 🧼 Optional: Add trait abstraction for noise generators:
+//     - e.g. `trait NoiseFn { fn sample(x: f32, y: f32) -> f32 }`
+//     - Enables dynamic dispatch or plugin-style extensibility
+
+// 🚀 Future: Add multi-channel or layered noise:
+//     - e.g. `Vec<Vec<f32>>` for grayscale maps or biome blending
+//     - Could integrate with terrain heightmaps or structure overlays
+
+// 🧠 Consider exposing evolution parameters externally:
+//     - Let `generate_grid_noise()` accept `steps`, `birth_limit`, `survival_limit`
+//     - Improves configurability and reuse
+
+
+
+// Noise generation algorithms for procedural terrain and patterns.
+// Supports Perlin, Simplex, Cellular, and Cellular Automata.
+
+use rand::Rng;
+use rand::SeedableRng;
+#[allow(unused_imports)]
+use crate::zv9_prelude::*;
+
+
+/// Basic sine-cosine hybrid noise function.
+/// Placeholder: replace with a real algorithm later.
+pub fn basic_noise(x: f32, y: f32) -> f32 {
+    (x.sin() + y.cos()) * 0.5
+}
+
+/// Enum representing supported noise types.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
+pub enum NoiseType {
+    Basic,
+    Perlin,
+    Simplex,
+    Cellular,
+    CellularAutomata,
+}
+
+impl NoiseType {
+    /// Returns the string name of the noise type.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            NoiseType::Basic => "basic",
+            NoiseType::Perlin => "perlin",
+            NoiseType::Simplex => "simplex",
+            NoiseType::Cellular => "cellular",
+            NoiseType::CellularAutomata => "automata",
+        }
+    }
+
+    /// Indicates whether the noise type is currently implemented.
+    pub fn is_available(&self) -> bool {
+        matches!(self, NoiseType::Basic | NoiseType::CellularAutomata)
+    }
+}
+
+/// Dispatcher for coordinate-based noise sampling.
+pub fn generate_noise(x: f32, y: f32, noise_type: NoiseType) -> f32 {
+    match noise_type {
+        NoiseType::Basic => basic_noise(x, y),
+        NoiseType::Perlin => 0.0,  // TODO: Implement Perlin noise
+        NoiseType::Simplex => 0.0, // TODO: Implement Simplex noise
+        NoiseType::Cellular => 0.0, // TODO: Implement Cellular noise
+        NoiseType::CellularAutomata => 0.0, // Not applicable for direct sampling
+    }
+}
+
+/// Generates a binary grid using the specified noise type.
+/// For CellularAutomata, applies rule-based evolution after initialization.
+pub fn generate_grid_noise(
+    width: usize,
+    height: usize,
+    noise_type: NoiseType,
+    seed: u64,
+) -> Vec<Vec<u8>> {
+    let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
+    let mut grid = vec![vec![0; width]; height];
+
+    for y in 0..height {
+        for x in 0..width {
+            grid[y][x] = if rng.gen_bool(0.45) { 1 } else { 0 };
+        }
+    }
+
+    if noise_type == NoiseType::CellularAutomata {
+        cellular_automata(&mut grid, 5, 4, 3);
+    }
+
+    grid
+}
+
+/// Evolves a binary grid using cellular automata rules.
+pub fn cellular_automata(
+    grid: &mut Vec<Vec<u8>>,
+    steps: usize,
+    birth_limit: u8,
+    survival_limit: u8,
+) {
+    let height = grid.len();
+    let width = grid[0].len();
+
+    for _ in 0..steps {
+        let mut new_grid = grid.clone();
+
+        for y in 0..height {
+            for x in 0..width {
+                let neighbors = count_alive_neighbors(grid, x, y);
+                let cell = grid[y][x];
+
+                new_grid[y][x] = match cell {
+                    1 if neighbors < survival_limit => 0,
+                    0 if neighbors > birth_limit => 1,
+                    _ => cell,
+                };
+            }
+        }
+
+        *grid = new_grid;
+    }
+}
+
+/// Counts the number of alive neighbors around a cell.
+fn count_alive_neighbors(grid: &[Vec<u8>], x: usize, y: usize) -> u8 {
+    let mut count = 0;
+
+    for dy in -1..=1 {
+        for dx in -1..=1 {
+            if dx == 0 && dy == 0 {
+                continue;
+            }
+
+            let nx = x as isize + dx;
+            let ny = y as isize + dy;
+
+            if ny >= 0 && ny < grid.len() as isize && nx >= 0 && nx < grid[0].len() as isize {
+                count += grid[ny as usize][nx as usize];
+            }
+        }
+    }
+
+    count
+}
+
+// the end

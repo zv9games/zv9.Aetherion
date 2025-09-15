@@ -6,7 +6,10 @@ edition = "2021"
 
 # A GDExtension library must be of this type
 [lib]
+name = "aetherion_engine"
+path = "src/zv9_lib.rs"
 crate-type = ["cdylib", "rlib"]
+
 
 [dependencies]
 # Required for your `build_map` pipeline:
@@ -55,7 +58,7 @@ strip = "symbols"
 # path = "src/bin/sync_to_godot.rs"
 
 name = "aetherion_binary"
-path = "src/bin/aetherion_binary.rs"
+path = "src/bin/zv9_bin_aetherion_binary.rs"
 
 # [[bin]]
 # name = "debugger"
