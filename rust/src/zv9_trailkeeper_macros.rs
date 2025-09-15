@@ -32,23 +32,23 @@
 //     - Re-export via `pub use` or document how to include it
 //     - Enables broader adoption across subsystems
 
-#[allow(unused_imports)]
-use crate::zv9_prelude::*;
-/// Macro for emitting structured log entries to Trailkeeper.
-///
-/// Supports both full and shorthand forms:
-///
-/// ```rust
-/// log_event!(
-///     event_type: EventType::System,
-///     actor: "engine",
-///     description: "Engine initialized",
-///     affected_components: ["config", "logging"],
-///     status: LogStatus::Success
-/// );
-///
-/// log_event!(EventType::System, "engine", "Engine initialized");
-/// ```
+//#[allow(unused_imports)]
+//use crate::zv9_prelude::*;
+// Macro for emitting structured log entries to Trailkeeper.
+//
+// Supports both full and shorthand forms:
+//
+// ```rust
+// log_event!(
+//     event_type: EventType::System,
+//     actor: "engine",
+//     description: "Engine initialized",
+//     affected_components: ["config", "logging"],
+//     status: LogStatus::Success
+// );
+//
+// log_event!(EventType::System, "engine", "Engine initialized");
+// ```
 #[macro_export]
 macro_rules! log_event {
     (
@@ -90,7 +90,7 @@ macro_rules! log_event {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    //use super::*;
     use crate::zv9_prelude::*;
 
     #[test]
