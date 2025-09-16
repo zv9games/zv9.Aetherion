@@ -11,6 +11,7 @@ use aetherion_engine::trailkeeper::{
     scan::scan_git_diff,
     entry::LogEntry,
 };
+use aetherion_engine::pipeline_builder::bitmask::convert_world_png_to_chunk;
 use aetherion_engine::{Conductor, ProcCommand, MapDataChunk, GodotSync, TileInfo};
 
 use crossterm::event::{self, Event, KeyCode};
@@ -192,6 +193,7 @@ fn build_menu() -> Vec<MenuItem> {
         MenuItem { key: '4', label: "View: Trailkeeper Logs", action: view_trailkeeper_logs },
         MenuItem { key: '5', label: "Start: Aetherion Runtime", action: start_runtime },
         MenuItem { key: '6', label: "Benchmark: Max Grid Placement", action: run_max_grid_benchmark },
+		MenuItem { key: '7', label: "Perform: Bitmask PNG Conversion", action: run_bitmask_conversion },
         MenuItem { key: '9', label: "Exit", action: || {} },
     ]
 }
@@ -251,6 +253,27 @@ fn main() {
     }
 
     log_info("Exit", "Engine shutdown complete.");
+}
+
+fn run_bitmask_conversion() {
+    use std::time::Instant;
+
+    println!("🧪 Starting bitmask conversion from world.png...");
+
+    let path = "C:/ZV9/zv9.aetherion/.assets/world.png";
+    let scale = 3;
+    let start = Instant::now();
+
+    let chunk = convert_world_png_to_chunk(path, scale);
+    let elapsed = start.elapsed();
+
+    println!("✅ Conversion complete.");
+    println!("🧱 Tiles placed: {}", chunk.len());
+    println!("📐 Final grid size: ~{} x {}", 
+        (chunk.len() as f64).sqrt().round() as u32, 
+        (chunk.len() as f64).sqrt().round() as u32
+    );
+    println!("⏱ Time taken: {:.2?}", elapsed);
 }
 
 

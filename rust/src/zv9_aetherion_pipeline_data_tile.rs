@@ -38,25 +38,40 @@ pub struct TileInfo {
 }
 
 impl TileInfo {
+    /// Creates a new tile with the given atlas coordinates and optional type.
+    pub fn new(atlas_coords: SerializableVector2i, source_id: i32) -> Self {
+        Self {
+            source_id,
+            atlas_coords,
+            alternate_id: 0,
+            rotation: 0,
+            layer: 0,
+            flags: tile_flags::VISIBLE,
+            variant_id: None,
+            frame_count: None,
+            animation_speed: None,
+        }
+    }
+
     /// Converts tile metadata into a Godot Dictionary.
     pub fn to_dictionary(&self) -> Dictionary {
         let mut dict = Dictionary::new();
-        let _ = dict.insert("source_id", self.source_id);
-        let _ = dict.insert("alternate_id", self.alternate_id);
-        let _ = dict.insert("rotation", self.rotation.clamp(0, 3));
-        let _ = dict.insert("layer", self.layer);
-        let _ = dict.insert("flags", self.flags);
-        let _ = dict.insert("atlas_x", self.atlas_coords.x);
-        let _ = dict.insert("atlas_y", self.atlas_coords.y);
+        dict.insert("source_id", self.source_id);
+        dict.insert("alternate_id", self.alternate_id);
+        dict.insert("rotation", self.rotation.clamp(0, 3));
+        dict.insert("layer", self.layer);
+        dict.insert("flags", self.flags);
+        dict.insert("atlas_x", self.atlas_coords.x);
+        dict.insert("atlas_y", self.atlas_coords.y);
 
         if let Some(variant) = self.variant_id {
-            let _ = dict.insert("variant_id", variant);
+            dict.insert("variant_id", variant);
         }
         if let Some(frames) = self.frame_count {
-            let _ = dict.insert("frame_count", frames);
+            dict.insert("frame_count", frames);
         }
         if let Some(speed) = self.animation_speed {
-            let _ = dict.insert("animation_speed", speed);
+            dict.insert("animation_speed", speed);
         }
 
         dict
@@ -117,5 +132,6 @@ pub mod tile_flags {
     pub const EMISSIVE: u32       = 0b01000;
     pub const DYNAMIC: u32        = 0b10000;
 }
+
 
 // the end

@@ -45,6 +45,7 @@ pub mod zv9_aetherion_generator_pattern_type { include!("zv9_aetherion_generator
 pub mod zv9_aetherion_interaction_modifiers { include!("zv9_aetherion_interaction_modifiers.rs"); }
 pub mod zv9_aetherion_interaction_tools { include!("zv9_aetherion_interaction_tools.rs"); }
 
+pub mod zv9_aetherion_pipeline_builder_bitmask { include!("zv9_aetherion_pipeline_builder_bitmask.rs"); }
 pub mod zv9_aetherion_pipeline_builder_builder { include!("zv9_aetherion_pipeline_builder_builder.rs"); }
 pub mod zv9_aetherion_pipeline_builder_streamer { include!("zv9_aetherion_pipeline_builder_streamer.rs"); }
 pub mod zv9_aetherion_pipeline_builder_threaded { include!("zv9_aetherion_pipeline_builder_threaded.rs"); }
@@ -177,9 +178,16 @@ pub mod core {
     pub use crate::zv9_aetherion_core_lifecycle::*;
 }
 
+pub mod pipeline_builder {
+    pub mod bitmask {
+        pub use crate::zv9_aetherion_pipeline_builder_bitmask::*;
+    }
+}
+
 
 // 🧠 Core types
 pub use zv9_aetherion_core_conductor::{Conductor, ProcCommand};
 pub use zv9_aetherion_pipeline_data_chunk::MapDataChunk;
 pub use zv9_godot_interface_messaging_sync::GodotSync;
 pub use zv9_aetherion_core_runtime::start;
+pub use zv9_aetherion_pipeline_builder_bitmask::*;
