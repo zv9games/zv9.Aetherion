@@ -1,57 +1,17 @@
 //C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_generator_noise.rs
-
-// ✅ Suggestions for aetherion/generator/noise.rs
-
-// 🔧 Implement missing noise types:
-//     - Perlin, Simplex, and Cellular noise are currently stubs
-//     - Consider using crates like `noise`, `fastnoise`, or writing custom algorithms
-
-// 🧩 Add normalization and scaling:
-//     - Clamp or scale output of `generate_noise()` to [0.0, 1.0] range
-//     - Useful for blending, thresholding, or visual previews
-
-// 🚦 Add seed-based determinism to `basic_noise()`:
-//     - Currently stateless — consider injecting seed or offset for reproducibility
-
-// 📚 Document noise characteristics:
-//     - Describe expected visual output or use cases for each noise type
-//     - Could include ASCII previews or sample grid dumps
-
-// 🧪 Add unit tests for `generate_grid_noise()` and `cellular_automata()`:
-//     - Validate grid dimensions, fill ratios, and evolution behavior
-
-// 🧼 Optional: Add trait abstraction for noise generators:
-//     - e.g. `trait NoiseFn { fn sample(x: f32, y: f32) -> f32 }`
-//     - Enables dynamic dispatch or plugin-style extensibility
-
-// 🚀 Future: Add multi-channel or layered noise:
-//     - e.g. `Vec<Vec<f32>>` for grayscale maps or biome blending
-//     - Could integrate with terrain heightmaps or structure overlays
-
-// 🧠 Consider exposing evolution parameters externally:
-//     - Let `generate_grid_noise()` accept `steps`, `birth_limit`, `survival_limit`
-//     - Improves configurability and reuse
-
-
-
-// Noise generation algorithms for procedural terrain and patterns.
-// Supports Perlin, Simplex, Cellular, and Cellular Automata.
-
 use rand::Rng;
 use rand::SeedableRng;
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
 
-
-/// Basic sine-cosine hybrid noise function.
+/// 🔊 Basic sine-cosine hybrid noise function.
 /// Placeholder: replace with a real algorithm later.
 pub fn basic_noise(x: f32, y: f32) -> f32 {
     (x.sin() + y.cos()) * 0.5
 }
 
-/// Enum representing supported noise types.
+/// 🎛 Enum representing supported noise types.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-
 pub enum NoiseType {
     Basic,
     Perlin,
@@ -78,18 +38,18 @@ impl NoiseType {
     }
 }
 
-/// Dispatcher for coordinate-based noise sampling.
+/// 🧪 Dispatcher for coordinate-based noise sampling.
 pub fn generate_noise(x: f32, y: f32, noise_type: NoiseType) -> f32 {
     match noise_type {
         NoiseType::Basic => basic_noise(x, y),
-        NoiseType::Perlin => 0.0,  // TODO: Implement Perlin noise
-        NoiseType::Simplex => 0.0, // TODO: Implement Simplex noise
-        NoiseType::Cellular => 0.0, // TODO: Implement Cellular noise
+        NoiseType::Perlin => 0.0,           // TODO: Implement Perlin noise
+        NoiseType::Simplex => 0.0,          // TODO: Implement Simplex noise
+        NoiseType::Cellular => 0.0,         // TODO: Implement Cellular noise
         NoiseType::CellularAutomata => 0.0, // Not applicable for direct sampling
     }
 }
 
-/// Generates a binary grid using the specified noise type.
+/// 🧱 Generates a binary grid using the specified noise type.
 /// For CellularAutomata, applies rule-based evolution after initialization.
 pub fn generate_grid_noise(
     width: usize,
@@ -113,7 +73,7 @@ pub fn generate_grid_noise(
     grid
 }
 
-/// Evolves a binary grid using cellular automata rules.
+/// 🔁 Evolves a binary grid using cellular automata rules.
 pub fn cellular_automata(
     grid: &mut Vec<Vec<u8>>,
     steps: usize,
@@ -143,7 +103,7 @@ pub fn cellular_automata(
     }
 }
 
-/// Counts the number of alive neighbors around a cell.
+/// 📊 Counts the number of alive neighbors around a cell.
 fn count_alive_neighbors(grid: &[Vec<u8>], x: usize, y: usize) -> u8 {
     let mut count = 0;
 
@@ -164,5 +124,59 @@ fn count_alive_neighbors(grid: &[Vec<u8>], x: usize, y: usize) -> u8 {
 
     count
 }
+#[cfg(test)]
+mod stress_tests {
+    use super::*;
+
+    #[test]
+    fn stress_basic_noise_sampling() {
+        for i in 0..10_000 {
+            let x = i as f32 * 0.01;
+            let y = (i % 100) as f32 * 0.01;
+            let val = generate_noise(x, y, NoiseType::Basic);
+            assert!(val.is_finite());
+        }
+    }
+
+    #[test]
+    fn stress_grid_generation_basic() {
+        let grid = generate_grid_noise(128, 128, NoiseType::Basic, 42);
+        assert_eq!(grid.len(), 128);
+        assert_eq!(grid[0].len(), 128);
+    }
+
+    #[test]
+    fn stress_grid_generation_automata() {
+        let grid = generate_grid_noise(64, 64, NoiseType::CellularAutomata, 12345);
+        assert_eq!(grid.len(), 64);
+        assert_eq!(grid[0].len(), 64);
+
+        let alive_count: usize = grid.iter().flatten().filter(|&&v| v == 1).count();
+        assert!(alive_count > 0); // Shouldn't be all dead
+    }
+
+    #[test]
+    fn stress_cellular_automata_evolution() {
+        let mut grid = vec![vec![1; 32]; 32];
+        cellular_automata(&mut grid, 10, 4, 3);
+        let alive_count: usize = grid.iter().flatten().filter(|&&v| v == 1).count();
+        assert!(alive_count < 1024); // Should evolve, not stay fully alive
+    }
+
+    #[test]
+    fn stress_noise_type_dispatch() {
+        for noise in [
+            NoiseType::Basic,
+            NoiseType::Perlin,
+            NoiseType::Simplex,
+            NoiseType::Cellular,
+            NoiseType::CellularAutomata,
+        ] {
+            let val = generate_noise(1.0, 1.0, noise);
+            assert!(val.is_finite());
+        }
+    }
+}
+
 
 // the end

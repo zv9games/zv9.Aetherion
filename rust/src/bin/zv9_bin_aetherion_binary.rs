@@ -1,3 +1,9 @@
+//c:/ZV9/zv9.aetherion/rust/src/zv9_bin_aetherion_binary.rs
+
+
+
+
+use aetherion_engine::core::runtime::start as start_runtime;
 use aetherion_engine::util::logging::{init_logging, log_info};
 use aetherion_engine::trailkeeper::{
     collector::Trailkeeper,
@@ -5,81 +11,23 @@ use aetherion_engine::trailkeeper::{
     scan::scan_git_diff,
     entry::LogEntry,
 };
-
-use aetherion_engine::{Conductor, ProcCommand, MapDataChunk, GodotSync};
-
+use aetherion_engine::{Conductor, ProcCommand, MapDataChunk, GodotSync, TileInfo};
 
 use crossterm::event::{self, Event, KeyCode};
 use std::{process::Command, thread, time::Duration};
 use walkdir::WalkDir;
 
-
-
-// 🧩 Menu item definition
+/// 🧩 Menu item definition
 struct MenuItem {
     key: char,
     label: &'static str,
     action: fn(),
 }
 
-// 📜 Log viewer
-fn print_log_entry(index: usize, log: &LogEntry) {
-    println!("──────────────────────────────────────────────");
-    println!("📄 Entry #{}", index);
-    println!("🕒 Timestamp: {}", log.timestamp.to_rfc3339());
-    println!("🧠 Event Type: {:?}", log.event_type);
-    println!("👤 Actor: {}", log.actor);
-    println!("📝 Description: {}", log.description);
-    println!("📦 Components: {:?}", log.affected_components);
-    println!("⚠️ Status: {:?}", log.status);
-    println!("──────────────────────────────────────────────");
-}
+//
+// ─── Menu Actions ─────────────────────────────────────────────────────────────
+//
 
-fn view_trailkeeper_logs() {
-    use std::io::{self, Write};
-
-    println!("\n📜 Trailkeeper Log Registry:\n");
-
-    let logs = Trailkeeper::all();
-    if logs.is_empty() {
-        println!("(No logs recorded yet.)");
-    } else {
-        let stdin = io::stdin();
-        let mut buffer = String::new();
-
-        for (i, log) in logs.iter().enumerate() {
-            print_log_entry(i + 1, log);
-            print!("Press Enter to continue, or type 9 to quit: ");
-            io::stdout().flush().unwrap();
-            buffer.clear();
-            stdin.read_line(&mut buffer).unwrap();
-
-            if buffer.trim() == "9" {
-                println!("\n🚪 Exiting log viewer...\n");
-                break;
-            }
-        }
-    }
-
-    println!("\n✅ Log inspection complete.\n");
-}
-
-// 📦 Module scanner
-fn print_module_tree() {
-    println!("\n📦 Scanning for Rust modules in /src...\n");
-
-    for entry in WalkDir::new("src")
-        .into_iter()
-        .filter_map(Result::ok)
-        .filter(|e| e.path().extension().map_or(false, |ext| ext == "rs"))
-    {
-        println!("├── {}", entry.path().display());
-    }
-
-    println!("\n✅ Module scan complete.\n");
-}
-
-// 🧪 Runtime diagnostics
 fn run_cargo_tests() {
     println!("🚀 Running full cargo test suite...\n");
     let status = Command::new("cargo")
@@ -93,7 +41,6 @@ fn run_cargo_tests() {
     }
 }
 
-// 🌀 Tick simulation
 fn simulate_tick_flow() {
     println!("🌀 Simulating tick flow with procedural commands...\n");
 
@@ -112,7 +59,6 @@ fn simulate_tick_flow() {
     println!("\n✅ Tick simulation complete.\n");
 }
 
-// 📋 Queue inspection
 fn inspect_pending_queue() {
     let mut conductor = Conductor::new(GodotSync::init());
     conductor.enqueue(ProcCommand::EmitSignal("Pending check".into()));
@@ -122,7 +68,6 @@ fn inspect_pending_queue() {
     println!("✅ Queue inspection complete.\n");
 }
 
-// 🔍 Trailkeeper scan
 fn run_trailkeeper_scan() {
     println!("🔍 Running Trailkeeper scan...\n");
     scan_git_diff();
@@ -135,7 +80,109 @@ fn run_trailkeeper_scan() {
     println!("\n✅ Trailkeeper scan complete.\n");
 }
 
-// 🧭 Menu builder
+fn view_trailkeeper_logs() {
+    use std::io::{self, Write};
+
+    println!("\n📜 Trailkeeper Log Registry:\n");
+
+    let logs = Trailkeeper::all();
+    if logs.is_empty() {
+        println!("(No logs recorded yet.)");
+        return;
+    }
+
+    let stdin = io::stdin();
+    let mut buffer = String::new();
+
+    for (i, log) in logs.iter().enumerate() {
+        print_log_entry(i + 1, log);
+        print!("Press Enter to continue, or type 9 to quit: ");
+        io::stdout().flush().unwrap();
+        buffer.clear();
+        stdin.read_line(&mut buffer).unwrap();
+
+        if buffer.trim() == "9" {
+            println!("\n🚪 Exiting log viewer...\n");
+            break;
+        }
+    }
+
+    println!("\n✅ Log inspection complete.\n");
+}
+
+fn print_log_entry(index: usize, log: &LogEntry) {
+    println!("──────────────────────────────────────────────");
+    println!("📄 Entry #{}", index);
+    println!("🕒 Timestamp: {}", log.timestamp.to_rfc3339());
+    println!("🧠 Event Type: {:?}", log.event_type);
+    println!("👤 Actor: {}", log.actor);
+    println!("📝 Description: {}", log.description);
+    println!("📦 Components: {:?}", log.affected_components);
+    println!("⚠️ Status: {:?}", log.status);
+    println!("──────────────────────────────────────────────");
+}
+
+fn print_module_tree() {
+    println!("\n📦 Scanning for Rust modules in /src...\n");
+
+    for entry in WalkDir::new("src")
+        .into_iter()
+        .filter_map(Result::ok)
+        .filter(|e| e.path().extension().map_or(false, |ext| ext == "rs"))
+    {
+        println!("├── {}", entry.path().display());
+    }
+
+    println!("\n✅ Module scan complete.\n");
+}
+
+fn run_max_grid_benchmark() {
+    use std::time::{Instant, Duration};
+
+    println!("🧪 Starting max grid benchmark (30s)...");
+
+    let mut chunk = MapDataChunk::default();
+    let start = Instant::now();
+    let time_limit = Duration::from_secs(30);
+    let mut tiles_placed = 0;
+    let mut last_logged = Instant::now();
+
+    let grid_width = 10_000; // virtual width, not allocated
+    let mut x = 0;
+    let mut y = 0;
+
+    while Instant::now() - start < time_limit {
+        // Simulate tile placement
+        chunk.place_tile(x, y, TileInfo::default());
+        tiles_placed += 1;
+
+        x += 1;
+        if x >= grid_width {
+            x = 0;
+            y += 1;
+        }
+
+        // Log once per second
+        if Instant::now() - last_logged >= Duration::from_secs(1) {
+            println!("⏱ {}s elapsed — {} tiles placed", 
+                (Instant::now() - start).as_secs(),
+                tiles_placed
+            );
+            last_logged = Instant::now();
+        }
+    }
+
+    println!("\n✅ Benchmark complete.");
+    println!("🧱 Total tiles placed: {}", tiles_placed);
+    println!("📐 Final grid size: {} x {}", grid_width, y + 1);
+    println!("⚡ Throughput: ~{} tiles/sec", tiles_placed / 30);
+}
+
+
+//
+// ─── Menu Setup ───────────────────────────────────────────────────────────────
+//
+
 fn build_menu() -> Vec<MenuItem> {
     vec![
         MenuItem { key: '0', label: "Run: Cargo Test Suite", action: run_cargo_tests },
@@ -143,11 +190,13 @@ fn build_menu() -> Vec<MenuItem> {
         MenuItem { key: '2', label: "Inspect: Pending Queue", action: inspect_pending_queue },
         MenuItem { key: '3', label: "Run: Trailkeeper Scan", action: run_trailkeeper_scan },
         MenuItem { key: '4', label: "View: Trailkeeper Logs", action: view_trailkeeper_logs },
+        MenuItem { key: '5', label: "Start: Aetherion Runtime", action: start_runtime },
+        MenuItem { key: '6', label: "Benchmark: Max Grid Placement", action: run_max_grid_benchmark },
         MenuItem { key: '9', label: "Exit", action: || {} },
     ]
 }
 
-// 🧭 Menu printer
+
 fn print_menu(menu: &[MenuItem]) {
     println!("\n🧭 Aetherion Engine Dev Console\n");
     for item in menu {
@@ -156,7 +205,10 @@ fn print_menu(menu: &[MenuItem]) {
     println!("\nPress a number key to select an option...\n");
 }
 
-// 🚀 Main loop
+//
+// ─── Main Loop ────────────────────────────────────────────────────────────────
+//
+
 fn main() {
     init_logging();
     log_info("Startup", "Engine boot sequence initiated.");
@@ -173,7 +225,7 @@ fn main() {
 "#
     );
 
-    print_module_tree();
+    //print_module_tree();
 
     let menu = build_menu();
     print_menu(&menu);
@@ -200,3 +252,6 @@ fn main() {
 
     log_info("Exit", "Engine shutdown complete.");
 }
+
+
+// the end

@@ -1,47 +1,11 @@
 //C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_structure_generation.rs
 
-// 🔧 Expand `GodotNoiseType` to match full internal `NoiseType`:
-//     - Add Perlin, Simplex, Cellular, etc.
-//     - Update `From<GString>` and `Into<GString>` to support all variants
-//     - Prevent silent fallback to Basic on unknown strings
-
-// 🧩 Make `MapBuildOptions::to_noise_config()` fully configurable:
-//     - Expose `fill_ratio`, `steps`, `birth_limit`, and `survival_limit` as fields
-//     - Enables full procedural control from GDScript or editor UI
-
-// 🚦 Add validation and clamping:
-//     - Ensure `width`, `height`, and `seed` are within safe bounds
-//     - Clamp `fill_ratio` to [0.0, 1.0] if exposed
-
-// 📚 Document integration expectations:
-//     - Clarify how this struct is used by the engine and editor
-//     - Note assumptions about `black` and `blue` tile roles (e.g. land vs water)
-
-/// 🧪 Add unit tests for conversion logic:
-//     - Validate `to_noise_config()` and `noise_type()` mappings
-//     - Ensure `default()` produces expected values
-
-// 🧼 Optional: Add helper methods for display or logging:
-//     - `fn describe(&self) -> String`
-//     - Useful for debugging, diagnostics, or editor overlays
-
-// 🚀 Future: Add support for presets or profiles:
-//     - e.g. “island”, “cave”, “plains” with pre-filled config values
-//     - Could expose `fn preset(name: &str) -> Self`
-
-// 🧠 Consider exposing tile styling as a struct:
-//     - Replace `black` and `blue` with `TileStyle { land: Vector2i, water: Vector2i }`
-//     - Improves clarity and extensibility
-
-
-// 🧭 Map generation configuration for Godot integration and internal engine use.
 use std::str::FromStr;
 use std::fmt;
 use serde::{Serialize, Deserialize};
 use godot::prelude::*;
 use godot::builtin::GString;
 use crate::zv9_prelude::*; // Includes NoiseType, SerializableVector2i, etc.
-
 
 //
 // ─── Noise Type Wrapper ────────────────────────────────────────────────────────
@@ -109,20 +73,11 @@ impl From<GString> for GodotNoiseType {
     }
 }
 
-
 impl From<GodotNoiseType> for NoiseType {
     fn from(value: GodotNoiseType) -> Self {
-        match value {
-            GodotNoiseType::Basic => NoiseType::Basic,
-            GodotNoiseType::Perlin => NoiseType::Perlin,
-            GodotNoiseType::Simplex => NoiseType::Simplex,
-            GodotNoiseType::Cellular => NoiseType::Cellular,
-            GodotNoiseType::CellularAutomata => NoiseType::CellularAutomata,
-        }
+        value.to_internal()
     }
 }
-
-
 
 //
 // ─── Map Build Options ─────────────────────────────────────────────────────────
@@ -143,7 +98,7 @@ pub struct MapBuildOptions {
     pub survival_limit: u8,
     pub black: SerializableVector2i,
     pub blue: SerializableVector2i,
-	pub delivery_interval_ms: Option<u32>,
+    pub delivery_interval_ms: Option<u32>,
 }
 
 impl MapBuildOptions {
@@ -161,7 +116,7 @@ impl MapBuildOptions {
             survival_limit: 3,
             black: SerializableVector2i { x: 0, y: 0 },
             blue: SerializableVector2i { x: 1, y: 1 },
-			delivery_interval_ms: Some(2),
+            delivery_interval_ms: Some(2),
         }
     }
 
@@ -171,8 +126,7 @@ impl MapBuildOptions {
             width: self.width.max(1) as usize,
             height: self.height.max(1) as usize,
             seed: self.seed,
-            fill_ratio: f64::from(self.fill_ratio.clamp(0.0, 1.0)),
-
+            fill_ratio: self.fill_ratio.clamp(0.0, 1.0) as f64,
             steps: self.steps,
             birth_limit: self.birth_limit,
             survival_limit: self.survival_limit,
@@ -211,5 +165,71 @@ impl MapBuildOptions {
         )
     }
 }
+
+#[cfg(test)]
+mod stress_tests {
+    use super::*;
+
+    #[test]
+    fn stress_default_config_bounds() {
+        let config = MapBuildOptions::default(9999, -100, 42);
+        assert!(config.width <= 4096);
+        assert!(config.height >= 1);
+        assert_eq!(config.mode, GodotNoiseType::CellularAutomata);
+    }
+
+    #[test]
+    fn stress_noise_config_conversion() {
+        let config = MapBuildOptions::default(128, 128, 123);
+        let noise = config.to_noise_config();
+        assert_eq!(noise.width, 128);
+        assert_eq!(noise.height, 128);
+        assert!(noise.fill_ratio <= 1.0);
+    }
+
+    #[test]
+    fn stress_tile_count_calculation() {
+        let config = MapBuildOptions::default(64, 64, 0);
+        assert_eq!(config.total_tiles(), 4096);
+    }
+
+    #[test]
+    fn stress_godot_tile_coords() {
+        let config = MapBuildOptions::default(32, 32, 0);
+        let (black, blue) = config.godot_tile_coords();
+        assert_eq!(black.x, 0);
+        assert_eq!(blue.y, 1);
+    }
+
+    #[test]
+    fn stress_description_formatting() {
+        let config = MapBuildOptions::default(16, 16, 999);
+        let desc = config.describe();
+        assert!(desc.contains("MapBuildOptions"));
+        assert!(desc.contains("seed=999"));
+    }
+}
+
+use crate::zv9_aetherion_pipeline_data_tile::{TileInfo, tile_flags};
+
+/// Procedural tile generator that computes tile metadata on demand.
+pub fn tile_at(x: u64, y: u64, seed: u64) -> TileInfo {
+    let hash = x.wrapping_mul(31).wrapping_add(y.wrapping_mul(17)).wrapping_add(seed);
+    TileInfo {
+        rotation: (hash % 4) as u8,
+        variant_id: Some((hash % 7) as i32),
+        flags: tile_flags::VISIBLE | tile_flags::COLLIDABLE,
+        ..Default::default()
+    }
+}
+
+/// Infinite iterator over a virtual tile field.
+pub fn generate_virtual_field(width: u64, height: u64, seed: u64) -> impl Iterator<Item = (u64, u64, TileInfo)> {
+    (0..height).flat_map(move |y| {
+        (0..width).map(move |x| (x, y, tile_at(x, y, seed)))
+    })
+}
+
+
 
 // the end

@@ -1,48 +1,11 @@
 //C:/ZV9/zv9.aetherion/rust/src/util/time.rs
 
-// ✅ Suggestions for util/time.rs
-
-// 🔧 Add manual tick advancement:
-//     - fn force_tick(&mut self) to manually reset last_tick
-//     - Useful for debugging or external pacing control
-
-// 🧩 Add tick count tracking:
-//     - tick_count: u64 to monitor how many ticks have occurred
-//     - Enables profiling, diagnostics, or pacing analytics
-
-// 🚦 Improve precision control:
-//     - Consider exposing ticks_per_second() for introspection
-//     - Useful for dynamic adjustment or UI display
-
-// 📚 Document timing assumptions:
-//     - Clarify that this uses monotonic time (Instant) and is frame-rate independent
-//     - Note that should_tick() is intended for fixed-step logic
-
-// 🧪 Add unit tests with simulated time:
-//     - Validate tick triggering, interval accuracy, and reset behavior
-//     - Use mock time or controlled delays for precision testing
-
-// 🧼 Optional: Add budget tracking:
-//     - fn is_over_budget(&self, frame_duration: Duration) -> bool
-//     - Enables performance monitoring and adaptive pacing
-
-// 🚀 Future: Add adaptive tick rate support:
-//     - e.g. fn set_tick_rate(new_rate: u32)
-//     - Enables dynamic scaling based on load or user settings
-
-// 🧠 Consider exposing tick diagnostics:
-//     - fn describe() -> String with interval, elapsed, and tick status
-//     - Useful for logging, overlays, or debugging
-
-
-// Tick and budget management utilities for Aetherion.
-// Provides timing control for fixed-rate updates and runtime profiling.
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
 use std::time::{Duration, Instant};
 
-// Manages fixed-rate ticking for runtime systems.
-// Tracks elapsed time and determines when a tick should occur.
+/// ⏲️ Manages fixed-rate ticking for runtime systems.
+/// Tracks elapsed time and determines when a tick should occur.
 pub struct TickTimer {
     last_tick: Instant,
     tick_rate: Duration,
@@ -78,5 +41,58 @@ impl TickTimer {
         self.tick_rate
     }
 }
+
+
+
+#[cfg(test)]
+mod stress_tests {
+    use super::*;
+
+    #[test]
+    fn stress_tick_interval_accuracy() {
+        let timer = TickTimer::new(60); // 60 ticks/sec
+        let expected = Duration::from_millis(16);
+        let actual = timer.tick_interval();
+        assert!((actual.as_millis() as i64 - expected.as_millis() as i64).abs() <= 1);
+    }
+
+    #[test]
+    fn stress_should_tick_behavior() {
+        let mut timer = TickTimer::new(10); // 100ms interval
+        std::thread::sleep(Duration::from_millis(120));
+        assert!(timer.should_tick());
+    }
+
+    #[test]
+    fn stress_should_tick_false_when_too_soon() {
+        let mut timer = TickTimer::new(100); // 10ms interval
+        std::thread::sleep(Duration::from_millis(5));
+        assert!(!timer.should_tick());
+    }
+
+    #[test]
+    fn stress_multiple_tick_cycles() {
+        let mut timer = TickTimer::new(20); // 50ms interval
+        let mut ticks = 0;
+
+        for _ in 0..5 {
+            std::thread::sleep(Duration::from_millis(55));
+            if timer.should_tick() {
+                ticks += 1;
+            }
+        }
+
+        assert_eq!(ticks, 5);
+    }
+
+    #[test]
+    fn stress_time_since_last_tick() {
+        let timer = TickTimer::new(60);
+        std::thread::sleep(Duration::from_millis(10));
+        let elapsed = timer.time_since_last_tick();
+        assert!(elapsed >= Duration::from_millis(10));
+    }
+}
+
 
 //end time.rs

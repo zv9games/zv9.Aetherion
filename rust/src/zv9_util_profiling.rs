@@ -1,31 +1,32 @@
-//C:/ZV9/zv9.aetherion/rust/src/util/profiling.rs
+//C:/ZV9/zv9.aetherion/rust/src/zv9_util_profiling.rs
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
+use std::time::{Duration, Instant};
 
-/// ✅ Suggestions for util/profiling.rs
-
-// 🔧 Add lightweight profiling timer:
+/// ⏱ Lightweight profiling timer for scoped diagnostics.
 pub struct Profiler {
     label: &'static str,
-    start: std::time::Instant,
+    start: Instant,
 }
 
 impl Profiler {
+    /// Starts a new profiling session with a label.
     pub fn start(label: &'static str) -> Self {
         Self {
             label,
-            start: std::time::Instant::now(),
+            start: Instant::now(),
         }
     }
 
+    /// Ends the profiling session and prints the elapsed time.
     pub fn end(self) {
         let duration = self.start.elapsed();
         println!("[⏱ {}] took {:.2?}", self.label, duration);
-        // Optionally: record to Trailkeeper or diagnostics overlay
+        // Optional: record to Trailkeeper or diagnostics overlay
     }
 }
 
-// 🧩 Add scoped profiling macro:
+/// 🧩 Scoped profiling macro for inline measurement.
 #[macro_export]
 macro_rules! profile_scope {
     ($label:expr) => {
@@ -33,33 +34,67 @@ macro_rules! profile_scope {
     };
 }
 
-// 🚦 Add frame budget tracking:
+/// 🚦 Frame budget tracker for performance thresholds.
 pub struct FrameBudget {
-    pub max_duration: std::time::Duration,
+    pub max_duration: Duration,
 }
 
 impl FrameBudget {
-    pub fn is_exceeded(&self, elapsed: std::time::Duration) -> bool {
+    /// Returns true if the elapsed time exceeds the budget.
+    pub fn is_exceeded(&self, elapsed: Duration) -> bool {
         elapsed > self.max_duration
     }
 }
 
-// 📚 Document usage:
-//     - Clarify that this module is for runtime profiling, not statistical sampling
-//     - Note that it's lightweight and suitable for in-engine diagnostics
 
-// 🧪 Add tests for timing accuracy:
-//     - Validate that `Profiler::end()` reports correct durations
-//     - Ensure `FrameBudget` behaves as expected
+#[cfg(test)]
+mod stress_tests {
+    use super::*;
 
-// 🚀 Future: Add integration with Trailkeeper:
-//     - Automatically log slow frames or expensive operations
-//     - Enables historical performance tracking
+    #[test]
+    fn stress_profiler_duration_accuracy() {
+        let profiler = Profiler::start("test");
+        std::thread::sleep(Duration::from_millis(10));
+        let elapsed = profiler.start.elapsed();
+        assert!(elapsed >= Duration::from_millis(10));
+    }
 
-// 🧠 Consider exposing profiling to GDScript:
-//     - e.g. `ProfilerNode` that logs or displays durations
-//     - Useful for editor tooling or runtime inspection
+    #[test]
+    fn stress_profiler_end_output() {
+        let profiler = Profiler::start("output_check");
+        std::thread::sleep(Duration::from_millis(5));
+        profiler.end(); // Should print timing info
+    }
 
+    #[test]
+    fn stress_frame_budget_enforcement() {
+        let budget = FrameBudget {
+            max_duration: Duration::from_millis(16),
+        };
+
+        let short = Duration::from_millis(10);
+        let long = Duration::from_millis(20);
+
+        assert!(!budget.is_exceeded(short));
+        assert!(budget.is_exceeded(long));
+    }
+
+    #[test]
+    fn stress_multiple_profilers() {
+        for i in 0..5 {
+            let label = match i {
+                0 => "load",
+                1 => "tick",
+                2 => "render",
+                3 => "sync",
+                _ => "finalize",
+            };
+            let profiler = Profiler::start(label);
+            std::thread::sleep(Duration::from_millis(2));
+            profiler.end();
+        }
+    }
+}
 
 
 

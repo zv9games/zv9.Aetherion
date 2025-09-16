@@ -1,49 +1,14 @@
 //C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_structure_placements.rs
 
-// ✅ Suggestions for aetherion/structure/placements.rs
-
-// 🔧 Define core placement strategies:
-//     - `fn place_structure(grid: &mut MapGrid, pos: Position, structure: &StructureTemplate)`
-//     - `fn scatter_objects(grid: &mut MapGrid, count: usize, radius: i32)`
-//     - Useful for placing buildings, decorations, or gameplay elements
-
-// 🧩 Add placement constraints:
-//     - e.g. avoid overlapping tiles, respect terrain types, enforce bounds
-//     - Could use `GridBounds`, `TileType`, or custom rules
-
-// 🚦 Add support for placement zones or masks:
-//     - e.g. `ZoneMask` or `PlacementRegion` to restrict where things can spawn
-//     - Enables biome-aware or rule-based placement
-
-// 📚 Document placement semantics:
-//     - Clarify how placements differ from modifiers or terrain generation
-//     - Note whether placements are deterministic or randomized
-
-// 🧪 Add unit tests for placement logic:
-//     - Validate structure alignment, collision checks, and spatial coverage
-
-// 🧼 Optional: Add placement preview or dry-run mode:
-//     - `fn simulate_placement(...) -> Vec<Position>`
-//     - Useful for editor visualization or debugging
-
-// 🚀 Future: Add support for procedural dungeons or cities:
-//     - e.g. `fn generate_city(...) -> Vec<StructurePlacement>`
-//     - Could integrate with noise maps or pathfinding
-
-// 🧠 Consider exposing placement presets or templates:
-//     - e.g. `StructureTemplate::house()`, `Pattern::circle(radius)`
-//     - Enables reusable and composable placement logic
 use crate::zv9_prelude::*;
 
-/// Dummy structure placement function to use prelude types.
+/// 🏗 Dummy structure placement function for testing and integration.
 pub fn place_structure_stub(grid: &mut MapGrid, pos: Position) {
-    // Create a 3x3 bounds region starting from the given position
+    // Define a 3x3 region starting from the given position
     let bounds = GridBounds::new(pos.to_vec2i().into(), Vector2i::new(3, 3).into());
-
-    // Use a simple tile type for stub placement
     let tile_type = TileType::Chunk;
 
-    // Iterate over bounds and place tiles
+    // Place tiles within bounds
     for p in bounds.iter() {
         let position = Position { x: p.x, y: p.y };
         grid.set(position, tile_type);
@@ -59,6 +24,52 @@ pub fn place_structure_stub(grid: &mut MapGrid, pos: Position) {
         status: LogStatus::Success,
     });
 }
+
+#[cfg(test)]
+mod stress_tests {
+    use super::*;
+    use crate::zv9_prelude::*;
+
+    #[test]
+    fn stress_structure_placement_centered() {
+        let mut grid = MapGrid::new(64, 64);
+        let pos = Position { x: 30, y: 30 };
+        place_structure_stub(&mut grid, pos);
+
+        let bounds = GridBounds::new(pos.to_vec2i().into(), Vector2i::new(3, 3).into());
+        for p in bounds.iter() {
+            let placed = grid.get(Position { x: p.x, y: p.y });
+            assert_eq!(placed, Some(TileType::Chunk));
+        }
+    }
+
+    #[test]
+    fn stress_structure_placement_near_edge() {
+        let mut grid = MapGrid::new(8, 8);
+        let pos = Position { x: 6, y: 6 };
+        place_structure_stub(&mut grid, pos);
+
+        let bounds = GridBounds::new(pos.to_vec2i().into(), Vector2i::new(3, 3).into());
+        for p in bounds.iter() {
+            let placed = grid.get(Position { x: p.x, y: p.y });
+            // Should not panic even if out of bounds
+            let _ = placed; // Optional: assert if within bounds
+        }
+    }
+
+    #[test]
+    fn stress_multiple_stub_placements() {
+        let mut grid = MapGrid::new(128, 128);
+        for i in 0..10 {
+            let pos = Position { x: i * 10, y: i * 10 };
+            place_structure_stub(&mut grid, pos);
+        }
+
+        let total_chunks = grid.count_type(TileType::Chunk);
+        assert!(total_chunks >= 90); // 10 placements × ~9 tiles each
+    }
+}
+
 
 
 // the end

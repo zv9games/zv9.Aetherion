@@ -1,64 +1,17 @@
 //C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_pipeline_builder_streamer.rs
 
-// ✅ Suggestions for aetherion/pipeline/builder/streamer.rs
 
-// 🔧 Add dynamic pacing adjustment:
-//     - Adapt `delivery_interval` based on runtime load or frame budget
-//     - Could integrate with `RuntimeState::average_tick_duration()`
-
-// 🧩 Add delivery prioritization:
-//     - Support tagging chunks with priority levels
-//     - e.g. urgent overlays vs background terrain
-
-// 🚦 Add delivery feedback or retry logic:
-//     - Confirm chunk was successfully received by Godot
-//     - Optionally requeue failed deliveries
-
-// 📚 Document delivery guarantees:
-//     - Clarify whether chunks are guaranteed to arrive in order
-//     - Note behavior under pause/resume or frame spikes
-
-// 🧪 Add unit tests for pacing and queue behavior:
-//     - Validate delivery timing, pause/resume, and queue length tracking
-
-// 🧼 Optional: Add delivery metrics:
-//     - Track total delivered chunks, average delivery rate, etc.
-//     - Useful for diagnostics or performance tuning
-
-// 🚀 Future: Add streaming modes:
-//     - e.g. burst mode, lazy mode, or frame-synced mode
-//     - Could expose `set_mode(StreamMode)` API
-
-// 🧠 Consider exposing chunk preview or peek:
-//     - `fn peek_next_chunk(&self) -> Option<&MapDataChunk>`
-//     - Useful for debugging or editor overlays
-
-
-// 🚚 Smart chunk streaming and pacing logic.
-//
-// Controls how and when chunks are delivered to Godot, ensuring smooth
-// runtime flow and avoiding frame budget spikes.
 
 use crate::zv9_prelude::*;
-
 use std::collections::VecDeque;
 use std::time::{Duration, Instant};
 
-/// Controls pacing and prioritization of chunk delivery.
+/// 🚚 Controls pacing and prioritization of chunk delivery.
 pub struct ChunkStreamer {
-    /// Queue of chunks waiting to be delivered.
     queue: VecDeque<MapDataChunk>,
-
-    /// Sync channel to Godot.
     sync: GodotSync,
-
-    /// Minimum delay between chunk deliveries.
     delivery_interval: Duration,
-
-    /// Timestamp of last delivery.
     last_delivery: Instant,
-
-    /// Whether streaming is paused.
     paused: bool,
 }
 
@@ -125,4 +78,69 @@ impl ChunkStreamer {
         &mut self.sync
     }
 }
+
+
+#[cfg(test)]
+mod stress_tests {
+    use super::*;
+    use crate::zv9_prelude::*;
+
+    #[test]
+    fn stress_enqueue_and_deliver() {
+        let sync = GodotSync::init();
+        let mut streamer = ChunkStreamer::new(sync, 1);
+        let chunk = MapDataChunk::default();
+
+        for _ in 0..1000 {
+            streamer.enqueue_chunk(chunk.clone());
+        }
+
+        for _ in 0..1000 {
+            std::thread::sleep(Duration::from_millis(1));
+            streamer.try_deliver();
+        }
+
+        assert_eq!(streamer.queue_len(), 0);
+        assert!(!streamer.has_pending());
+    }
+
+    #[test]
+    fn stress_pause_resume_behavior() {
+        let sync = GodotSync::init();
+        let mut streamer = ChunkStreamer::new(sync, 1);
+        let chunk = MapDataChunk::default();
+
+        streamer.enqueue_chunk(chunk.clone());
+        streamer.pause();
+        std::thread::sleep(Duration::from_millis(5));
+        streamer.try_deliver();
+
+        assert_eq!(streamer.queue_len(), 1); // Should not deliver while paused
+
+        streamer.resume();
+        std::thread::sleep(Duration::from_millis(5));
+        streamer.try_deliver();
+
+        assert_eq!(streamer.queue_len(), 0); // Should deliver after resume
+    }
+
+    #[test]
+    fn stress_delivery_interval_enforcement() {
+        let sync = GodotSync::init();
+        let mut streamer = ChunkStreamer::new(sync, 50); // 50ms interval
+        let chunk = MapDataChunk::default();
+
+        streamer.enqueue_chunk(chunk.clone());
+        streamer.try_deliver(); // Should not deliver immediately
+
+        assert_eq!(streamer.queue_len(), 1);
+
+        std::thread::sleep(Duration::from_millis(60));
+        streamer.try_deliver(); // Should deliver now
+
+        assert_eq!(streamer.queue_len(), 0);
+    }
+}
+
+
 // the end
