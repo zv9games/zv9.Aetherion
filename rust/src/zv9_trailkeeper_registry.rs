@@ -11,7 +11,7 @@ lazy_static::lazy_static! {
 pub const COMPONENTS: &[&str] = &["engine", "oracle", "map", "generator"];
 
 // Registers a component name (no deduplication).
-pub fn register_component(name: &str) {
+pub fn register_component(name: &str, desc: &str) {
     let mut components = REGISTERED_COMPONENTS.lock().unwrap();
     components.push(name.to_string());
 
@@ -19,7 +19,7 @@ pub fn register_component(name: &str) {
         event_type: EventType::System,
         timestamp: chrono::Utc::now(),
         actor: "registry".into(),
-        description: format!("Registered component: {}", name),
+        description: format!("Registered component: {} - {}", name, desc),
         affected_components: vec![name.into()],
         status: LogStatus::Success,
     });
@@ -38,6 +38,14 @@ pub fn all_event_types() -> Vec<EventType> {
         EventType::FileChange,
         EventType::StructurePlacement,
     ]
+}
+
+pub fn print_api_summary() {
+    let components = REGISTERED_COMPONENTS.lock().unwrap();
+    println!("\n📘 Aetherion API Surface:\n");
+    for name in components.iter() {
+        println!("🔹 {}", name);
+    }
 }
 
 

@@ -6,6 +6,12 @@ use crate::zv9_prelude::*; // everything is in here
 use godot::prelude::*; 
 use godot_macros::gdextension;
 
+#[macro_use]
+pub mod zv9_trailkeeper_macros {
+    include!("zv9_trailkeeper_macros.rs");
+}
+
+
 pub const VERSION: &str = "0.1.0";
 
 pub mod zv9_prelude {
@@ -98,7 +104,6 @@ pub mod zv9_trailkeeper_collector { include!("zv9_trailkeeper_collector.rs"); }
 pub mod zv9_trailkeeper_config { include!("zv9_trailkeeper_config.rs"); }
 pub mod zv9_trailkeeper_entry { include!("zv9_trailkeeper_entry.rs"); }
 pub mod zv9_trailkeeper_export { include!("zv9_trailkeeper_export.rs"); }
-pub mod zv9_trailkeeper_macros { include!("zv9_trailkeeper_macros.rs"); }
 pub mod zv9_trailkeeper_registry { include!("zv9_trailkeeper_registry.rs"); }
 pub mod zv9_trailkeeper_scan { include!("zv9_trailkeeper_scan.rs"); }
 pub mod zv9_trailkeeper_watch { include!("zv9_trailkeeper_watch.rs"); }
@@ -148,7 +153,8 @@ pub mod trailkeeper {
     pub use crate::zv9_trailkeeper_config::*;
     pub use crate::zv9_trailkeeper_entry::*;
     pub use crate::zv9_trailkeeper_export::*;
-    //pub use crate::zv9__trailkeeper__macros::*;
+    
+
     pub use crate::zv9_trailkeeper_registry::*;
     pub use crate::zv9_trailkeeper_scan::*;
     pub use crate::zv9_trailkeeper_watch::*;
@@ -165,7 +171,12 @@ pub mod trailkeeper {
     pub mod entry {
         pub use crate::zv9_trailkeeper_entry::*;
     }
+	pub mod registry {
+		pub use crate::zv9_trailkeeper_registry::*;
 }
+
+}	
+
 
 
 pub mod core {
@@ -191,3 +202,5 @@ pub use zv9_aetherion_pipeline_data_chunk::MapDataChunk;
 pub use zv9_godot_interface_messaging_sync::GodotSync;
 pub use zv9_aetherion_core_runtime::start;
 pub use zv9_aetherion_pipeline_builder_bitmask::*;
+// 🧠 Macro Re-exports
+

@@ -1,43 +1,9 @@
 
 //C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_godot_interface_signals.rs
 
-// 🔧 Add signal grouping or categorization:
-//     - e.g. `#[signal(group = "generation")]` or prefix conventions
-//     - Helps organize signals in GDScript and editor tooling
-
-// 🧩 Add signal documentation:
-//     - Inline comments for each signal explaining when and why it fires
-//     - Improves clarity for GDScript consumers and plugin authors
-
-// 🚦 Add signal throttling or deduplication:
-//     - Prevent flooding with `generation_progress` or `tick_*` signals
-//     - Could use internal counters or timestamps
-
-// 📚 Document signal lifecycle:
-//     - Clarify which signals fire during init, build, sync, and teardown
-//     - Could include a signal flow diagram in module-level docs
-
-// 🧪 Add integration tests for signal dispatch:
-//     - Validate that signals are emitted correctly during terrain generation
-//     - Ensure payloads match expected formats
-
-// 🧼 Optional: Add signal introspection or logging:
-//     - Emit debug logs when signals are fired
-//     - Useful for diagnostics and runtime tracing
-
-// 🚀 Future: Add signal subscription API:
-//     - e.g. `fn subscribe(signal: &str, callback: Callable)`
-//     - Enables dynamic hook registration from GDScript or Rust
-
-// 🧠 Consider exposing signal metadata:
-//     - e.g. `fn all_signals() -> Vec<&'static str>`
-//     - Useful for editor UIs, debugging, or plugin systems
-
-
 use godot::prelude::*;
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
-
 
 /// 🛰️ AetherionSignals — Godot-facing signal node for engine events.
 /// Connected in GDScript to receive updates from the Rust core.
@@ -55,8 +21,9 @@ impl INode for AetherionSignals {
     }
 
     fn ready(&mut self) {
-        godot_print!("📡 AetherionSignals initialized.");
-    }
+		godot_print!("📡 AetherionSignals initialized.");
+		log_component!("AetherionSignals", "Signal node for engine events");
+	}
 }
 
 #[godot_api]
@@ -78,7 +45,7 @@ impl AetherionSignals {
     fn map_chunk_ready();
 
     #[signal]
-    fn chunk_ready(chunk_data: Dictionary); // New: full chunk payload
+    fn chunk_ready(chunk_data: Dictionary);
 
     #[signal]
     fn map_build_cancelled();
@@ -115,14 +82,14 @@ impl AetherionSignals {
     fn sync_required();
 
     #[signal]
-    fn diagnostics(memory_usage: i64, thread_count: i32, tick_rate: f64); // New
+    fn diagnostics(memory_usage: i64, thread_count: i32, tick_rate: f64);
 
     // ⚠️ Error & warning signals
     #[signal]
-    fn rust_error(message: GString); // Updated to include message
+    fn rust_error(message: GString);
 
     #[signal]
-    fn rust_warning(message: GString); // New
+    fn rust_warning(message: GString);
 
     // 🔁 Tilemap & sync events
     #[signal]
@@ -136,7 +103,9 @@ impl AetherionSignals {
 
     // 🧪 Custom & extensible hooks
     #[signal]
-    fn custom_event(name: GString, payload: Variant); // New
+    fn custom_event(name: GString, payload: Variant);
 }
+
+
 
 // the end

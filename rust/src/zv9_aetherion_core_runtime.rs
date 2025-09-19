@@ -1,9 +1,9 @@
 //C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_core_runtime.rs
 use std::thread::sleep;
-
-use crate::zv9_prelude::*;
 use std::fmt;
 use std::time::{Duration, Instant};
+
+use crate::zv9_prelude::*;
 use crate::ProcCommand;
 
 /// 🕒 Tracks tick progression and frame timing for the engine runtime.
@@ -102,8 +102,8 @@ impl RuntimeState {
 //
 
 /// 🚀 Starts the Aetherion engine runtime loop.
-
 pub fn start() {
+    log_component!("RuntimeState", "Tracks tick progression and frame timing");
     log_info("runtime", "Starting Aetherion engine...");
 
     // 🧭 Engine configuration
@@ -143,9 +143,6 @@ pub fn start() {
 
     log_info("runtime", "Aetherion engine stopped.");
 }
-
-
-
 
 //
 // ─── Stress Tests ─────────────────────────────────────────────────────────────
@@ -203,6 +200,7 @@ mod stress_tests {
         assert!(state.time_since_last_tick() >= Duration::from_millis(20));
     }
 }
+
 
 
 // the end
