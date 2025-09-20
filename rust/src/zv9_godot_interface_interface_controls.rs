@@ -42,6 +42,7 @@ pub struct ControlPanel {
 
 #[godot_api]
 impl ControlPanel {
+	#[allow(dead_code)]
     fn init(base: Base<Control>) -> Self {
         Self {
             base,
@@ -146,12 +147,12 @@ impl ControlPanel {
     #[func]
     fn to_config_dict(&self) -> Dictionary {
         let mut dict = Dictionary::new();
-        dict.insert("terrain_mode", self.terrain_mode.clone());
-        dict.insert("structure_mode", self.structure_mode.clone());
-        dict.insert("pacing_ms", self.pacing_ms);
-        dict.insert("animate", self.animate);
-        dict.insert("black", self.black);
-        dict.insert("blue", self.blue);
+        let _ = dict.insert("terrain_mode", self.terrain_mode.clone());
+        let _ = dict.insert("structure_mode", self.structure_mode.clone());
+        let _ = dict.insert("pacing_ms", self.pacing_ms);
+        let _ = dict.insert("animate", self.animate);
+        let _ = dict.insert("black", self.black);
+        let _ = dict.insert("blue", self.blue);
         dict
     }
 }

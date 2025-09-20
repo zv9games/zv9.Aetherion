@@ -27,6 +27,7 @@ pub struct AetherionEngine {
 
 #[godot_api]
 impl AetherionEngine {
+	#[allow(dead_code)]
     fn init(base: Base<Node>) -> Self {
         let sync = GodotSync::init();
         Self {
@@ -39,7 +40,7 @@ impl AetherionEngine {
             chunk: Some(MapDataChunk::new()),
         }
     }
-
+	#[allow(dead_code)]
     fn ready(&mut self) {
 		godot_print!("⚙️ AetherionEngine online. Systems nominal.");
 		log_component!("AetherionEngine", "Engine node for procedural generation and signal dispatch");
@@ -78,11 +79,11 @@ impl AetherionEngine {
                     }
                     EngineMessage::Complete { width, height, mode, animate, duration } => {
                         let mut dict = Dictionary::new();
-                        dict.insert("width", width);
-                        dict.insert("height", height);
-                        dict.insert("mode", mode);
-                        dict.insert("animate", animate);
-                        dict.insert("duration", duration);
+                        let _ = dict.insert("width", width);
+                        let _ = dict.insert("height", height);
+                        let _ = dict.insert("mode", mode);
+                        let _ = dict.insert("animate", animate);
+                        let _ = dict.insert("duration", duration);
                         signals_node.emit_signal("generation_complete", &[dict.to_variant()])
                     }
                     EngineMessage::MapChunkReady => signals_node.emit_signal("map_chunk_ready", &[]),

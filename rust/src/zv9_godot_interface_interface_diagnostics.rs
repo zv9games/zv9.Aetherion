@@ -17,6 +17,7 @@ pub struct DiagnosticsOverlay {
 
 #[godot_api]
 impl DiagnosticsOverlay {
+	#[allow(dead_code)]
     fn init(base: Base<Label>) -> Self {
         Self { base }
     }

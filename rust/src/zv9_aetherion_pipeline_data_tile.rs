@@ -56,22 +56,22 @@ impl TileInfo {
     /// Converts tile metadata into a Godot Dictionary.
     pub fn to_dictionary(&self) -> Dictionary {
         let mut dict = Dictionary::new();
-        dict.insert("source_id", self.source_id);
-        dict.insert("alternate_id", self.alternate_id);
-        dict.insert("rotation", self.rotation.clamp(0, 3));
-        dict.insert("layer", self.layer);
-        dict.insert("flags", self.flags);
-        dict.insert("atlas_x", self.atlas_coords.x);
-        dict.insert("atlas_y", self.atlas_coords.y);
+        let _ = dict.insert("source_id", self.source_id);
+        let _ = dict.insert("alternate_id", self.alternate_id);
+        let _ = dict.insert("rotation", self.rotation.clamp(0, 3));
+        let _ = dict.insert("layer", self.layer);
+        let _ = dict.insert("flags", self.flags);
+        let _ = dict.insert("atlas_x", self.atlas_coords.x);
+        let _ = dict.insert("atlas_y", self.atlas_coords.y);
 
         if let Some(variant) = self.variant_id {
-            dict.insert("variant_id", variant);
+            let _ = dict.insert("variant_id", variant);
         }
         if let Some(frames) = self.frame_count {
-            dict.insert("frame_count", frames);
+            let _ = dict.insert("frame_count", frames);
         }
         if let Some(speed) = self.animation_speed {
-            dict.insert("animation_speed", speed);
+            let _ = dict.insert("animation_speed", speed);
         }
 
         dict

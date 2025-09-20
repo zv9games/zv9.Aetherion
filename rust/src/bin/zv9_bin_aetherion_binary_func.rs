@@ -8,8 +8,10 @@ use aetherion_engine::trailkeeper::{
 use aetherion_engine::pipeline_builder::bitmask::convert_world_png_to_chunk;
 use aetherion_engine::{Conductor, ProcCommand, MapDataChunk, GodotSync, TileInfo};
 use walkdir::WalkDir;
-use std::{collections::HashMap, fs, process::Command, time::{Instant, Duration}};
-use regex::Regex;
+#[allow(unused_imports)]
+use std::{collections::HashMap, fs, process::Command};
+
+use std::{time::{Instant, Duration}};
 
 pub fn run_cargo_tests() {
     println!("🚀 Running full cargo test suite...\n");
@@ -118,23 +120,30 @@ pub fn print_godot_api_surface() {
     let ignored_impls = ["crate", "std", "Default", "From", "fmt", "WithSignals"];
 
     let mut current_class = String::new();
-    let mut godot_api: HashMap<String, Vec<String>> = HashMap::new();
+    let mut godot_api: HashMap<(String, String), Vec<String>> = HashMap::new();
     let mut file_count = 0;
 
     for entry in WalkDir::new(".")
         .follow_links(true)
         .into_iter()
         .filter_map(Result::ok)
-        .filter(|e| e.path().extension().map_or(false, |ext| ext == "rs"))
+        .filter(|e| {
+            let path_str = e.path().display().to_string();
+            e.path().extension().map_or(false, |ext| ext == "rs")
+                && !path_str.contains("OLD1")
+                && !path_str.contains("OLD2")
+        })
     {
         file_count += 1;
         let path = entry.path();
+        let file_path = path.display().to_string();
+
         if let Ok(content) = fs::read_to_string(path) {
             let mut lines = content.lines().peekable();
-            let mut line_number = 0;
+            let mut _line_number = 0;
 
             while let Some(line) = lines.next() {
-                line_number += 1;
+                _line_number += 1;
                 let line = line.trim();
 
                 if line.contains("error[E0277]") {
@@ -185,7 +194,8 @@ pub fn print_godot_api_surface() {
                         let return_type = caps.get(4).map_or("", |m| m.as_str());
                         let signature = format!("fn {}({}) {}", name, params, return_type);
                         if !current_class.is_empty() {
-                            godot_api.entry(current_class.clone()).or_default().push(signature);
+                            let key = (current_class.clone(), file_path.clone());
+                            godot_api.entry(key).or_default().push(signature);
                         }
                     }
                 }
@@ -198,8 +208,8 @@ pub fn print_godot_api_surface() {
     if godot_api.is_empty() {
         println!("(No GDScript-callable methods detected. Scanned {} files.)", file_count);
     } else {
-        for (class, methods) in godot_api {
-            println!("\n🔹 Node: {}", class);
+        for ((class, file), methods) in godot_api {
+            println!("\n🔹 Node: {}  📁 {}", class, file);
             for method in methods {
                 println!("   └── {}", method);
             }
@@ -214,6 +224,8 @@ pub fn print_godot_api_surface() {
         "Scanned GDScript-callable API surface"
     );
 }
+
+
 
 
 

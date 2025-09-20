@@ -31,6 +31,7 @@ pub struct AetherionConfig {
 
 #[godot_api]
 impl AetherionConfig {
+	#[allow(dead_code)]
     fn init(_base: Base<Node>) -> Self {
         Self {
             tile_size: 16,
@@ -40,7 +41,6 @@ impl AetherionConfig {
             enable_voxel_mode: false,
         }
     }
-
     #[func]
     fn _ready(&self) {
         godot_print!("⚙️ AetherionConfig loaded.");
