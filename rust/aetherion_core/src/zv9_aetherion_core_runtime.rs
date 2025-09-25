@@ -13,7 +13,7 @@ pub struct RuntimeState {
     frame_budget: Duration,
     exceeded_budget: bool,
     avg_tick_duration: Duration,
-    on_tick: Option<Box<dyn Fn(u64, Duration) + Send + Sync>>,
+    on_tick: Option<Box<dyn FnMut(u64, Duration) + Send + Sync>>,
 }
 
 impl fmt::Debug for RuntimeState {
@@ -56,7 +56,7 @@ impl RuntimeState {
             (self.avg_tick_duration * 9 + elapsed) / 10
         };
 
-        if let Some(callback) = &self.on_tick {
+        if let Some(callback) = &mut self.on_tick {
             callback(self.tick_count, elapsed);
         }
     }
@@ -87,7 +87,7 @@ impl RuntimeState {
 
     pub fn set_tick_listener<F>(&mut self, callback: F)
     where
-        F: Fn(u64, Duration) + Send + Sync + 'static,
+        F: FnMut(u64, Duration) + Send + Sync + 'static,
     {
         self.on_tick = Some(Box::new(callback));
     }
@@ -171,17 +171,21 @@ mod stress_tests {
     }
 
     #[test]
-    fn stress_listener_callback() {
-        let mut state = RuntimeState::new();
-        let mut called = false;
-        state.set_tick_listener(move |tick, _| {
-            if tick == 1 {
-                called = true;
-            }
-        });
-        state.tick();
-        assert!(called);
-    }
+	fn stress_listener_callback() {
+		let mut state = RuntimeState::new();
+		let called = std::sync::Arc::new(std::sync::Mutex::new(false));
+		let called_clone = called.clone();
+
+		state.set_tick_listener(move |tick, _| {
+			if tick == 1 {
+				*called_clone.lock().unwrap() = true;
+			}
+		});
+
+		state.tick();
+		assert!(*called.lock().unwrap());
+	}
+
 
     #[test]
     fn stress_average_smoothing() {
@@ -195,12 +199,10 @@ mod stress_tests {
 
     #[test]
     fn stress_time_since_last_tick() {
-        let mut state = RuntimeState::new();
+        let state = RuntimeState::new();
         std::thread::sleep(Duration::from_millis(20));
         assert!(state.time_since_last_tick() >= Duration::from_millis(20));
     }
 }
-
-
 
 // the end

@@ -7,9 +7,10 @@ use std::io::Write;
 use crate::zv9_prelude::*;
 
 /// 📝 Initializes the logging system using `env_logger`.
-/// Should be called once during engine startup.
+/// Safe to call multiple times in test environments.
 pub fn init_logging() {
-    Builder::new()
+    let _ = Builder::new()
+        .is_test(true)
         .filter_level(LevelFilter::Info) // Change to Debug, Warn, etc. as needed
         .format(|buf, record| {
             writeln!(
@@ -20,7 +21,7 @@ pub fn init_logging() {
                 record.args()
             )
         })
-        .init();
+        .try_init();
 
     info!("📝 Logging initialized.");
 }
@@ -44,8 +45,6 @@ pub fn log_error(tag: &str, message: &str) {
 pub fn log_info(tag: &str, message: &str) {
     info!("[{}] {}", tag, message);
 }
-
-
 
 #[cfg(test)]
 mod stress_tests {

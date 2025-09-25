@@ -40,6 +40,7 @@ pub fn all_event_types() -> Vec<EventType> {
     ]
 }
 
+// Prints a summary of registered components.
 pub fn print_api_summary() {
     let components = REGISTERED_COMPONENTS.lock().unwrap();
     println!("\n📘 Aetherion API Surface:\n");
@@ -48,16 +49,15 @@ pub fn print_api_summary() {
     }
 }
 
-
 #[cfg(test)]
 mod stress_tests {
     use super::*;
 
     #[test]
     fn stress_register_and_lookup() {
-        register_component("engine");
-        register_component("oracle");
-        register_component("map");
+        register_component("engine", "Core conductor orchestration system");
+        register_component("oracle", "Predictive subsystem and query interface");
+        register_component("map", "Spatial grid and tile registry");
 
         assert!(is_registered("engine"));
         assert!(is_registered("oracle"));
@@ -67,9 +67,9 @@ mod stress_tests {
 
     #[test]
     fn stress_duplicate_registration() {
-        register_component("engine");
-        register_component("engine");
-        register_component("engine");
+        for _ in 0..3 {
+            register_component("engine", "Core conductor orchestration system");
+        }
 
         let components = REGISTERED_COMPONENTS.lock().unwrap();
         let count = components.iter().filter(|c| c == &"engine").count();
@@ -79,7 +79,7 @@ mod stress_tests {
     #[test]
     fn stress_bulk_registration() {
         for i in 0..1000 {
-            register_component(&format!("comp_{}", i));
+            register_component(&format!("comp_{}", i), "Auto-generated component");
         }
 
         assert!(is_registered("comp_999"));
@@ -93,6 +93,7 @@ mod stress_tests {
         assert!(events.contains(&EventType::StructurePlacement));
     }
 }
+
 
 
 // the end

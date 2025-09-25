@@ -4,8 +4,11 @@ use crate::zv9_prelude::*;
 
 /// 🏗 Dummy structure placement function for testing and integration.
 pub fn place_structure_stub(grid: &mut MapGrid, pos: Position) {
-    // Define a 3x3 region starting from the given position
-    let bounds = GridBounds::new(pos.to_vec2i().into(), Vector2i::new(3, 3).into());
+    // Define a 3×3 region starting from the given position
+    let bounds = GridBounds::new(
+        SerializableVector2i { x: pos.x, y: pos.y },
+        SerializableVector2i { x: 3, y: 3 },
+    );
     let tile_type = TileType::Chunk;
 
     // Place tiles within bounds
@@ -28,38 +31,59 @@ pub fn place_structure_stub(grid: &mut MapGrid, pos: Position) {
 #[cfg(test)]
 mod stress_tests {
     use super::*;
-    use crate::zv9_prelude::*;
+    //use crate::zv9_prelude::*;
 
     #[test]
     fn stress_structure_placement_centered() {
-        let mut grid = MapGrid::new(64, 64);
+        let bounds = GridBounds::new(
+            SerializableVector2i { x: 0, y: 0 },
+            SerializableVector2i { x: 64, y: 64 },
+        );
+        let mut grid = MapGrid::new(bounds);
         let pos = Position { x: 30, y: 30 };
         place_structure_stub(&mut grid, pos);
 
-        let bounds = GridBounds::new(pos.to_vec2i().into(), Vector2i::new(3, 3).into());
-        for p in bounds.iter() {
+        let structure_bounds = GridBounds::new(
+            SerializableVector2i { x: pos.x, y: pos.y },
+            SerializableVector2i { x: 3, y: 3 },
+        );
+        for p in structure_bounds.iter() {
             let placed = grid.get(Position { x: p.x, y: p.y });
-            assert_eq!(placed, Some(TileType::Chunk));
+            if let Some(tile) = placed {
+                assert_eq!(tile, TileType::Chunk);
+            } else {
+                panic!("Expected TileType::Chunk, but got None at {:?}", p);
+            }
         }
     }
 
     #[test]
     fn stress_structure_placement_near_edge() {
-        let mut grid = MapGrid::new(8, 8);
+        let bounds = GridBounds::new(
+            SerializableVector2i { x: 0, y: 0 },
+            SerializableVector2i { x: 8, y: 8 },
+        );
+        let mut grid = MapGrid::new(bounds);
         let pos = Position { x: 6, y: 6 };
         place_structure_stub(&mut grid, pos);
 
-        let bounds = GridBounds::new(pos.to_vec2i().into(), Vector2i::new(3, 3).into());
-        for p in bounds.iter() {
-            let placed = grid.get(Position { x: p.x, y: p.y });
-            // Should not panic even if out of bounds
-            let _ = placed; // Optional: assert if within bounds
+        let structure_bounds = GridBounds::new(
+            SerializableVector2i { x: pos.x, y: pos.y },
+            SerializableVector2i { x: 3, y: 3 },
+        );
+        for p in structure_bounds.iter() {
+            let _ = grid.get(Position { x: p.x, y: p.y }); // Should not panic
         }
     }
 
     #[test]
     fn stress_multiple_stub_placements() {
-        let mut grid = MapGrid::new(128, 128);
+        let bounds = GridBounds::new(
+            SerializableVector2i { x: 0, y: 0 },
+            SerializableVector2i { x: 128, y: 128 },
+        );
+        let mut grid = MapGrid::new(bounds);
+
         for i in 0..10 {
             let pos = Position { x: i * 10, y: i * 10 };
             place_structure_stub(&mut grid, pos);
@@ -69,7 +93,6 @@ mod stress_tests {
         assert!(total_chunks >= 90); // 10 placements × ~9 tiles each
     }
 }
-
 
 
 // the end

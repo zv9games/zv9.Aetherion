@@ -124,6 +124,7 @@ fn count_alive_neighbors(grid: &[Vec<u8>], x: usize, y: usize) -> u8 {
 
     count
 }
+
 #[cfg(test)]
 mod stress_tests {
     use super::*;
@@ -152,16 +153,29 @@ mod stress_tests {
         assert_eq!(grid[0].len(), 64);
 
         let alive_count: usize = grid.iter().flatten().filter(|&&v| v == 1).count();
-        assert!(alive_count > 0); // Shouldn't be all dead
+        assert!(alive_count > 0 && alive_count < 4096); // Shouldn't be all dead or all alive
     }
 
     #[test]
-    fn stress_cellular_automata_evolution() {
-        let mut grid = vec![vec![1; 32]; 32];
-        cellular_automata(&mut grid, 10, 4, 3);
-        let alive_count: usize = grid.iter().flatten().filter(|&&v| v == 1).count();
-        assert!(alive_count < 1024); // Should evolve, not stay fully alive
-    }
+	fn stress_cellular_automata_evolution() {
+		use rand::{SeedableRng, Rng};
+		let mut rng = rand::rngs::StdRng::seed_from_u64(999);
+		let mut grid = vec![vec![0; 32]; 32];
+
+		for y in 0..32 {
+			for x in 0..32 {
+				grid[y][x] = if rng.gen_bool(0.5) { 1 } else { 0 };
+			}
+		}
+	
+		let before = grid.iter().flatten().filter(|&&v| v == 1).count();
+		cellular_automata(&mut grid, 10, 4, 3);
+		let after = grid.iter().flatten().filter(|&&v| v == 1).count();
+
+		assert!(after != before); // Should evolve
+		assert!(after < 1024);    // Should not be fully alive
+	}
+
 
     #[test]
     fn stress_noise_type_dispatch() {

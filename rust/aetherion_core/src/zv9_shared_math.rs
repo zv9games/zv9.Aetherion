@@ -10,6 +10,16 @@ pub const TAU: f64 = std::f64::consts::PI * 2.0;
 ///
 /// # Examples
 /// ```
+/// fn clamp<T: PartialOrd>(val: T, min: T, max: T) -> T {
+///     if val < min {
+///         min
+///     } else if val > max {
+///         max
+///     } else {
+///         val
+///     }
+/// }
+///
 /// let x = clamp(5, 0, 10);    // returns 5
 /// let y = clamp(-3, 0, 10);   // returns 0
 /// let z = clamp(42, 0, 10);   // returns 10
@@ -24,7 +34,6 @@ pub fn clamp<T: PartialOrd>(val: T, min: T, max: T) -> T {
     }
 }
 
-
 #[cfg(test)]
 mod stress_tests {
     use super::*;
@@ -38,15 +47,15 @@ mod stress_tests {
 
     #[test]
     fn stress_clamp_floats() {
-        assert_eq!(clamp(3.5, 1.0, 4.0), 3.5);
-        assert_eq!(clamp(-1.2, 0.0, 2.0), 0.0);
-        assert_eq!(clamp(9.9, 0.0, 5.0), 5.0);
+        assert_eq!(clamp(3.5_f64, 1.0, 4.0), 3.5);
+        assert_eq!(clamp(-1.2_f64, 0.0, 2.0), 0.0);
+        assert_eq!(clamp(9.9_f64, 0.0, 5.0), 5.0);
     }
 
     #[test]
     fn stress_clamp_edge_equal_bounds() {
         assert_eq!(clamp(5, 5, 5), 5);
-        assert_eq!(clamp(0.0, 0.0, 0.0), 0.0);
+        assert_eq!(clamp(0.0_f64, 0.0, 0.0), 0.0);
     }
 
     #[test]

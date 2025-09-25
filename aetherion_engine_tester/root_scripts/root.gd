@@ -5,6 +5,8 @@ var main_node: Node2D
 var initialized_nodes: Array = []
 
 func _ready():
+	#get_tree().get_root().print_tree()
+
 	print("🚀 AetherionTester: Summoning subsystems...")
 
 	init_node = get_node("init")

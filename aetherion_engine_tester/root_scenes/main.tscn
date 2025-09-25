@@ -277,6 +277,12 @@ script = ExtResource("1_3lhfi")
 [node name="main" type="Node2D" parent="."]
 script = ExtResource("2_kvte3")
 
+[node name="AetherionMap" type="AetherionMap" parent="main"]
+
+[node name="AetherionConfig" type="AetherionConfig" parent="main"]
+
+[node name="AetherionGenerator" type="AetherionGenerator" parent="main"]
+
 [node name="AetherionSignals" type="AetherionSignals" parent="main"]
 
 [node name="AetherionEngine" type="AetherionEngine" parent="main"]

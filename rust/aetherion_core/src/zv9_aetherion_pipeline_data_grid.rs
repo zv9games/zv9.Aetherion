@@ -11,8 +11,8 @@ pub enum TileType {
     Wall,
     Floor,
     Path,
-	Blue,
-	Black,
+    Blue,
+    Black,
     // Extend with additional types as needed
 }
 
@@ -34,8 +34,9 @@ impl MapGrid {
     }
 
     /// Retrieves the tile at the given position.
-    pub fn get(&self, pos: Position) -> TileType {
-        *self.tiles.get(&pos).unwrap_or(&TileType::Empty)
+    /// Returns `None` if the tile is not set.
+    pub fn get(&self, pos: Position) -> Option<TileType> {
+        self.tiles.get(&pos).copied()
     }
 
     /// Sets a tile at the given position.
@@ -70,5 +71,11 @@ impl MapGrid {
     pub fn iter(&self) -> impl Iterator<Item = (&Position, &TileType)> {
         self.tiles.iter()
     }
+
+    /// Counts how many tiles match the given type.
+    pub fn count_type(&self, target: TileType) -> usize {
+        self.tiles.values().filter(|&&t| t == target).count()
+    }
 }
+
 // the end
