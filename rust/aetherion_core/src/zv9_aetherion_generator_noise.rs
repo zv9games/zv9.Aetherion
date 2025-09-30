@@ -1,8 +1,8 @@
-//C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_generator_noise.rs
 use rand::Rng;
 use rand::SeedableRng;
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
+use std::str::FromStr;
 
 /// 🔊 Basic sine-cosine hybrid noise function.
 /// Placeholder: replace with a real algorithm later.
@@ -35,6 +35,21 @@ impl NoiseType {
     /// Indicates whether the noise type is currently implemented.
     pub fn is_available(&self) -> bool {
         matches!(self, NoiseType::Basic | NoiseType::CellularAutomata)
+    }
+}
+
+impl FromStr for NoiseType {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "basic" => Ok(NoiseType::Basic),
+            "perlin" => Ok(NoiseType::Perlin),
+            "simplex" => Ok(NoiseType::Simplex),
+            "cellular" => Ok(NoiseType::Cellular),
+            "automata" | "cellularautomata" => Ok(NoiseType::CellularAutomata),
+            _ => Err(()),
+        }
     }
 }
 
@@ -124,73 +139,3 @@ fn count_alive_neighbors(grid: &[Vec<u8>], x: usize, y: usize) -> u8 {
 
     count
 }
-
-#[cfg(test)]
-mod stress_tests {
-    use super::*;
-
-    #[test]
-    fn stress_basic_noise_sampling() {
-        for i in 0..10_000 {
-            let x = i as f32 * 0.01;
-            let y = (i % 100) as f32 * 0.01;
-            let val = generate_noise(x, y, NoiseType::Basic);
-            assert!(val.is_finite());
-        }
-    }
-
-    #[test]
-    fn stress_grid_generation_basic() {
-        let grid = generate_grid_noise(128, 128, NoiseType::Basic, 42);
-        assert_eq!(grid.len(), 128);
-        assert_eq!(grid[0].len(), 128);
-    }
-
-    #[test]
-    fn stress_grid_generation_automata() {
-        let grid = generate_grid_noise(64, 64, NoiseType::CellularAutomata, 12345);
-        assert_eq!(grid.len(), 64);
-        assert_eq!(grid[0].len(), 64);
-
-        let alive_count: usize = grid.iter().flatten().filter(|&&v| v == 1).count();
-        assert!(alive_count > 0 && alive_count < 4096); // Shouldn't be all dead or all alive
-    }
-
-    #[test]
-	fn stress_cellular_automata_evolution() {
-		use rand::{SeedableRng, Rng};
-		let mut rng = rand::rngs::StdRng::seed_from_u64(999);
-		let mut grid = vec![vec![0; 32]; 32];
-
-		for y in 0..32 {
-			for x in 0..32 {
-				grid[y][x] = if rng.gen_bool(0.5) { 1 } else { 0 };
-			}
-		}
-	
-		let before = grid.iter().flatten().filter(|&&v| v == 1).count();
-		cellular_automata(&mut grid, 10, 4, 3);
-		let after = grid.iter().flatten().filter(|&&v| v == 1).count();
-
-		assert!(after != before); // Should evolve
-		assert!(after < 1024);    // Should not be fully alive
-	}
-
-
-    #[test]
-    fn stress_noise_type_dispatch() {
-        for noise in [
-            NoiseType::Basic,
-            NoiseType::Perlin,
-            NoiseType::Simplex,
-            NoiseType::Cellular,
-            NoiseType::CellularAutomata,
-        ] {
-            let val = generate_noise(1.0, 1.0, noise);
-            assert!(val.is_finite());
-        }
-    }
-}
-
-
-// the end

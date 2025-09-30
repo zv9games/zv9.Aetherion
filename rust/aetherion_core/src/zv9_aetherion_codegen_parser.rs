@@ -1,14 +1,8 @@
-//C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_codegen_parser.rs
 
-// TODO:
-// - Group tokens into meaningful DslCommand blocks
-// - Support command arguments with named keys
-// - Validate command structure (e.g. required args)
-// - Add error handling for malformed input
-// - Support multi-line scripts and comments
 
 
 use crate::zv9_prelude::*;
+use crate::codegen::dsl::{DslToken, DslScript, DslCommand};
 
 /// A simple tokenizer that splits raw input into DSL tokens.
 /// This is a stub — expand with real lexical analysis.

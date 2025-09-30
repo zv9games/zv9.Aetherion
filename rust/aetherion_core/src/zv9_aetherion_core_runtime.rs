@@ -1,10 +1,14 @@
-//C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_core_runtime.rs
 use std::thread::sleep;
 use std::fmt;
 use std::time::{Duration, Instant};
 
 use crate::zv9_prelude::*;
-use crate::ProcCommand;
+use crate::core::conductor::{Conductor, ProcCommand};
+use crate::util::config::EngineConfig;
+use crate::util::logging::{log_info, log_debug};
+use crate::pipeline::data::MapDataChunk;
+use crate::pipeline::builder::{ChunkStreamer, ChunkDelivery};
+use crate::log_component;
 
 /// 🕒 Tracks tick progression and frame timing for the engine runtime.
 pub struct RuntimeState {
@@ -30,7 +34,6 @@ impl fmt::Debug for RuntimeState {
 }
 
 impl RuntimeState {
-    /// Creates a new runtime tracker with a default frame budget (16ms ≈ 60 FPS).
     pub fn new() -> Self {
         Self {
             tick_count: 0,
@@ -42,7 +45,6 @@ impl RuntimeState {
         }
     }
 
-    /// Advances the tick and updates internal timing state.
     pub fn tick(&mut self) {
         let now = Instant::now();
         let elapsed = now.duration_since(self.last_tick);
@@ -61,12 +63,15 @@ impl RuntimeState {
         }
     }
 
-    pub fn is_budget_exceeded(&self) -> bool {
-        self.exceeded_budget
-    }
-
     pub fn set_frame_budget(&mut self, millis: u64) {
         self.frame_budget = Duration::from_millis(millis);
+    }
+
+    pub fn set_tick_listener<F>(&mut self, callback: F)
+    where
+        F: FnMut(u64, Duration) + Send + Sync + 'static,
+    {
+        self.on_tick = Some(Box::new(callback));
     }
 
     pub fn time_since_last_tick(&self) -> Duration {
@@ -85,11 +90,8 @@ impl RuntimeState {
         self.avg_tick_duration
     }
 
-    pub fn set_tick_listener<F>(&mut self, callback: F)
-    where
-        F: FnMut(u64, Duration) + Send + Sync + 'static,
-    {
-        self.on_tick = Some(Box::new(callback));
+    pub fn is_budget_exceeded(&self) -> bool {
+        self.exceeded_budget
     }
 
     pub fn has_tick_listener(&self) -> bool {
@@ -97,56 +99,39 @@ impl RuntimeState {
     }
 }
 
-//
-// ─── Engine Startup ───────────────────────────────────────────────────────────
-//
-
-/// 🚀 Starts the Aetherion engine runtime loop.
-pub fn start() {
+/// 🚀 Starts the Aetherion engine runtime loop with a given delivery backend.
+pub fn start<D: ChunkDelivery + Send + 'static>(delivery: D) {
     log_component!("RuntimeState", "Tracks tick progression and frame timing");
     log_info("runtime", "Starting Aetherion engine...");
 
-    // 🧭 Engine configuration
     let config = EngineConfig::default();
     let mut state = RuntimeState::new();
-    state.set_frame_budget(u64::from((1000 / config.tick_rate).max(1)));
+    let interval_ms = u64::from((1000 / config.tick_rate).max(1));
+    state.set_frame_budget(interval_ms);
 
-    // 🧱 Runtime components
-    let mut conductor = Conductor::new(GodotSync::init());
+    let streamer = ChunkStreamer::new(delivery, config.interval_ms);
+    let mut conductor = Conductor::new(streamer);
     let mut chunk = MapDataChunk::default();
 
-    // 🎬 Initial command queue
     conductor.enqueue(ProcCommand::GenerateTerrain);
     conductor.enqueue(ProcCommand::EmitSignal("Engine started".into()));
     conductor.enqueue(ProcCommand::WaitTicks(10));
     conductor.enqueue(ProcCommand::EmitSignal("Midway checkpoint".into()));
 
-    // 🧪 Tick diagnostics
     state.set_tick_listener(|tick, elapsed| {
         log_debug("tick", &format!("Tick {} took {:?}", tick, elapsed));
     });
 
-    // 🔁 Main tick loop
-    loop {
+    while state.ticks() < 20 {
         if state.time_since_last_tick() >= state.budget() {
             state.tick();
             conductor.tick(state.ticks(), &mut chunk);
-
-            if state.ticks() >= 20 {
-                log_info("runtime", "Engine shutdown requested.");
-                break;
-            }
         }
-
-        sleep(Duration::from_millis(1)); // Prevent CPU thrashing
+        sleep(Duration::from_millis(1));
     }
 
     log_info("runtime", "Aetherion engine stopped.");
 }
-
-//
-// ─── Stress Tests ─────────────────────────────────────────────────────────────
-//
 
 #[cfg(test)]
 mod stress_tests {
@@ -171,21 +156,20 @@ mod stress_tests {
     }
 
     #[test]
-	fn stress_listener_callback() {
-		let mut state = RuntimeState::new();
-		let called = std::sync::Arc::new(std::sync::Mutex::new(false));
-		let called_clone = called.clone();
+    fn stress_listener_callback() {
+        let mut state = RuntimeState::new();
+        let called = std::sync::Arc::new(std::sync::Mutex::new(false));
+        let called_clone = called.clone();
 
-		state.set_tick_listener(move |tick, _| {
-			if tick == 1 {
-				*called_clone.lock().unwrap() = true;
-			}
-		});
+        state.set_tick_listener(move |tick, _| {
+            if tick == 1 {
+                *called_clone.lock().unwrap() = true;
+            }
+        });
 
-		state.tick();
-		assert!(*called.lock().unwrap());
-	}
-
+        state.tick();
+        assert!(*called.lock().unwrap());
+    }
 
     #[test]
     fn stress_average_smoothing() {
@@ -204,5 +188,3 @@ mod stress_tests {
         assert!(state.time_since_last_tick() >= Duration::from_millis(20));
     }
 }
-
-// the end

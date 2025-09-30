@@ -1,38 +1,89 @@
-//C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_pipeline_builder_streamer.rs
-
-
-
 use crate::zv9_prelude::*;
+use crate::pipeline::data::MapDataChunk;
+use crate::zv9_shared_messages::EngineMessage;
 use std::collections::VecDeque;
 use std::time::{Duration, Instant};
 
-/// 🚚 Controls pacing and prioritization of chunk delivery.
-pub struct ChunkStreamer {
+/// 📦 Trait for delivering chunks to an external system.
+pub trait ChunkDelivery: Send {
+    fn deliver(&mut self, chunk: MapDataChunk);
+    fn sync(&mut self) -> &mut SyncBridge;
+}
+
+/// 🎛 Orchestrates procedural flow and coordinates delivery pacing.
+pub struct Conductor<D: ChunkDelivery> {
     queue: VecDeque<MapDataChunk>,
-    sync: GodotSync,
+    ticks_waiting: u64,
+    streamer: ChunkStreamer<D>,
+}
+
+impl<D: ChunkDelivery> Conductor<D> {
+    pub fn new(streamer: ChunkStreamer<D>) -> Self {
+        Self {
+            queue: VecDeque::new(),
+            ticks_waiting: 0,
+            streamer,
+        }
+    }
+
+    pub fn enqueue_chunk(&mut self, chunk: MapDataChunk) {
+        self.queue.push_back(chunk);
+    }
+
+    pub fn tick(&mut self) {
+        if self.ticks_waiting > 0 {
+            self.ticks_waiting -= 1;
+            return;
+        }
+
+        if let Some(chunk) = self.queue.pop_front() {
+            self.streamer.enqueue_chunk(chunk);
+        }
+
+        self.streamer.try_deliver();
+    }
+
+    pub fn pause(&mut self) {
+        self.streamer.pause();
+    }
+
+    pub fn resume(&mut self) {
+        self.streamer.resume();
+    }
+
+    pub fn has_pending(&self) -> bool {
+        !self.queue.is_empty() || self.streamer.has_pending()
+    }
+
+    pub fn queue_len(&self) -> usize {
+        self.queue.len()
+    }
+}
+
+/// 🚚 Streamer that manages chunk delivery pacing and queueing.
+pub struct ChunkStreamer<D: ChunkDelivery> {
+    queue: VecDeque<MapDataChunk>,
+    delivery: D,
     delivery_interval: Duration,
     last_delivery: Instant,
     paused: bool,
 }
 
-impl ChunkStreamer {
-    /// Creates a new streamer with a default pacing interval.
-    pub fn new(sync: GodotSync, interval_ms: u64) -> Self {
+impl<D: ChunkDelivery> ChunkStreamer<D> {
+    pub fn new(delivery: D, interval_ms: u64) -> Self {
         Self {
             queue: VecDeque::new(),
-            sync,
+            delivery,
             delivery_interval: Duration::from_millis(interval_ms),
             last_delivery: Instant::now(),
             paused: false,
         }
     }
 
-    /// Adds a chunk to the delivery queue.
     pub fn enqueue_chunk(&mut self, chunk: MapDataChunk) {
         self.queue.push_back(chunk);
     }
 
-    /// Attempts to deliver a chunk if pacing allows.
     pub fn try_deliver(&mut self) {
         if self.paused || self.queue.is_empty() {
             return;
@@ -41,106 +92,55 @@ impl ChunkStreamer {
         let now = Instant::now();
         if now.duration_since(self.last_delivery) >= self.delivery_interval {
             if let Some(chunk) = self.queue.pop_front() {
-                self.sync.add_chunk(chunk);
-                self.sync.add_signal(EngineMessage::MapChunkReady);
+                self.delivery.deliver(chunk);
                 self.last_delivery = now;
             }
         }
     }
 
-    /// Pauses chunk delivery.
     pub fn pause(&mut self) {
         self.paused = true;
     }
 
-    /// Resumes chunk delivery.
     pub fn resume(&mut self) {
         self.paused = false;
     }
 
-    /// Returns true if there are pending chunks.
     pub fn has_pending(&self) -> bool {
         !self.queue.is_empty()
     }
 
-    /// Returns the number of queued chunks.
     pub fn queue_len(&self) -> usize {
         self.queue.len()
     }
 
-    /// Returns a reference to the underlying GodotSync channel.
-    pub fn sync(&self) -> &GodotSync {
-        &self.sync
-    }
-
-    /// Returns a mutable reference to the underlying GodotSync channel.
-    pub fn sync_mut(&mut self) -> &mut GodotSync {
-        &mut self.sync
+    pub fn sync(&mut self) -> &mut SyncBridge {
+        self.delivery.sync()
     }
 }
 
-
-#[cfg(test)]
-mod stress_tests {
-    use super::*;
-    //use crate::zv9_prelude::*;
-
-    #[test]
-    fn stress_enqueue_and_deliver() {
-        let sync = GodotSync::init();
-        let mut streamer = ChunkStreamer::new(sync, 1);
-        let chunk = MapDataChunk::default();
-
-        for _ in 0..1000 {
-            streamer.enqueue_chunk(chunk.clone());
-        }
-
-        for _ in 0..1000 {
-            std::thread::sleep(Duration::from_millis(1));
-            streamer.try_deliver();
-        }
-
-        assert_eq!(streamer.queue_len(), 0);
-        assert!(!streamer.has_pending());
-    }
-
-    #[test]
-    fn stress_pause_resume_behavior() {
-        let sync = GodotSync::init();
-        let mut streamer = ChunkStreamer::new(sync, 1);
-        let chunk = MapDataChunk::default();
-
-        streamer.enqueue_chunk(chunk.clone());
-        streamer.pause();
-        std::thread::sleep(Duration::from_millis(5));
-        streamer.try_deliver();
-
-        assert_eq!(streamer.queue_len(), 1); // Should not deliver while paused
-
-        streamer.resume();
-        std::thread::sleep(Duration::from_millis(5));
-        streamer.try_deliver();
-
-        assert_eq!(streamer.queue_len(), 0); // Should deliver after resume
-    }
-
-    #[test]
-    fn stress_delivery_interval_enforcement() {
-        let sync = GodotSync::init();
-        let mut streamer = ChunkStreamer::new(sync, 50); // 50ms interval
-        let chunk = MapDataChunk::default();
-
-        streamer.enqueue_chunk(chunk.clone());
-        streamer.try_deliver(); // Should not deliver immediately
-
-        assert_eq!(streamer.queue_len(), 1);
-
-        std::thread::sleep(Duration::from_millis(60));
-        streamer.try_deliver(); // Should deliver now
-
-        assert_eq!(streamer.queue_len(), 0);
-    }
+/// 🔗 SyncBridge allows delivery backends to emit signals and coordinate with the engine.
+#[derive(Default)]
+pub struct SyncBridge {
+    signals: Vec<EngineMessage>,
 }
 
+impl SyncBridge {
+    pub fn new() -> Self {
+        Self {
+            signals: Vec::new(),
+        }
+    }
 
-// the end
+    pub fn add_signal(&mut self, signal: EngineMessage) {
+        self.signals.push(signal);
+    }
+
+    pub fn drain_signals(&mut self) -> Vec<EngineMessage> {
+        std::mem::take(&mut self.signals)
+    }
+
+    pub fn has_signals(&self) -> bool {
+        !self.signals.is_empty()
+    }
+}

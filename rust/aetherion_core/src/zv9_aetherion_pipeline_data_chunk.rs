@@ -1,10 +1,7 @@
-//C://ZV9/zv9.aetherion/rust/src/zv9_aetherion_pipeline_data_chunk.rs
-
-
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
-use godot::prelude::*;
 use crate::zv9_prelude::*;
+use crate::pipeline::data::{SerializableVector2i, TileInfo};
 
 
 /// A chunk of tile data used in procedural generation.
@@ -57,27 +54,8 @@ impl MapDataChunk {
         self.tiles.get(pos)
     }
 
-    /// Converts the chunk into a Godot Dictionary for signal dispatch.
-    pub fn to_dictionary(&self) -> Dictionary {
-		let mut dict = Dictionary::new();
-		let mut tile_data = Dictionary::new();
-
-		for (pos, info) in &self.tiles {
-			let _ = tile_data.insert(pos.to_vector2i(), info.to_dictionary());
-		}
-
-		let _ = dict.insert("tile_count", self.len() as i32);
-		let _ = dict.insert("tiles", tile_data);
-
-		dict
-	}
-	/// Places a tile at the given (x, y) position using default metadata.
-	pub fn place_tile(&mut self, _x: u32, _y: u32, _info: TileInfo) {
-    // no-op for benchmarking
-	}
-
-
-
+    /// Places a tile at the given (x, y) position using default metadata.
+    pub fn place_tile(&mut self, _x: u32, _y: u32, _info: TileInfo) {
+        // no-op for benchmarking
+    }
 }
-
-// the end

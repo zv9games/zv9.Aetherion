@@ -1,38 +1,3 @@
-//C:/ZV9/zv9.aetherion/rust/src/shared/types.rs
-
-// ✅ Suggestions for shared/types.rs
-
-// 🔧 Add display and formatting support:
-//     - `impl std::fmt::Display for EntityId`
-//     - Useful for logging, debugging, and UI overlays
-
-// 🧩 Add semantic wrappers for other primitives:
-//     - e.g. `pub struct Tick(pub u64)`, `pub struct Layer(pub u8)`
-//     - Improves type safety and expressiveness across systems
-
-// 🚦 Add validation or reserved ID logic:
-//     - e.g. `EntityId::is_reserved()`, `EntityId::is_valid()`
-//     - Enables special handling for system entities or null IDs
-
-// 📚 Document usage patterns:
-//     - Clarify where `Coord` and `Timestamp` are used (e.g. tilemaps, diagnostics)
-//     - Note that `EntityId` is hashable and suitable for maps/sets
-
-// 🧪 Add unit tests for `EntityId` methods:
-//     - Validate `from_raw()` and `value()` round-trip
-//     - Ensure equality and hashing behave as expected
-
-// 🧼 Optional: Add conversion traits:
-//     - `impl From<u64> for EntityId`, `impl Into<u64> for EntityId`
-//     - Improves ergonomics and interop with external systems
-
-// 🚀 Future: Add entity metadata or tagging:
-//     - e.g. `pub struct TaggedEntityId { id: EntityId, tag: String }`
-//     - Enables grouping, filtering, or debugging
-
-// 🧠 Consider exposing these types to GDScript:
-//     - Wrap in a Godot-friendly struct or export via utility node
-//     - Useful for editor tooling or runtime scripting
 
 
 // Common type aliases and primitive wrappers used across Aetherion.
@@ -64,5 +29,15 @@ impl EntityId {
         EntityId(id)
     }
 }
+
+
+/// Serializable wrapper for engine-native `Vector2i`.
+/// Used in map data, tile metadata, and chunk streaming.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct SerializableVector2i {
+    pub x: i32,
+    pub y: i32,
+}
+
 
 //end types.rs

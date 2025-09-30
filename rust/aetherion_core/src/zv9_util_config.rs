@@ -1,5 +1,3 @@
-//C:/ZV9/zv9.aetherion/rust/src/util/config.rs
-
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
 use serde::{Deserialize, Serialize};
@@ -16,6 +14,9 @@ pub struct EngineConfig {
 
     /// Enables verbose logging and diagnostics.
     pub enable_logging: bool,
+
+    /// Delivery pacing interval in milliseconds.
+    pub interval_ms: u64,
 }
 
 impl Default for EngineConfig {
@@ -24,6 +25,7 @@ impl Default for EngineConfig {
             tick_rate: 60,
             max_threads: 4,
             enable_logging: true,
+            interval_ms: 16, // ~60 FPS pacing
         }
     }
 }
@@ -50,6 +52,7 @@ mod stress_tests {
         assert_eq!(config.tick_rate, 60);
         assert_eq!(config.max_threads, 4);
         assert!(config.enable_logging);
+        assert_eq!(config.interval_ms, 16);
     }
 
     #[test]
@@ -74,14 +77,12 @@ mod stress_tests {
             tick_rate: 30,
             max_threads: 16,
             enable_logging: false,
+            interval_ms: 33,
         };
 
         assert_eq!(config.tick_rate, 30);
         assert_eq!(config.max_threads, 16);
         assert!(!config.enable_logging);
+        assert_eq!(config.interval_ms, 33);
     }
 }
-
-
-
-//end config.rs

@@ -1,6 +1,14 @@
 //C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_structure_placements.rs
 
 use crate::zv9_prelude::*;
+use crate::pipeline::data::MapGrid;
+use crate::util::position::Position;
+use crate::pipeline::data::TileType;
+use crate::trailkeeper::collector::Trailkeeper;
+use crate::trailkeeper::entry::LogEntry;
+use crate::trailkeeper::entry::EventType;
+use crate::trailkeeper::entry::LogStatus;
+
 
 /// 🏗 Dummy structure placement function for testing and integration.
 pub fn place_structure_stub(grid: &mut MapGrid, pos: Position) {

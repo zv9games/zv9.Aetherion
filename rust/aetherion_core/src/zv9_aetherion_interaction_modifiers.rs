@@ -2,6 +2,10 @@
 
 use crate::zv9_prelude::*;
 use rand::Rng;
+use crate::pipeline::data::MapDataChunk;
+use crate::pipeline::data::SerializableVector2i;
+use crate::pipeline::data::TileInfo;
+
 
 /// 🧠 Trait for applying mutations to a tile chunk.
 pub trait TileModifier {

@@ -1,7 +1,8 @@
-//C:/ZV9/zv9/aetherion/rust/src/zv9_util_random.rs 
+// C:/ZV9/zv9/aetherion/rust/src/zv9_util_random.rs
 
 use rand::{Rng, SeedableRng};
 use rand::rngs::StdRng;
+use rand::distributions::uniform::SampleUniform;
 
 /// 🎲 Seeded random number generator wrapper for reproducible procedural logic.
 pub struct Randomizer {
@@ -17,7 +18,10 @@ impl Randomizer {
     }
 
     /// Generates a value within a range.
-    pub fn gen_range<T: rand::distributions::uniform::SampleUniform>(&mut self, min: T, max: T) -> T {
+    pub fn gen_range<T>(&mut self, min: T, max: T) -> T
+    where
+        T: SampleUniform + PartialOrd,
+    {
         self.rng.gen_range(min..max)
     }
 
@@ -46,5 +50,3 @@ pub fn random_sign(rng: &mut impl Rng) -> i32 {
 pub fn random_direction_2d(rng: &mut impl Rng) -> (i32, i32) {
     (random_sign(rng), random_sign(rng))
 }
-
-// the end

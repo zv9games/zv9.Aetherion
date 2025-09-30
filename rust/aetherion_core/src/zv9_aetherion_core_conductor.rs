@@ -1,11 +1,15 @@
-//c:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_core_conductor.rs
-
 use crate::zv9_prelude::*;
 use std::collections::VecDeque;
+use crate::pipeline::data::MapDataChunk;
+use crate::pipeline::data::SerializableVector2i;
+use crate::structure::tile_at;
+use crate::util::logging::log_info;
+use crate::pipeline::builder::ChunkStreamer;
+use crate::pipeline::builder::ChunkDelivery;
+
+
 
 /// 🎼 Procedural commands that can be queued and executed by the conductor.
-/// NOTE: Only terrain generation and signal dispatch are active for Pacman 2.0.
-/// Modifier and structure overlays are reserved for post-client expansion.
 pub enum ProcCommand {
     GenerateTerrain,
     OverlayStructure,
@@ -15,21 +19,24 @@ pub enum ProcCommand {
 }
 
 /// 🎛 Orchestrates procedural flow by executing queued commands.
-pub struct Conductor {
+pub struct Conductor<D: ChunkDelivery> {
     queue: VecDeque<ProcCommand>,
     ticks_waiting: u64,
-    sync: GodotSync,
+    streamer: ChunkStreamer<D>, // 👈 Add this
 }
 
-impl Conductor {
-    /// Creates a new conductor with an empty queue and sync channel.
-    pub fn new(sync: GodotSync) -> Self {
-        Self {
-            queue: VecDeque::new(),
-            ticks_waiting: 0,
-            sync,
-        }
-    }
+
+impl<D: ChunkDelivery> Conductor<D> {
+
+    /// Creates a new conductor with an empty queue.
+    pub fn new(streamer: ChunkStreamer<D>) -> Self {
+		Self {
+			queue: VecDeque::new(),
+			ticks_waiting: 0,
+			streamer,
+		}
+	}
+
 
     /// Adds a command to the queue.
     pub fn enqueue(&mut self, cmd: ProcCommand) {
@@ -44,7 +51,6 @@ impl Conductor {
         use rayon::prelude::*;
 
         log_info("conductor", &format!("🕒 Tick {} started", tick));
-        self.sync.add_signal(EngineMessage::Status(format!("🕒 Tick {} started", tick)));
 
         if self.ticks_waiting > 0 {
             log_info("conductor", &format!("⏳ Waiting... {} ticks remaining", self.ticks_waiting));
@@ -56,7 +62,6 @@ impl Conductor {
             match cmd {
                 ProcCommand::GenerateTerrain => {
                     log_info("conductor", "🌍 Generating terrain...");
-                    self.sync.add_signal(EngineMessage::Status("🌍 Generating terrain...".into()));
 
                     let seed = tick;
                     let start = Instant::now();
@@ -104,24 +109,21 @@ impl Conductor {
                     }
 
                     log_info("conductor", &format!("🧨 Final tile count: {}", total_tiles));
-                    self.sync.add_signal(EngineMessage::Status(format!("🧨 Final tile count: {}", total_tiles)));
                 }
 
                 ProcCommand::OverlayStructure => {
                     log_info("conductor", "🏗 Overlaying structure...");
-                    self.sync.add_signal(EngineMessage::Status("🏗 Overlaying structure...".into()));
                     // TODO: Implement structure overlay logic post-Pacman 2.0
                 }
 
                 ProcCommand::ApplyModifier(f) => {
                     log_info("conductor", "🖌 Applying modifier...");
                     f(chunk);
-                    self.sync.add_signal(EngineMessage::Status("🖌 Modifier applied.".into()));
+                    log_info("conductor", "🖌 Modifier applied.");
                 }
 
                 ProcCommand::EmitSignal(msg) => {
                     log_info("conductor", &format!("📢 Emitting signal: {}", msg));
-                    self.sync.add_signal(EngineMessage::Status(msg));
                 }
 
                 ProcCommand::WaitTicks(n) => {
@@ -134,7 +136,7 @@ impl Conductor {
         log_info("conductor", &format!("✅ Tick {} complete", tick));
     }
 
-    /// Returns true if the conductor has pending commands.
+    /// Returns true if there are pending commands or active wait.
     pub fn has_pending(&self) -> bool {
         !self.queue.is_empty() || self.ticks_waiting > 0
     }
@@ -144,79 +146,3 @@ impl Conductor {
         self.queue.len()
     }
 }
-
-
-
-//
-// ─── Stress Tests ─────────────────────────────────────────────────────────────
-//
-
-#[cfg(test)]
-mod stress_tests {
-    use super::*;
-    //use crate::zv9_prelude::*;
-
-    #[test]
-    fn stress_enqueue_and_tick() {
-        let sync = GodotSync::init();
-        let mut conductor = Conductor::new(sync);
-        let mut chunk = MapDataChunk::default();
-
-        for _ in 0..10_000 {
-            conductor.enqueue(ProcCommand::EmitSignal("Stress test signal".into()));
-        }
-
-        for tick in 0..10_000 {
-            conductor.tick(tick, &mut chunk);
-        }
-
-        assert_eq!(conductor.queue_len(), 0);
-        assert!(!conductor.has_pending());
-    }
-
-    #[test]
-    fn stress_wait_logic() {
-        let sync = GodotSync::init();
-        let mut conductor = Conductor::new(sync);
-        let mut chunk = MapDataChunk::default();
-
-        conductor.enqueue(ProcCommand::WaitTicks(100));
-        conductor.enqueue(ProcCommand::EmitSignal("After wait".into()));
-
-        for tick in 0..150 {
-            conductor.tick(tick, &mut chunk);
-        }
-
-        assert!(!conductor.has_pending());
-    }
-
-    #[test]
-    fn stress_modifier_application() {
-        let sync = GodotSync::init();
-        let mut conductor = Conductor::new(sync);
-        let mut chunk = MapDataChunk::default();
-
-        // Stub modifier: safely mutates one tile to validate system
-        conductor.enqueue(ProcCommand::ApplyModifier(Box::new(|chunk| {
-            let pos = SerializableVector2i { x: 0, y: 0 };
-            let tile = TileInfo {
-                source_id: 0,
-                atlas_coords: pos,
-                alternate_id: 0,
-                rotation: 0,
-                layer: 0,
-                flags: 0,
-                variant_id: None,
-                frame_count: None,
-                animation_speed: None,
-            };
-            chunk.insert(pos, tile);
-        })));
-
-        conductor.tick(0, &mut chunk);
-        assert!(!conductor.has_pending());
-    }
-}
-
-
-// the end

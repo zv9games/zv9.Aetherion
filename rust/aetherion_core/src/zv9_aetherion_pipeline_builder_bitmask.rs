@@ -4,7 +4,7 @@ use image::open;
 use rayon::prelude::*;
 use crate::zv9_aetherion_pipeline_data_chunk::MapDataChunk;
 use crate::zv9_aetherion_pipeline_data_tile::TileInfo;
-use crate::zv9_aetherion_pipeline_data_vector::SerializableVector2i;
+use crate::shared::SerializableVector2i;
 
 /// 🖼️ Converts a PNG image into a scaled tilemap chunk.
 /// White pixels become blue tiles, black pixels become black tiles.

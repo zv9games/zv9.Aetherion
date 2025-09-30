@@ -1,42 +1,7 @@
-/// ✅ Suggestions for util/position.rs
-
-// 🔧 Add directional utilities:
-//     - `fn offset(&self, dx: i32, dy: i32) -> Position`
-//     - `fn to_tuple(&self) -> (i32, i32)`
-//     - Improves ergonomics for grid manipulation and interop
-
-// 🧩 Add integration with Godot types:
-//     - `fn to_vector2i(&self) -> Vector2i`
-//     - Enables seamless use in Godot tilemaps or UI systems
-
-// 🚦 Improve precision handling:
-//     - Consider exposing `distance_squared()` for cheaper comparisons
-//     - Useful in pathfinding and proximity checks
-
-// 📚 Document coordinate semantics:
-//     - Clarify whether origin is top-left, center, or bottom-left
-//     - Note how `step()` relates to `Direction` and movement logic
-
-// 🧪 Add unit tests for `step`, `min`, `max`, and `distance_to`:
-//     - Validate correctness across edge cases and negative coordinates
-
-// 🧼 Optional: Add arithmetic traits:
-//     - `impl Add for Position`, `impl Sub for Position`
-//     - Enables vector-style math and spatial reasoning
-
-// 🚀 Future: Add region or bounds helpers:
-//     - e.g. `fn within(&self, bounds: GridBounds) -> bool`
-//     - Useful for chunking, map generation, and collision checks
-
-// 🧠 Consider exposing position to GDScript:
-//     - Wrap in a Godot-friendly struct or export via utility node
-//     - Useful for runtime control, debugging, or editor integration
-
-#[allow(unused_imports)]
 use crate::zv9_prelude::*;
 use std::ops::AddAssign;
-#[allow(unused_imports)]
-use godot::prelude::*;
+use crate::util::direction::Direction;
+use crate::util::velocity::Velocity;
 
 /// A 2D grid position used for tile placement, movement, and spatial queries.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -82,11 +47,6 @@ impl Position {
         (dx * dx + dy * dy).sqrt()
     }
 
-    /// Converts this position to a Godot-native `Vector2i`.
-    pub fn to_vec2i(&self) -> Vector2i {
-        Vector2i::new(self.x, self.y)
-    }
-
     /// Converts this position to a serializable vector.
     pub fn to_serializable(&self) -> SerializableVector2i {
         SerializableVector2i { x: self.x, y: self.y }
@@ -103,11 +63,5 @@ impl AddAssign<Velocity> for Position {
 impl From<Position> for SerializableVector2i {
     fn from(pos: Position) -> Self {
         SerializableVector2i { x: pos.x, y: pos.y }
-    }
-}
-
-impl From<Position> for Vector2i {
-    fn from(pos: Position) -> Self {
-        Vector2i::new(pos.x, pos.y)
     }
 }

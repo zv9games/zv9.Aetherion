@@ -1,42 +1,3 @@
-//C:/ZV9/zv9.aetherion/rust/src/shared/grid_bounds.rs
-
-/// ✅ Suggestions for shared/grid_bounds.rs
-
-// 🔧 Add utility methods for spatial queries:
-//     - `fn corners(&self) -> [SerializableVector2i; 4]`
-//     - `fn center(&self) -> SerializableVector2i`
-//     - Useful for placement, visualization, and chunk alignment
-
-// 🧩 Add support for resizing or shifting bounds:
-//     - `fn expand(&mut self, dx: i32, dy: i32)`
-//     - `fn shift_origin(&mut self, offset: SerializableVector2i)`
-//     - Enables dynamic map growth or viewport movement
-
-// 🚦 Add validation and clamping:
-//     - Ensure `width` and `height` are non-negative
-//     - Prevent invalid bounds from propagating into grid logic
-
-// 📚 Document coordinate system assumptions:
-//     - Clarify whether origin is top-left, center, or bottom-left
-//     - Note how bounds interact with chunk or tile indexing
-
-// 🧪 Add unit tests for `contains()` logic:
-//     - Validate edge cases, negative positions, and origin-relative checks
-
-// 🧼 Optional: Add display or debug formatting:
-//     - `impl std::fmt::Display for GridBounds`
-//     - Useful for logging, diagnostics, or editor overlays
-
-// 🚀 Future: Add intersection and containment checks:
-//     - `fn intersects(&self, other: &GridBounds) -> bool`
-//     - `fn contains_bounds(&self, other: &GridBounds) -> bool`
-//     - Enables spatial partitioning or region queries
-
-// 🧠 Consider exposing bounds as a Godot-friendly type:
-//     - e.g. `fn to_rect2i() -> Rect2i`
-//     - Useful for editor visualization or UI integration
-
-
 use crate::zv9_prelude::*;
 use std::fmt;
 
@@ -101,22 +62,34 @@ impl GridBounds {
         self.origin.y += offset.y;
     }
 
-    /// Converts bounds to a Godot-native Rect2i.
-    pub fn to_rect2i(&self) -> Rect2i {
-        Rect2i {
-            position: self.origin.into(),
-            size: Vector2i::new(self.width, self.height),
-        }
-    }
-
     /// Returns true if this bounds intersects another.
     pub fn intersects(&self, other: &GridBounds) -> bool {
-        self.to_rect2i().intersects(other.to_rect2i())
+        let ax1 = self.origin.x;
+        let ay1 = self.origin.y;
+        let ax2 = ax1 + self.width;
+        let ay2 = ay1 + self.height;
+
+        let bx1 = other.origin.x;
+        let by1 = other.origin.y;
+        let bx2 = bx1 + other.width;
+        let by2 = by1 + other.height;
+
+        ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1
     }
 
     /// Returns true if this bounds fully contains another.
     pub fn contains_bounds(&self, other: &GridBounds) -> bool {
-        self.to_rect2i().encloses(other.to_rect2i())
+        let ax1 = self.origin.x;
+        let ay1 = self.origin.y;
+        let ax2 = ax1 + self.width;
+        let ay2 = ay1 + self.height;
+
+        let bx1 = other.origin.x;
+        let by1 = other.origin.y;
+        let bx2 = bx1 + other.width;
+        let by2 = by1 + other.height;
+
+        bx1 >= ax1 && bx2 <= ax2 && by1 >= ay1 && by2 <= ay2
     }
 
     /// Returns an iterator over all positions within the bounds.
@@ -144,7 +117,3 @@ impl fmt::Display for GridBounds {
         )
     }
 }
-
-
-
-//end grid_bounds.rs
