@@ -1,16 +1,18 @@
-// c:/ZV9/zv9.aetherion/rust/src/zv9_bin_aetherion_binary_func.rs
 
 use std::process::Command;
 use std::io::{self, Write};
 
-use crate::trailkeeper::{
-    collector::Trailkeeper,
-    config::check_config_change,
-    scan::scan_git_diff,
-    entry::{LogEntry, EventType},
+use aetherion_core::trailkeeper::{
+    Trailkeeper,
+    check_config_change,
+    scan_git_diff,
+    LogEntry,
+    EventType,
 };
 
-use crate::core::conductor::{Conductor, ProcCommand};
+
+
+use aetherion_core::core::{Conductor, ProcCommand};
 
 /// 🚀 Runs the full Rust test suite via Cargo
 pub fn run_cargo_tests() {

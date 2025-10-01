@@ -1,5 +1,6 @@
-use crate::pipeline::data::{MapDataChunk, TileInfo};
-use crate::pipeline::builder::convert_world_png_to_chunk;
+use aetherion_core::pipeline::data::{MapDataChunk, TileInfo};
+use aetherion_core::pipeline::builder::convert_world_png_to_chunk;
+
 
 
 use std::collections::HashMap;

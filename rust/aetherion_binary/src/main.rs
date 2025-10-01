@@ -14,7 +14,7 @@ use aetherion_core::zv9_util_logging::{init_logging, log_info};
 use zv9_util_binary_menu::{build_menu, print_menu};
 use zv9_util_binary_func::*;
 
-use aetherion_engine::log_component;
+use aetherion_core::log_component;
 
 fn main() {
     // 🧠 Startup

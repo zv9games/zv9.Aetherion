@@ -9,4 +9,7 @@ aetherion_engine = { path = "../aetherion_engine" }  # ← Add this line
 crossterm = "0.27"
 log = "0.4"
 env_logger = "0.10"
+walkdir = "2.5.0"
+regex = "1.11.3"
+chrono = "0.4.42"
 

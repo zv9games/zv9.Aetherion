@@ -1,4 +1,4 @@
-//c:/ZV9/zv9.aetherion/rust/src/zv9_trailkeeper_macros.rs
+
 /// 🧠 Macro for logging structured events to Trailkeeper.
 #[macro_export]
 macro_rules! log_event {
@@ -48,6 +48,7 @@ macro_rules! log_component {
 #[cfg(test)]
 mod tests {
     use crate::zv9_prelude::*;
+	use crate::trailkeeper::EventType;
 
     #[test]
     fn dummy_macro_usage() {

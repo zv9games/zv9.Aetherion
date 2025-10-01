@@ -1,10 +1,9 @@
-//c:/ZV9/zv9.aetherion/rust/src/zv9_bin_aetherion_binary_func2.rs
 
 
 use walkdir::WalkDir;
 #[allow(unused_imports)] //hidden post compiler
-use crate::trailkeeper::entry::LogEntry;
-use crate::trailkeeper::entry::EventType;
+use aetherion_core::trailkeeper::{LogEntry, EventType};
+use aetherion_core::log_event;
 
 
 /// 📦 Prints a tree of Rust modules under /src

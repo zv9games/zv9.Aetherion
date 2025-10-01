@@ -1,22 +1,10 @@
-use crate::core::runtime::start;
-use crate::zv9_aetherion_pipeline_builder_dummy_delivery::DummyDelivery;
+use aetherion_core::core::start;
+use aetherion_core::zv9_aetherion_pipeline_builder_dummy_delivery::DummyDelivery;
 
-use crate::cli::func::{
-    run_cargo_tests,
-    run_trailkeeper_scan,
-    view_trailkeeper_logs,
-};
-
-use crate::cli::func2::{
-    print_godot_api_surface,
-    print_module_tree,
-};
-
-use crate::cli::func3::{
-    run_bitmask_conversion,
-    run_max_grid_benchmark,
-    test_generation_and_placement_cli,
-};
+use crate::zv9_util_binary_func::{run_cargo_tests, run_trailkeeper_scan, view_trailkeeper_logs};
+use crate::zv9_util_binary_func2::{print_godot_api_surface, print_module_tree};
+use crate::zv9_util_binary_func3::{run_bitmask_conversion, run_max_grid_benchmark, test_generation_and_placement_cli};
+use aetherion_engine::inspect_pending_queue;
 
 /// 🧩 Menu item definition
 pub struct MenuItem {
@@ -26,19 +14,55 @@ pub struct MenuItem {
 }
 
 /// 🧭 Builds the interactive dev console menu
+/// 🧭 Builds the interactive dev console menu
 pub fn build_menu() -> Vec<MenuItem> {
     vec![
         // ✅ Stable Tools
-        MenuItem { key: '0', label: "✅ Run: Cargo Test Suite", action: Box::new(run_cargo_tests) },
-        MenuItem { key: '1', label: "✅ Inspect: Godot-Callable API Surface", action: Box::new(print_godot_api_surface) },
-        MenuItem { key: '2', label: "✅ Inspect: Pending Queue", action: Box::new(inspect_pending_queue) },
-        MenuItem { key: '3', label: "⚠️ Run: Trailkeeper Scan", action: Box::new(run_trailkeeper_scan) },
-        MenuItem { key: '4', label: "⚠️ View: Trailkeeper Logs", action: Box::new(view_trailkeeper_logs) },
-        MenuItem { key: '5', label: "⚠️ Start: Aetherion Runtime [Rust Only]", action: Box::new(|| start(DummyDelivery::new())) },
-        MenuItem { key: '6', label: "🧪 Test: Generation & Placement [Emulated]", action: Box::new(test_generation_and_placement_cli) },
-        MenuItem { key: '7', label: "✅ Perform: Bitmask PNG Conversion", action: Box::new(run_bitmask_conversion) },
-        MenuItem { key: '8', label: "✅ Inspect: Rust Module Tree", action: Box::new(print_module_tree) },
-        MenuItem { key: '9', label: "✅ Exit", action: Box::new(|| {}) },
+        MenuItem { 
+            key: '0', 
+            label: "✅ Run: Cargo Test Suite", 
+            action: Box::new(run_cargo_tests), // zv9_util_binary_func.rs
+        },
+        MenuItem { 
+            key: '1', 
+            label: "✅ Inspect: Godot-Callable API Surface", 
+            action: Box::new(print_godot_api_surface), // zv9_util_binary_func2.rs
+        },
+        MenuItem { 
+            key: '2', 
+            label: "✅ Inspect: Rust Module Tree", 
+            action: Box::new(print_module_tree), // zv9_util_binary_func2.rs
+        },
+        MenuItem { 
+            key: '3', 
+            label: "⚠️ Run: Trailkeeper Scan", 
+            action: Box::new(run_trailkeeper_scan), // zv9_util_binary_func.rs
+        },
+        MenuItem { 
+            key: '4', 
+            label: "⚠️ Start: Aetherion Runtime [Rust Only]", 
+            action: Box::new(|| start(DummyDelivery::new())), // inline in zv9_util_binary_menu.rs
+        },
+        MenuItem { 
+            key: '5', 
+            label: "🧪 Test: Generation & Placement zv9_util_binary_func3.rs", 
+            action: Box::new(test_generation_and_placement_cli), // zv9_util_binary_func3.rs
+        },
+        MenuItem { 
+            key: '6', 
+            label: "✅ Perform: Bitmask PNG Conversion", 
+            action: Box::new(run_bitmask_conversion), // zv9_util_binary_func3.rs
+        },
+        MenuItem { 
+            key: '7', 
+            label: "🧪 Benchmark: Max Grid Placement", 
+            action: Box::new(run_max_grid_benchmark), // zv9_util_binary_func3.rs
+        },
+        MenuItem { 
+            key: '9', 
+            label: "✅ Exit", 
+            action: Box::new(|| {}), // inline
+        },
 
         // 🔮 Future Expansion / TODOs
         MenuItem { key: 'A', label: "🔮 TODO: Export Chunk Hashes for Streaming", action: Box::new(|| println!("TODO: Chunk hashing not yet implemented.")) },
@@ -52,9 +76,9 @@ pub fn build_menu() -> Vec<MenuItem> {
         MenuItem { key: 'I', label: "🔮 TODO: Inspect Chunk Merge Performance", action: Box::new(|| println!("TODO: Merge diagnostics not yet implemented.")) },
         MenuItem { key: 'J', label: "🔮 TODO: Launch Headless Batch Generator", action: Box::new(|| println!("TODO: Batch generator not yet implemented.")) },
         MenuItem { key: 'K', label: "🔮 TODO: Configure Plugin Mode for Unity", action: Box::new(|| println!("TODO: Unity plugin mode not yet implemented.")) },
-        MenuItem { key: 'L', label: "🧪 Benchmark: Max Grid Placement", action: Box::new(run_max_grid_benchmark) },
     ]
 }
+
 
 /// 🖥 Prints the menu to the console
 pub fn print_menu(menu: &[MenuItem]) {
