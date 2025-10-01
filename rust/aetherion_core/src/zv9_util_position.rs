@@ -1,7 +1,8 @@
 use crate::zv9_prelude::*;
 use std::ops::AddAssign;
-use crate::util::direction::Direction;
-use crate::util::velocity::Velocity;
+use crate::zv9_util_direction::Direction;
+use crate::zv9_util_velocity::Velocity;
+
 
 /// A 2D grid position used for tile placement, movement, and spatial queries.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

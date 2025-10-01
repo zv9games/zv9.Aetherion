@@ -2,7 +2,7 @@ use crate::zv9_prelude::*;
 use std::str::FromStr;
 use crate::structure::MapBuildOptions;
 use crate::pipeline::builder::{ChunkStreamer, ChunkDelivery, spawn_map_builder};
-use crate::generator::noise::NoiseType;
+use crate::zv9_aetherion_generator_noise::NoiseType;
 
 pub fn spawn_builder_thread(delivery: impl ChunkDelivery + Send + 'static, options: MapBuildOptions,) {
     let config = options.to_noise_config();

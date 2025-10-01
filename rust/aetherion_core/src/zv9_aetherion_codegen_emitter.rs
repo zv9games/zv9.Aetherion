@@ -1,6 +1,6 @@
 
 use crate::zv9_prelude::*;
-use crate::codegen::config::Config;
+use crate::zv9_aetherion_codegen_config::Config;
 
 
 /// Emits Rust code based on a simplified DSL input.

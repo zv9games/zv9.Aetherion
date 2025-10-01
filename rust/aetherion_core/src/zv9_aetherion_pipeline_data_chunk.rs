@@ -3,9 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::zv9_prelude::*;
 use crate::pipeline::data::{SerializableVector2i, TileInfo};
 
-
-/// A chunk of tile data used in procedural generation.
-/// Maps grid positions to tile metadata.
+/// 🧱 MapDataChunk — grid-aligned tile metadata used in procedural generation.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct MapDataChunk {
     pub tiles: HashMap<SerializableVector2i, TileInfo>,
@@ -55,6 +53,7 @@ impl MapDataChunk {
     }
 
     /// Places a tile at the given (x, y) position using default metadata.
+    /// Used for benchmarking or placeholder logic.
     pub fn place_tile(&mut self, _x: u32, _y: u32, _info: TileInfo) {
         // no-op for benchmarking
     }

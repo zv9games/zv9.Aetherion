@@ -3,9 +3,9 @@ use std::fmt;
 use std::time::{Duration, Instant};
 
 use crate::zv9_prelude::*;
-use crate::core::conductor::{Conductor, ProcCommand};
-use crate::util::config::EngineConfig;
-use crate::util::logging::{log_info, log_debug};
+use crate::zv9_aetherion_core_conductor::{Conductor, ProcCommand};
+use crate::zv9_util_config::EngineConfig; // ✅
+use crate::zv9_util_logging::{log_info, log_debug};
 use crate::pipeline::data::MapDataChunk;
 use crate::pipeline::builder::{ChunkStreamer, ChunkDelivery};
 use crate::log_component;

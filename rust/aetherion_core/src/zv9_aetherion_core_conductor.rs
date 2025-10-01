@@ -1,15 +1,11 @@
 use crate::zv9_prelude::*;
 use std::collections::VecDeque;
-use crate::pipeline::data::MapDataChunk;
-use crate::pipeline::data::SerializableVector2i;
+use crate::pipeline::data::{MapDataChunk, SerializableVector2i};
 use crate::structure::tile_at;
-use crate::util::logging::log_info;
-use crate::pipeline::builder::ChunkStreamer;
-use crate::pipeline::builder::ChunkDelivery;
+use crate::zv9_util_logging::log_info;
+use crate::pipeline::builder::{ChunkStreamer, ChunkDelivery};
 
-
-
-/// 🎼 Procedural commands that can be queued and executed by the conductor.
+/// 🎼 ProcCommand — procedural instructions queued for execution by the conductor.
 pub enum ProcCommand {
     GenerateTerrain,
     OverlayStructure,
@@ -18,35 +14,31 @@ pub enum ProcCommand {
     WaitTicks(u64),
 }
 
-/// 🎛 Orchestrates procedural flow by executing queued commands.
+/// 🎛 Conductor — orchestrates procedural flow by executing queued commands.
 pub struct Conductor<D: ChunkDelivery> {
     queue: VecDeque<ProcCommand>,
     ticks_waiting: u64,
-    streamer: ChunkStreamer<D>, // 👈 Add this
+    streamer: ChunkStreamer<D>,
 }
 
-
 impl<D: ChunkDelivery> Conductor<D> {
-
     /// Creates a new conductor with an empty queue.
     pub fn new(streamer: ChunkStreamer<D>) -> Self {
-		Self {
-			queue: VecDeque::new(),
-			ticks_waiting: 0,
-			streamer,
-		}
-	}
-
+        Self {
+            queue: VecDeque::new(),
+            ticks_waiting: 0,
+            streamer,
+        }
+    }
 
     /// Adds a command to the queue.
     pub fn enqueue(&mut self, cmd: ProcCommand) {
         self.queue.push_back(cmd);
     }
 
-    /// Processes one tick of the conductor loop.
+    /// Executes one tick of the conductor loop.
     pub fn tick(&mut self, tick: u64, chunk: &mut MapDataChunk) {
-        use std::sync::atomic::{AtomicUsize, Ordering};
-        use std::sync::Arc;
+        use std::sync::{Arc, atomic::{AtomicUsize, Ordering}};
         use std::time::{Duration, Instant};
         use rayon::prelude::*;
 
@@ -65,46 +57,45 @@ impl<D: ChunkDelivery> Conductor<D> {
 
                     let seed = tick;
                     let start = Instant::now();
-                    let limit = Duration::from_secs(30);
+                    let timeout = Duration::from_secs(30);
                     let width = 10_000;
                     let height = 100_000;
                     let chunk_size = 256;
 
-                    let chunks: Vec<(u64, u64)> = (0..height)
+                    let regions: Vec<(u64, u64)> = (0..height)
                         .step_by(chunk_size)
                         .flat_map(|y| (0..width).step_by(chunk_size).map(move |x| (x, y)))
                         .collect();
 
-                    let processed_chunks = Arc::new(AtomicUsize::new(0));
-                    let thread_chunks: Vec<MapDataChunk> = chunks
+                    let processed = Arc::new(AtomicUsize::new(0));
+                    let thread_chunks: Vec<MapDataChunk> = regions
                         .into_par_iter()
                         .map(|(x0, y0)| {
-                            let mut local_chunk = MapDataChunk::new();
+                            let mut local = MapDataChunk::new();
 
                             for y in y0..(y0 + chunk_size as u64).min(height) {
                                 for x in x0..(x0 + chunk_size as u64).min(width) {
-                                    if Instant::now() - start >= limit {
+                                    if Instant::now().duration_since(start) >= timeout {
                                         break;
                                     }
 
                                     let tile = tile_at(x, y, seed);
                                     let pos = SerializableVector2i { x: x as i32, y: y as i32 };
-                                    local_chunk.insert(pos, tile);
+                                    local.insert(pos, tile);
                                 }
                             }
 
-                            let count = processed_chunks.fetch_add(1, Ordering::Relaxed);
+                            let count = processed.fetch_add(1, Ordering::Relaxed);
                             if count % 100 == 0 {
                                 log_info("conductor", &format!("🧱 Processed {} chunks...", count));
                             }
 
-                            local_chunk
+                            local
                         })
                         .collect();
 
-                    let mut total_tiles = 0;
+                    let total_tiles: usize = thread_chunks.iter().map(|c| c.len()).sum();
                     for thread_chunk in thread_chunks {
-                        total_tiles += thread_chunk.len();
                         chunk.merge(thread_chunk);
                     }
 
@@ -124,6 +115,7 @@ impl<D: ChunkDelivery> Conductor<D> {
 
                 ProcCommand::EmitSignal(msg) => {
                     log_info("conductor", &format!("📢 Emitting signal: {}", msg));
+                    // TODO: Use streamer.sync().emit_custom(msg) if needed
                 }
 
                 ProcCommand::WaitTicks(n) => {
@@ -144,5 +136,10 @@ impl<D: ChunkDelivery> Conductor<D> {
     /// Returns the number of queued commands.
     pub fn queue_len(&self) -> usize {
         self.queue.len()
+    }
+
+    /// Provides mutable access to the underlying streamer.
+    pub fn streamer_mut(&mut self) -> &mut ChunkStreamer<D> {
+        &mut self.streamer
     }
 }

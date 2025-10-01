@@ -2,9 +2,7 @@
 
 
 use crate::zv9_prelude::*;
-use crate::trailkeeper::entry::LogEntry;
-use crate::trailkeeper::collector::Trailkeeper;
-use serde::Serialize;
+use crate::zv9_trailkeeper_entry::{LogEntry, EventType, LogStatus};use crate::zv9_trailkeeper_collector::Trailkeeper;use serde::Serialize;
 use std::fs::File;
 use std::io::Write;
 

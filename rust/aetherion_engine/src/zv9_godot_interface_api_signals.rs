@@ -4,6 +4,7 @@
 use godot::prelude::*;
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
+use aetherion_core::log_component;
 
 /// 🛰️ AetherionSignals — Godot-facing signal node for engine events.
 /// Connected in GDScript to receive updates from the Rust core.

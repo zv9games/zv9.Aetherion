@@ -4,13 +4,21 @@ use crate::zv9_shared_messages::EngineMessage;
 use std::collections::VecDeque;
 use std::time::{Duration, Instant};
 
-/// 📦 Trait for delivering chunks to an external system.
+//
+// ─── Chunk Delivery Trait ──────────────────────────────────────────────────────
+//
+
+/// 📦 ChunkDelivery — trait for delivering chunks to an external system.
 pub trait ChunkDelivery: Send {
     fn deliver(&mut self, chunk: MapDataChunk);
     fn sync(&mut self) -> &mut SyncBridge;
 }
 
-/// 🎛 Orchestrates procedural flow and coordinates delivery pacing.
+//
+// ─── Conductor ─────────────────────────────────────────────────────────────────
+//
+
+/// 🎛 Conductor — orchestrates procedural flow and coordinates delivery pacing.
 pub struct Conductor<D: ChunkDelivery> {
     queue: VecDeque<MapDataChunk>,
     ticks_waiting: u64,
@@ -18,6 +26,7 @@ pub struct Conductor<D: ChunkDelivery> {
 }
 
 impl<D: ChunkDelivery> Conductor<D> {
+    /// Creates a new conductor with a delivery streamer.
     pub fn new(streamer: ChunkStreamer<D>) -> Self {
         Self {
             queue: VecDeque::new(),
@@ -26,10 +35,12 @@ impl<D: ChunkDelivery> Conductor<D> {
         }
     }
 
+    /// Queues a chunk for future delivery.
     pub fn enqueue_chunk(&mut self, chunk: MapDataChunk) {
         self.queue.push_back(chunk);
     }
 
+    /// Advances the conductor by one tick.
     pub fn tick(&mut self) {
         if self.ticks_waiting > 0 {
             self.ticks_waiting -= 1;
@@ -43,24 +54,37 @@ impl<D: ChunkDelivery> Conductor<D> {
         self.streamer.try_deliver();
     }
 
+    /// Pauses delivery.
     pub fn pause(&mut self) {
         self.streamer.pause();
     }
 
+    /// Resumes delivery.
     pub fn resume(&mut self) {
         self.streamer.resume();
     }
 
+    /// Returns true if there are pending chunks or active wait.
     pub fn has_pending(&self) -> bool {
         !self.queue.is_empty() || self.streamer.has_pending()
     }
 
+    /// Returns the number of queued chunks.
     pub fn queue_len(&self) -> usize {
         self.queue.len()
     }
+
+    /// Provides mutable access to the underlying streamer.
+    pub fn streamer_mut(&mut self) -> &mut ChunkStreamer<D> {
+        &mut self.streamer
+    }
 }
 
-/// 🚚 Streamer that manages chunk delivery pacing and queueing.
+//
+// ─── Chunk Streamer ────────────────────────────────────────────────────────────
+//
+
+/// 🚚 ChunkStreamer — manages pacing and delivery of chunks.
 pub struct ChunkStreamer<D: ChunkDelivery> {
     queue: VecDeque<MapDataChunk>,
     delivery: D,
@@ -70,6 +94,7 @@ pub struct ChunkStreamer<D: ChunkDelivery> {
 }
 
 impl<D: ChunkDelivery> ChunkStreamer<D> {
+    /// Creates a new streamer with a delivery backend and interval.
     pub fn new(delivery: D, interval_ms: u64) -> Self {
         Self {
             queue: VecDeque::new(),
@@ -80,10 +105,12 @@ impl<D: ChunkDelivery> ChunkStreamer<D> {
         }
     }
 
+    /// Queues a chunk for delivery.
     pub fn enqueue_chunk(&mut self, chunk: MapDataChunk) {
         self.queue.push_back(chunk);
     }
 
+    /// Attempts to deliver a chunk if interval has passed.
     pub fn try_deliver(&mut self) {
         if self.paused || self.queue.is_empty() {
             return;
@@ -98,48 +125,66 @@ impl<D: ChunkDelivery> ChunkStreamer<D> {
         }
     }
 
+    /// Pauses delivery.
     pub fn pause(&mut self) {
         self.paused = true;
     }
 
+    /// Resumes delivery.
     pub fn resume(&mut self) {
         self.paused = false;
     }
 
+    /// Returns true if there are pending chunks.
     pub fn has_pending(&self) -> bool {
         !self.queue.is_empty()
     }
 
+    /// Returns the number of queued chunks.
     pub fn queue_len(&self) -> usize {
         self.queue.len()
     }
 
+    /// Accesses the sync bridge.
     pub fn sync(&mut self) -> &mut SyncBridge {
         self.delivery.sync()
     }
+
+    /// Provides mutable access to the delivery backend.
+    pub fn delivery_mut(&mut self) -> &mut D {
+        &mut self.delivery
+    }
 }
 
-/// 🔗 SyncBridge allows delivery backends to emit signals and coordinate with the engine.
+//
+// ─── Sync Bridge ───────────────────────────────────────────────────────────────
+//
+
+/// 🔗 SyncBridge — allows delivery backends to emit signals and coordinate with the engine.
 #[derive(Default)]
 pub struct SyncBridge {
     signals: Vec<EngineMessage>,
 }
 
 impl SyncBridge {
+    /// Creates a new sync bridge.
     pub fn new() -> Self {
         Self {
             signals: Vec::new(),
         }
     }
 
+    /// Queues a signal message.
     pub fn add_signal(&mut self, signal: EngineMessage) {
         self.signals.push(signal);
     }
 
+    /// Retrieves and clears all queued signals.
     pub fn drain_signals(&mut self) -> Vec<EngineMessage> {
         std::mem::take(&mut self.signals)
     }
 
+    /// Returns true if there are pending signals.
     pub fn has_signals(&self) -> bool {
         !self.signals.is_empty()
     }

@@ -1,8 +1,9 @@
 use rand::Rng;
 use rand::SeedableRng;
+use std::str::FromStr;
+
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
-use std::str::FromStr;
 
 /// 🔊 Basic sine-cosine hybrid noise function.
 /// Placeholder: replace with a real algorithm later.
@@ -10,7 +11,7 @@ pub fn basic_noise(x: f32, y: f32) -> f32 {
     (x.sin() + y.cos()) * 0.5
 }
 
-/// 🎛 Enum representing supported noise types.
+/// 🎛 Enum representing supported internal noise types.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NoiseType {
     Basic,
@@ -24,17 +25,17 @@ impl NoiseType {
     /// Returns the string name of the noise type.
     pub fn as_str(&self) -> &'static str {
         match self {
-            NoiseType::Basic => "basic",
-            NoiseType::Perlin => "perlin",
-            NoiseType::Simplex => "simplex",
-            NoiseType::Cellular => "cellular",
-            NoiseType::CellularAutomata => "automata",
+            Self::Basic => "basic",
+            Self::Perlin => "perlin",
+            Self::Simplex => "simplex",
+            Self::Cellular => "cellular",
+            Self::CellularAutomata => "automata",
         }
     }
 
     /// Indicates whether the noise type is currently implemented.
     pub fn is_available(&self) -> bool {
-        matches!(self, NoiseType::Basic | NoiseType::CellularAutomata)
+        matches!(self, Self::Basic | Self::CellularAutomata)
     }
 }
 
@@ -43,12 +44,49 @@ impl FromStr for NoiseType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
-            "basic" => Ok(NoiseType::Basic),
-            "perlin" => Ok(NoiseType::Perlin),
-            "simplex" => Ok(NoiseType::Simplex),
-            "cellular" => Ok(NoiseType::Cellular),
-            "automata" | "cellularautomata" => Ok(NoiseType::CellularAutomata),
+            "basic" => Ok(Self::Basic),
+            "perlin" => Ok(Self::Perlin),
+            "simplex" => Ok(Self::Simplex),
+            "cellular" => Ok(Self::Cellular),
+            "automata" | "cellularautomata" => Ok(Self::CellularAutomata),
             _ => Err(()),
+        }
+    }
+}
+
+/// 🌐 Godot-facing wrapper for parsing noise types from UI strings.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GodotNoiseType {
+    Basic,
+    Perlin,
+    Simplex,
+    Cellular,
+    CellularAutomata,
+}
+
+impl FromStr for GodotNoiseType {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "basic" => Ok(Self::Basic),
+            "perlin" => Ok(Self::Perlin),
+            "simplex" => Ok(Self::Simplex),
+            "cellular" => Ok(Self::Cellular),
+            "automata" | "cellularautomata" => Ok(Self::CellularAutomata),
+            _ => Err(()),
+        }
+    }
+}
+
+impl From<GodotNoiseType> for NoiseType {
+    fn from(g: GodotNoiseType) -> Self {
+        match g {
+            GodotNoiseType::Basic => Self::Basic,
+            GodotNoiseType::Perlin => Self::Perlin,
+            GodotNoiseType::Simplex => Self::Simplex,
+            GodotNoiseType::Cellular => Self::Cellular,
+            GodotNoiseType::CellularAutomata => Self::CellularAutomata,
         }
     }
 }

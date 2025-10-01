@@ -3,6 +3,7 @@ use rand::Rng;
 use godot::prelude::*;
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
+use aetherion_core::log_component;
 
 /// ⚙️ AetherionConfig — Configuration node for exposing procedural engine settings to Godot.
 #[derive(GodotClass)]

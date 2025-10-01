@@ -1,10 +1,8 @@
 
 
 use crate::zv9_prelude::*;
-use crate::trailkeeper::collector::Trailkeeper;
-use crate::trailkeeper::entry::LogEntry;
-use crate::trailkeeper::entry::EventType;
-use crate::trailkeeper::entry::LogStatus;
+use crate::zv9_trailkeeper_collector::Trailkeeper;
+use crate::zv9_trailkeeper_entry::{LogEntry, EventType, LogStatus};
 
 
 use chrono::Utc;

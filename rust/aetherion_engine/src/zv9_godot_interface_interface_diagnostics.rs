@@ -4,6 +4,7 @@ use godot::prelude::*;
 use godot::classes::Label;
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
+use aetherion_core::log_component;
 
 /// 📊 DiagnosticsOverlay — UI label for displaying engine metrics.
 ///

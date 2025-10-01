@@ -4,8 +4,7 @@
 use std::sync::Mutex;
 use lazy_static::lazy_static;
 use crate::zv9_prelude::*;
-use crate::trailkeeper::entry::LogEntry;
-
+use crate::zv9_trailkeeper_entry::{LogEntry, EventType, LogStatus};
 
 lazy_static! {
     static ref LOG_REGISTRY: Mutex<Vec<LogEntry>> = Mutex::new(Vec::new());

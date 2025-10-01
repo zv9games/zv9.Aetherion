@@ -1,9 +1,17 @@
-use crate::core::conductor::{Conductor, ProcCommand};
-use crate::zv9_godot_interface_messaging_sync::GodotSync;
+use aetherion_core::zv9_aetherion_core_conductor::{Conductor, ProcCommand};
+use aetherion_core::zv9_aetherion_pipeline_builder_streamer::{ChunkStreamer, SyncBridge};
+use crate::zv9_godot_interface_messaging_sync::{GodotDelivery, GodotSync};
 
 /// 📋 Inspects the procedural command queue using GodotSync
 pub fn inspect_pending_queue() {
-    let mut conductor = Conductor::new(GodotSync::init());
+    let sync = GodotSync::init();
+    let delivery = GodotDelivery {
+        sync: sync.clone(),
+        bridge: SyncBridge::default(),
+    };
+    let streamer = ChunkStreamer::new(delivery, 2); // 2ms interval
+
+    let mut conductor = Conductor::new(streamer);
     conductor.enqueue(ProcCommand::EmitSignal("Pending check".into()));
 
     println!("📋 Queue length: {}", conductor.queue_len());

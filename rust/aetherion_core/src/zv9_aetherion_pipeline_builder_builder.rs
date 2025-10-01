@@ -1,7 +1,7 @@
 use crate::zv9_prelude::*;
 use crate::zv9_aetherion_generator_noise_config::generate_grid_from_config;
-use crate::generator::noise_config::NoiseConfig;
-use crate::generator::noise::NoiseType;
+use crate::zv9_aetherion_generator_noise_config::NoiseConfig;
+use crate::zv9_aetherion_generator_noise::NoiseType;
 use crate::pipeline::builder::{ChunkStreamer, ChunkDelivery};
 use crate::pipeline::data::{SerializableVector2i, MapDataChunk, TileInfo};
 

@@ -3,31 +3,32 @@ use std::fmt;
 use serde::{Serialize, Deserialize};
 use crate::zv9_prelude::*;
 use crate::zv9_aetherion_pipeline_data_tile::{TileInfo, tile_flags};
-use crate::generator::noise::NoiseType;
-use crate::generator::noise_config::NoiseConfig;
+use crate::zv9_aetherion_generator_noise::NoiseType;
+use crate::zv9_aetherion_generator_noise_config::NoiseConfig;
 
 //
-// ─── Noise Type Wrapper ────────────────────────────────────────────────────────
+// ─── External Noise Type ───────────────────────────────────────────────────────
 //
 
-/// 🧠 Editor-safe wrapper for exposing noise types to external engines.
+/// 🧠 ExternalNoiseType — editor-safe wrapper for exposing noise types to external engines.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ExternalNoiseType {
     Basic,
-    Perlin,
-    Simplex,
     Cellular,
     CellularAutomata,
+    Perlin,
+    Simplex,
 }
 
 impl ExternalNoiseType {
+    /// Converts to internal NoiseType used by the generator.
     pub fn to_internal(self) -> NoiseType {
         match self {
             Self::Basic => NoiseType::Basic,
-            Self::Perlin => NoiseType::Perlin,
-            Self::Simplex => NoiseType::Simplex,
             Self::Cellular => NoiseType::Cellular,
             Self::CellularAutomata => NoiseType::CellularAutomata,
+            Self::Perlin => NoiseType::Perlin,
+            Self::Simplex => NoiseType::Simplex,
         }
     }
 }
@@ -36,10 +37,10 @@ impl fmt::Display for ExternalNoiseType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = match self {
             Self::Basic => "basic",
-            Self::Perlin => "perlin",
-            Self::Simplex => "simplex",
             Self::Cellular => "cellular",
             Self::CellularAutomata => "automata",
+            Self::Perlin => "perlin",
+            Self::Simplex => "simplex",
         };
         write!(f, "{}", name)
     }
@@ -51,10 +52,10 @@ impl FromStr for ExternalNoiseType {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
             "basic" => Ok(Self::Basic),
-            "perlin" => Ok(Self::Perlin),
-            "simplex" => Ok(Self::Simplex),
             "cellular" => Ok(Self::Cellular),
             "automata" => Ok(Self::CellularAutomata),
+            "perlin" => Ok(Self::Perlin),
+            "simplex" => Ok(Self::Simplex),
             _ => Err(()),
         }
     }
@@ -70,7 +71,7 @@ impl From<ExternalNoiseType> for NoiseType {
 // ─── Map Build Options ─────────────────────────────────────────────────────────
 //
 
-/// 🗺️ Configuration options for procedural map generation.
+/// 🗺️ MapBuildOptions — configuration for procedural map generation.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MapBuildOptions {
     pub width: i32,
@@ -88,6 +89,7 @@ pub struct MapBuildOptions {
 }
 
 impl MapBuildOptions {
+    /// Creates a default configuration with clamped dimensions.
     pub fn default(width: i32, height: i32, seed: u64) -> Self {
         Self {
             width: width.clamp(1, 4096),
@@ -105,6 +107,7 @@ impl MapBuildOptions {
         }
     }
 
+    /// Converts to internal NoiseConfig used by the generator.
     pub fn to_noise_config(&self) -> NoiseConfig {
         NoiseConfig {
             width: self.width.max(1) as usize,
@@ -117,18 +120,22 @@ impl MapBuildOptions {
         }
     }
 
+    /// Returns the internal noise type.
     pub fn noise_type(&self) -> NoiseType {
         self.mode.to_internal()
     }
 
+    /// Returns total tile count.
     pub fn total_tiles(&self) -> usize {
         (self.width * self.height).max(1) as usize
     }
 
+    /// Returns true if animation is enabled.
     pub fn is_animated(&self) -> bool {
         self.animate
     }
 
+    /// Returns a human-readable summary.
     pub fn describe(&self) -> String {
         format!(
             "MapBuildOptions: {}x{}, mode={}, seed={}, animated={}, fill={}, steps={}, birth={}, survival={}",
@@ -149,8 +156,12 @@ impl MapBuildOptions {
 // ─── Procedural Tile Generator ─────────────────────────────────────────────────
 //
 
+/// Generates a tile at the given position using a hash-based pattern.
 pub fn tile_at(x: u64, y: u64, seed: u64) -> TileInfo {
-    let hash = x.wrapping_mul(31).wrapping_add(y.wrapping_mul(17)).wrapping_add(seed);
+    let hash = x.wrapping_mul(31)
+        .wrapping_add(y.wrapping_mul(17))
+        .wrapping_add(seed);
+
     TileInfo {
         rotation: (hash % 4) as u8,
         variant_id: Some((hash % 7) as i32),
@@ -159,7 +170,12 @@ pub fn tile_at(x: u64, y: u64, seed: u64) -> TileInfo {
     }
 }
 
-pub fn generate_virtual_field(width: u64, height: u64, seed: u64) -> impl Iterator<Item = (u64, u64, TileInfo)> {
+/// Generates a virtual field of tiles for benchmarking or preview.
+pub fn generate_virtual_field(
+    width: u64,
+    height: u64,
+    seed: u64,
+) -> impl Iterator<Item = (u64, u64, TileInfo)> {
     (0..height).flat_map(move |y| {
         (0..width).map(move |x| (x, y, tile_at(x, y, seed)))
     })

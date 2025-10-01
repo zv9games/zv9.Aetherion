@@ -2,7 +2,7 @@
 
 
 use crate::zv9_prelude::*;
-use crate::generator::noise::NoiseType;
+use crate::zv9_aetherion_generator_noise::NoiseType;
 
 
 // Configuration for procedural noise generation.

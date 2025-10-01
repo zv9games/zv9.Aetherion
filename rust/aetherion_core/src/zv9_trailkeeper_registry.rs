@@ -1,9 +1,7 @@
 use crate::zv9_prelude::*;
 use std::sync::Mutex;
-use crate::trailkeeper::collector::Trailkeeper;
-use crate::trailkeeper::entry::LogEntry;
-use crate::trailkeeper::entry::EventType;
-use crate::trailkeeper::entry::LogStatus;
+use crate::zv9_trailkeeper_collector::Trailkeeper;
+use crate::zv9_trailkeeper_entry::{LogEntry, EventType, LogStatus};
 
 // 🧠 Thread-safe registry of known components.
 lazy_static::lazy_static! {

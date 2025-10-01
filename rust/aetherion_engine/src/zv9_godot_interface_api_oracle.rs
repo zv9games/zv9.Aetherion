@@ -2,6 +2,7 @@
 use godot::prelude::*;
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
+use aetherion_core::log_component;
 
 /// 🔮 AetherionOracle — Godot-facing node for manually driving the AetherionEngine.
 #[derive(GodotClass)]
