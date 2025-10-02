@@ -6,20 +6,42 @@ use aetherion_core::trailkeeper::{LogEntry, EventType};
 use aetherion_core::log_event;
 
 
-/// 📦 Prints a tree of Rust modules under /src
-pub fn print_module_tree() {
-    println!("\n📦 Scanning for Rust modules in /src...\n");
+use std::path::Path;
 
-    for entry in WalkDir::new("src")
-        .into_iter()
-        .filter_map(Result::ok)
-        .filter(|e| e.path().extension().map_or(false, |ext| ext == "rs"))
-    {
-        println!("├── {}", entry.path().display());
+/// 📦 Prints a tree of Rust modules across all workspace crates
+pub fn print_module_tree() {
+    println!("\n📦 Scanning for Rust modules across workspace...\n");
+
+    let crate_dirs = [
+        "../aetherion_core/src",
+        "../aetherion_engine/src",
+        "src", // aetherion_binary/src
+    ];
+
+    for crate_dir in crate_dirs {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(crate_dir);
+        if !path.exists() {
+            println!("⚠️ Skipping missing path: {}", path.display());
+            continue;
+        }
+
+        println!("🔍 Crate: {}\n", path.display());
+
+        for entry in WalkDir::new(&path)
+            .follow_links(false)
+            .into_iter()
+            .filter_map(Result::ok)
+            .filter(|e| e.path().extension().map_or(false, |ext| ext == "rs"))
+        {
+            println!("├── {}", entry.path().display());
+        }
+
+        println!();
     }
 
-    println!("\n✅ Module scan complete.\n");
+    println!("✅ Module scan complete.\n");
 }
+
 
 /// 🧪 Scans for GDScript-callable Rust methods exposed via #[func]
 pub fn print_godot_api_surface() {

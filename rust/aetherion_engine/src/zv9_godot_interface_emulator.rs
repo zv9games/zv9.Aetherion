@@ -38,6 +38,7 @@ impl TileMapInterface for FakeTileMap {
 }
 
 /// 🧱 Pure Rust stand-in for TileInfo (no FFI)
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct TileInfoStub {
     pub source_id: i32,

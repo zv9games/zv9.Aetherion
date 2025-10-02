@@ -1,5 +1,4 @@
 //C:/ZV9/zv9.aetherion/rust/src/zv9_godot_interface_api_config.rs
-use rand::Rng;
 use godot::prelude::*;
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
@@ -38,7 +37,8 @@ impl AetherionConfig {
             tile_size: 16,
             chunk_width: 8,
             chunk_height: 8,
-            seed: rand::thread_rng().gen_range(0..=i64::MAX),
+            seed: rand::random_range(0..=i64::MAX),
+
             enable_voxel_mode: false,
         }
     }
@@ -57,7 +57,9 @@ impl AetherionConfig {
     /// Regenerates the procedural seed.
     #[func]
     fn regenerate_seed(&mut self) {
-        self.seed = rand::thread_rng().gen_range(0..=i64::MAX);
+        self.seed = rand::random_range(0..=i64::MAX)
+
+
     }
 }
 

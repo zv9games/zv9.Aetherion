@@ -1,7 +1,7 @@
 
 use std::process::Command;
 use std::io::{self, Write};
-
+#[allow(unused_imports)]
 use aetherion_core::trailkeeper::{
     Trailkeeper,
     check_config_change,
@@ -11,7 +11,7 @@ use aetherion_core::trailkeeper::{
 };
 
 
-
+#[allow(unused_imports)]
 use aetherion_core::core::{Conductor, ProcCommand};
 
 /// 🚀 Runs the full Rust test suite via Cargo
@@ -47,6 +47,7 @@ pub fn run_trailkeeper_scan() {
 }
 
 /// 📜 Interactive viewer for Trailkeeper logs
+#[allow(dead_code)]
 pub fn view_trailkeeper_logs() {
     println!("\n📜 Trailkeeper Log Registry:\n");
 
@@ -76,6 +77,7 @@ pub fn view_trailkeeper_logs() {
 }
 
 /// 🧾 Prints a formatted Trailkeeper log entry
+#[allow(dead_code)]
 pub fn print_log_entry(index: usize, log: &LogEntry) {
     println!("──────────────────────────────────────────────");
     println!("📄 Entry #{}", index);

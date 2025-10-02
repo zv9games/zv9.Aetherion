@@ -1,6 +1,8 @@
+#[allow(unused_imports)]
 use crate::zv9_prelude::*;
 use std::sync::Mutex;
 use crate::zv9_trailkeeper_collector::Trailkeeper;
+#[allow(unused_imports)]
 use crate::zv9_trailkeeper_entry::{LogEntry, EventType, LogStatus};
 
 // 🧠 Thread-safe registry of known components.

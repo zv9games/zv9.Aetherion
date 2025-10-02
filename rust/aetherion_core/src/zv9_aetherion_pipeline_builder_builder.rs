@@ -5,7 +5,9 @@ use crate::zv9_aetherion_generator_noise::NoiseType;
 use crate::pipeline::builder::{ChunkStreamer, ChunkDelivery};
 use crate::pipeline::data::{SerializableVector2i, MapDataChunk, TileInfo};
 
+#[allow(unused_imports)]
 use rayon::prelude::*;
+
 use std::time::{Duration, Instant};
 use std::thread;
 

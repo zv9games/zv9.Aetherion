@@ -63,6 +63,7 @@ pub use aetherion_core::zv9_trailkeeper_collector::*;
 pub use aetherion_core::zv9_trailkeeper_config::*;
 pub use aetherion_core::zv9_trailkeeper_entry::*;
 pub use aetherion_core::zv9_trailkeeper_export::*;
+#[allow(unused_imports)]
 pub use aetherion_core::zv9_trailkeeper_macros::*;
 pub use aetherion_core::zv9_trailkeeper_registry::*;
 pub use aetherion_core::zv9_trailkeeper_scan::*;

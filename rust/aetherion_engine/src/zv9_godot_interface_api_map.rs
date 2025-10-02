@@ -20,6 +20,7 @@ pub struct AetherionMap {
 
 #[godot_api]
 impl AetherionMap {
+	#[allow(dead_code)]
     fn init(base: Base<Node>) -> Self {
         Self {
             base,
@@ -92,11 +93,11 @@ impl AetherionMap {
         if let Some(chunk) = &self.chunk {
             let key = SerializableVector2i { x: index, y: 0 };
             if let Some(tile) = chunk.get(&key) {
-                dict.insert("source_id", tile.source_id);
-                dict.insert("atlas_coords", Vector2i::new(tile.atlas_coords.x, tile.atlas_coords.y));
-                dict.insert("alternate_id", tile.alternate_id);
-                dict.insert("rotation", tile.rotation);
-                dict.insert("layer", tile.layer);
+                let _ = dict.insert("source_id", tile.source_id);
+                let _ = dict.insert("atlas_coords", Vector2i::new(tile.atlas_coords.x, tile.atlas_coords.y));
+                let _ = dict.insert("alternate_id", tile.alternate_id);
+                let _ = dict.insert("rotation", tile.rotation);
+                let _ = dict.insert("layer", tile.layer);
             } else {
                 godot_warn!("🧩 No tile found at index {}", index);
             }
@@ -129,11 +130,11 @@ impl AetherionMap {
         let mut tiles = Array::new();
         for i in 0..100 {
             let mut dict = Dictionary::new();
-            dict.insert("source_id", 0);
-            dict.insert("atlas_coords", Vector2i::new(i % 8, i / 8));
-            dict.insert("alternate_id", 0);
-            dict.insert("rotation", 0);
-            dict.insert("layer", 0);
+            let _ = dict.insert("source_id", 0);
+            let _ = dict.insert("atlas_coords", Vector2i::new(i % 8, i / 8));
+            let _ = dict.insert("alternate_id", 0);
+            let _ = dict.insert("rotation", 0);
+            let _ = dict.insert("layer", 0);
             tiles.push(dict.to_variant().into_arg());
         }
 

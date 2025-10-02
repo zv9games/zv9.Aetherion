@@ -1,9 +1,12 @@
-use aetherion_core::pipeline::data::{MapDataChunk, TileInfo};
 use aetherion_core::pipeline::builder::convert_world_png_to_chunk;
 
 
-
+#[allow(unused_imports)]
 use std::collections::HashMap;
+
+use aetherion_core::pipeline::data::{MapDataChunk, TileInfo};
+
+//use rayon::prelude::*;
 use std::time::{Duration, Instant};
 
 /// 🧪 Benchmarks tile placement throughput over 30 seconds
@@ -31,11 +34,8 @@ pub fn run_max_grid_benchmark() {
         }
 
         if Instant::now() - last_logged >= Duration::from_secs(1) {
-            println!(
-                "⏱ {}s elapsed — {} tiles placed",
-                (Instant::now() - start).as_secs(),
-                tiles_placed
-            );
+            let elapsed = Instant::now() - start;
+            println!("⏱ {}s elapsed — {} tiles placed", elapsed.as_secs(), tiles_placed);
             last_logged = Instant::now();
         }
     }
@@ -45,6 +45,8 @@ pub fn run_max_grid_benchmark() {
     println!("📐 Final grid size: {} x {}", grid_width, y + 1);
     println!("⚡ Throughput: ~{} tiles/sec", tiles_placed / 30);
 }
+
+
 
 /// 🧪 Converts a PNG into a tile chunk using bitmask logic
 pub fn run_bitmask_conversion() {
@@ -70,7 +72,7 @@ pub fn run_bitmask_conversion() {
 /// 🧪 CLI-safe test: generates and prints a test chunk
 pub fn test_generation_and_placement_cli() {
     println!("🧪 Running CLI test for generation and placement...");
-
+	#[allow(dead_code)]
     #[derive(Debug)]
     struct Tile {
         source_id: i32,

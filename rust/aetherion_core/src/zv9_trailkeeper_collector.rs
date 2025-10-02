@@ -3,7 +3,9 @@
 
 use std::sync::Mutex;
 use lazy_static::lazy_static;
+#[allow(unused_imports)]
 use crate::zv9_prelude::*;
+#[allow(unused_imports)]
 use crate::zv9_trailkeeper_entry::{LogEntry, EventType, LogStatus};
 
 lazy_static! {

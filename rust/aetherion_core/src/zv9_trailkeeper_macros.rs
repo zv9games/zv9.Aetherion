@@ -47,6 +47,7 @@ macro_rules! log_component {
 
 #[cfg(test)]
 mod tests {
+	#[allow(unused_imports)]
     use crate::zv9_prelude::*;
 	use crate::trailkeeper::EventType;
 

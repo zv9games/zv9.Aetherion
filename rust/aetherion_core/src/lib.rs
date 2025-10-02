@@ -122,7 +122,8 @@ pub mod trailkeeper {
     pub use crate::zv9_trailkeeper_config::*;
     pub use crate::zv9_trailkeeper_entry::*;
     pub use crate::zv9_trailkeeper_export::*;
-    pub use crate::zv9_trailkeeper_macros::*;
+    #[allow(unused_imports)]
+	pub use crate::zv9_trailkeeper_macros::*;
     pub use crate::zv9_trailkeeper_registry::*;
     pub use crate::zv9_trailkeeper_scan::*;
     pub use crate::zv9_trailkeeper_watch::*;

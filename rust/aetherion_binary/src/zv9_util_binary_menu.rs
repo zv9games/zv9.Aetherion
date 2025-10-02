@@ -1,9 +1,10 @@
 use aetherion_core::core::start;
 use aetherion_core::zv9_aetherion_pipeline_builder_dummy_delivery::DummyDelivery;
-
+#[allow(unused_imports)]
 use crate::zv9_util_binary_func::{run_cargo_tests, run_trailkeeper_scan, view_trailkeeper_logs};
 use crate::zv9_util_binary_func2::{print_godot_api_surface, print_module_tree};
 use crate::zv9_util_binary_func3::{run_bitmask_conversion, run_max_grid_benchmark, test_generation_and_placement_cli};
+#[allow(unused_imports)]
 use aetherion_engine::inspect_pending_queue;
 
 /// 🧩 Menu item definition
@@ -14,54 +15,53 @@ pub struct MenuItem {
 }
 
 /// 🧭 Builds the interactive dev console menu
-/// 🧭 Builds the interactive dev console menu
 pub fn build_menu() -> Vec<MenuItem> {
     vec![
         // ✅ Stable Tools
         MenuItem { 
             key: '0', 
-            label: "✅ Run: Cargo Test Suite", 
-            action: Box::new(run_cargo_tests), // zv9_util_binary_func.rs
+            label: "✅ Run: Cargo Test Suite [zv9_util_binary_func.rs]", 
+            action: Box::new(run_cargo_tests),
         },
         MenuItem { 
             key: '1', 
-            label: "✅ Inspect: Godot-Callable API Surface", 
-            action: Box::new(print_godot_api_surface), // zv9_util_binary_func2.rs
+            label: "✅ Inspect: Godot-Callable API Surface [zv9_util_binary_func2.rs]", 
+            action: Box::new(print_godot_api_surface),
         },
         MenuItem { 
             key: '2', 
-            label: "✅ Inspect: Rust Module Tree", 
-            action: Box::new(print_module_tree), // zv9_util_binary_func2.rs
+            label: "✅ Inspect: Rust Module Tree [zv9_util_binary_func2.rs]", 
+            action: Box::new(print_module_tree),
         },
         MenuItem { 
             key: '3', 
-            label: "⚠️ Run: Trailkeeper Scan", 
-            action: Box::new(run_trailkeeper_scan), // zv9_util_binary_func.rs
+            label: "⚠️ Run: Trailkeeper Scan [zv9_util_binary_func.rs]", 
+            action: Box::new(run_trailkeeper_scan),
         },
         MenuItem { 
             key: '4', 
-            label: "⚠️ Start: Aetherion Runtime [Rust Only]", 
-            action: Box::new(|| start(DummyDelivery::new())), // inline in zv9_util_binary_menu.rs
+            label: "⚠️ Start: Aetherion Runtime [inline in zv9_util_binary_menu.rs]", 
+            action: Box::new(|| start(DummyDelivery::new())),
         },
         MenuItem { 
             key: '5', 
-            label: "🧪 Test: Generation & Placement zv9_util_binary_func3.rs", 
-            action: Box::new(test_generation_and_placement_cli), // zv9_util_binary_func3.rs
+            label: "🧪 Test: Generation & Placement [zv9_util_binary_func3.rs]", 
+            action: Box::new(test_generation_and_placement_cli),
         },
         MenuItem { 
             key: '6', 
-            label: "✅ Perform: Bitmask PNG Conversion", 
-            action: Box::new(run_bitmask_conversion), // zv9_util_binary_func3.rs
+            label: "✅ Perform: Bitmask PNG Conversion [zv9_util_binary_func3.rs]", 
+            action: Box::new(run_bitmask_conversion),
         },
         MenuItem { 
             key: '7', 
-            label: "🧪 Benchmark: Max Grid Placement", 
-            action: Box::new(run_max_grid_benchmark), // zv9_util_binary_func3.rs
+            label: "🧪 Benchmark: Max Grid Placement [zv9_util_binary_func3.rs]", 
+            action: Box::new(run_max_grid_benchmark),
         },
         MenuItem { 
             key: '9', 
-            label: "✅ Exit", 
-            action: Box::new(|| {}), // inline
+            label: "✅ Exit [inline]", 
+            action: Box::new(|| {}),
         },
 
         // 🔮 Future Expansion / TODOs
@@ -78,6 +78,7 @@ pub fn build_menu() -> Vec<MenuItem> {
         MenuItem { key: 'K', label: "🔮 TODO: Configure Plugin Mode for Unity", action: Box::new(|| println!("TODO: Unity plugin mode not yet implemented.")) },
     ]
 }
+
 
 
 /// 🖥 Prints the menu to the console
