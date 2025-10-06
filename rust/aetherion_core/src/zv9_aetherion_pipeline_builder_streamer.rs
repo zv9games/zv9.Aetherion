@@ -1,3 +1,4 @@
+
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
 use crate::pipeline::data::MapDataChunk;
@@ -13,6 +14,11 @@ use std::time::{Duration, Instant};
 pub trait ChunkDelivery: Send {
     fn deliver(&mut self, chunk: MapDataChunk);
     fn sync(&mut self) -> &mut SyncBridge;
+
+    /// 💬 Pushes a status message into the signal stream.
+    fn push_status(&mut self, msg: &str) {
+        self.sync().add_signal(EngineMessage::Status(msg.to_string()));
+    }
 }
 
 //
@@ -49,8 +55,10 @@ impl<D: ChunkDelivery> Conductor<D> {
         }
 
         if let Some(chunk) = self.queue.pop_front() {
-            self.streamer.enqueue_chunk(chunk);
-        }
+			self.streamer.sync().add_signal(EngineMessage::ChunkReady(chunk.clone()));
+			self.streamer.enqueue_chunk(chunk);
+		}
+
 
         self.streamer.try_deliver();
     }

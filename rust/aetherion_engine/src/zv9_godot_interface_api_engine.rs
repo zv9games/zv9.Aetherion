@@ -1,7 +1,19 @@
+// zv9_godot_interface_api_engine.rs
+
+mod zv9_godot_interface_api_engine_core;
+mod zv9_godot_interface_api_engine_signals;
+mod zv9_godot_interface_api_engine_util; // optional
+
+pub use zv9_godot_interface_api_engine_core::*;
+pub use zv9_godot_interface_api_engine_signals::*;
+
+
+/*
 use godot::prelude::*;
 use godot::classes::TileMap;
 use godot::global::Error;
 
+#[allow(unused_imports)]
 use crate::zv9_prelude::*;
 use crate::zv9_godot_interface_map_ext::MapDataChunkExt;
 use crate::zv9_godot_interface_messaging_sync::{GodotDelivery, GodotSync};
@@ -9,7 +21,6 @@ use crate::zv9_godot_interface_messaging_sync::{GodotDelivery, GodotSync};
 use aetherion_core::log_component;
 use aetherion_core::pipeline::builder::spawn_builder_thread;
 use aetherion_core::zv9_aetherion_core_conductor::Conductor;
-use aetherion_core::zv9_aetherion_pipeline_builder_streamer::SyncBridge;
 
 /// 🚀 AetherionEngine — Godot-facing engine node for procedural generation and signal dispatch.
 #[derive(GodotClass)]
@@ -18,8 +29,6 @@ pub struct AetherionEngine {
     #[base]
     base: Base<Node>,
     sync: GodotSync,
-
-    #[export]
     signals_node: Option<Gd<AetherionSignals>>,
 
     #[export]
@@ -30,73 +39,127 @@ pub struct AetherionEngine {
     chunk: Option<MapDataChunk>,
 }
 
-#[godot_api]
+// 🔧 Constructor (called by Godot's init) — Debug-enhanced
 impl AetherionEngine {
-	#[allow(dead_code)]
     fn init(base: Base<Node>) -> Self {
+        godot_print!("🔧 Engine init: Starting.");
+        
         let sync = GodotSync::init();
+        godot_print!("🔧 Engine init: Sync created.");
+        
         let delivery = GodotDelivery {
             sync: sync.clone(),
             bridge: SyncBridge::default(),
         };
+        godot_print!("🔧 Engine init: Delivery created.");
+        
         let streamer = ChunkStreamer::new(delivery, 2);
-
+        godot_print!("🔧 Engine init: Streamer created.");
+        
+        let conductor_raw = Conductor::new(streamer);
+        godot_print!("🔧 Engine init: Conductor raw created.");
+        
+        let chunk_raw = MapDataChunk::new();
+        godot_print!("🔧 Engine init: Chunk raw created.");
+        
+        godot_print!("🔧 Engine init: Building Self with Option<...>.");
+        
         Self {
             base,
             sync,
             signals_node: None,
             target_tilemap: None,
-            current_status: "Uninitialized".into(),
-            conductor: Some(Conductor::new(streamer)),
-            chunk: Some(MapDataChunk::new()),
+            current_status: "Awaiting Oracle".into(),
+            conductor: Some(conductor_raw),
+            chunk: Some(chunk_raw),
         }
     }
-	#[allow(dead_code)]
-    fn ready(&mut self) {
+}
+
+#[godot_api]
+impl AetherionEngine {
+    // 🔧 Lifecycle
+    #[func]
+    fn enter_tree(&mut self) {
+        godot_print!("🔧 AetherionEngine: enter_tree called.");
+        // Fallback: Enable process here if _ready skips
+        self.base_mut().set_process(true);
+        godot_print!("⚙️ Process callback enabled (from enter_tree).");
+    }
+    
+    #[func]
+    fn _ready(&mut self) {
+        godot_print!("🔧 AetherionEngine: _ready starting.");
         godot_print!("⚙️ AetherionEngine online. Systems nominal.");
         log_component!("AetherionEngine", "Engine node for procedural generation and signal dispatch");
-        self.base.to_init_gd().set_process(true);
+        
+        // ✅ Enable process callback directly
+        self.base_mut().set_process(true);
+        godot_print!("⚙️ Process callback enabled (from _ready).");
+        
+        // 🔍 Post-init state check
+        let has_conductor = self.conductor.is_some();
+        let has_chunk = self.chunk.is_some();
+        godot_print!("🔍 _ready: Post-init check — Conductor: {}, Chunk: {}", has_conductor, has_chunk);
+        
+        self.sync.debug_id(); // 🧵 Trace sync ID on startup
+        godot_print!("🔧 AetherionEngine: _ready complete.");
     }
 
+    #[func]
     fn process(&mut self, _delta: f64) {
-        self.apply_chunks_to_tilemap();
+        self.sync.debug_id(); // 🧵 Trace sync ID per cycle
+        godot_print!("⚙️ process() running");
+
+        let drained = self.sync.drain_signals();
+        godot_print!("📡 process() → drained {} signals", drained.len());
+
+        for signal_msg in drained {
+            godot_print!("📡 signal_msg → {:?}", signal_msg);
+            if let EngineMessage::Status(status) = signal_msg {
+                godot_print!("📡 Status signal received: {}", status);
+                self.current_status = status;
+            }
+        }
+
+        // 🔁 Unified signal dispatch (optional: comment out to separate)
         self.emit_pending_signals();
     }
 
-    fn apply_chunks_to_tilemap(&mut self) {
-        if let Some(tilemap) = self.target_tilemap.as_mut() {
-            for chunk in self.sync.drain_chunks() {
-                for (pos, tile_info) in chunk.tiles {
-                    let pos_vec = Vector2i::new(pos.x, pos.y);
-                    let atlas_vec = Vector2i::new(tile_info.atlas_coords.x, tile_info.atlas_coords.y);
-
-                    tilemap.set_cell_ex(0, pos_vec)
-                        .source_id(tile_info.source_id)
-                        .atlas_coords(atlas_vec)
-                        .alternative_tile(tile_info.alternate_id)
-                        .done();
-                }
-            }
-        }
-    }
-
+    // 🔁 Signal Dispatch
+    #[func]
     fn emit_pending_signals(&mut self) {
         if let Some(signals_node) = self.signals_node.as_mut() {
-            for signal_msg in self.sync.drain_signals() {
+            let mut signals = Vec::new();
+
+            if let Some(conductor) = self.conductor.as_mut() {
+                let conductor_signals = conductor.streamer_mut().delivery_mut().sync.drain_signals();
+                godot_print!("📡 Engine: Drained {} signals from conductor", conductor_signals.len());
+                signals.extend(conductor_signals);
+            }
+
+            let engine_signals = self.sync.drain_signals();
+            godot_print!("📡 Engine: Drained {} signals from engine", engine_signals.len());
+            signals.extend(engine_signals);
+
+            for signal_msg in signals {
+                godot_print!("📡 Emitting signal: {:?}", signal_msg);
+
                 let result = match signal_msg {
                     EngineMessage::Start => signals_node.emit_signal("build_map_start", &[]),
                     EngineMessage::Progress(percent) => signals_node.emit_signal("generation_progress", &[percent.to_variant()]),
                     EngineMessage::Status(status) => {
+                        godot_print!("📡 Status signal received: {}", status);
                         self.current_status = status.clone();
                         signals_node.emit_signal("map_building_status", &[GString::from(status).to_variant()])
                     }
                     EngineMessage::Complete { width, height, mode, animate, duration } => {
                         let mut dict = Dictionary::new();
-                        let _ = dict.insert("width", width);
-                        let _ = dict.insert("height", height);
-                        let _ = dict.insert("mode", mode);
-                        let _ = dict.insert("animate", animate);
-                        let _ = dict.insert("duration", duration);
+                        dict.insert("width", width);
+                        dict.insert("height", height);
+                        dict.insert("mode", mode);
+                        dict.insert("animate", animate);
+                        dict.insert("duration", duration);
                         signals_node.emit_signal("generation_complete", &[dict.to_variant()])
                     }
                     EngineMessage::MapChunkReady => signals_node.emit_signal("map_chunk_ready", &[]),
@@ -127,17 +190,41 @@ impl AetherionEngine {
                     godot_warn!("⚠️ Engine: Signal emission failed: {:?}", result);
                 }
             }
+        } else {
+            godot_warn!("⚠️ Engine: No signals_node assigned. Cannot emit signals.");
         }
     }
 
+    // 🧭 Engine Control
     #[func]
     pub fn tick(&mut self, tick: u64) {
-        if let (Some(conductor), Some(chunk)) = (self.conductor.as_mut(), self.chunk.as_mut()) {
-            godot_print!("⚙️ Engine: Tick {} received from Oracle.", tick);
-            conductor.tick(tick, chunk);
-            self.process(0.0);
-        } else {
-            godot_warn!("⚠️ Engine: Tick ignored. Conductor or chunk not initialized.");
+        self.sync.debug_id(); // 🧵 Trace sync ID per tick
+        godot_print!("🔮 Engine: Tick {} received from Oracle.", tick);
+        
+        // 🔍 Granular: Pre-match state check
+        let has_conductor = self.conductor.is_some();
+        let has_chunk = self.chunk.is_some();
+        godot_print!("🔍 Engine: Pre-tick check — Conductor: {}, Chunk: {}", has_conductor, has_chunk);
+        
+        match (self.conductor.as_mut(), self.chunk.as_mut()) {
+            (Some(conductor), Some(chunk)) => {
+                godot_print!("📡 Engine: Dispatching tick to conductor.");
+                conductor.tick(tick, chunk); // ✅ Direct call—no unwind wrapper
+                godot_print!("✅ Engine: Conductor.tick completed.");
+
+                godot_print!("📡 Engine: Queuing status 'Idle' to sync.");
+                self.sync.push_status("Idle");
+
+                godot_print!("⚙️ Engine: Executing process cycle.");
+                self.process(0.0);
+                
+                // 🔍 Post-tick snapshot
+                godot_print!("📡 Post-tick status: {}", self.get_status());
+            }
+            _ => {
+                godot_warn!("⚠️ Engine: Tick ignored — conductor or chunk not initialized. (Conductor: {:?}, Chunk: {:?})", 
+                            has_conductor, has_chunk);
+            }
         }
     }
 
@@ -179,10 +266,29 @@ impl AetherionEngine {
         }
     }
 
+    // 🧱 Tilemap Control
     #[func]
     pub fn set_tilemap(&mut self, tilemap: Gd<TileMap>) {
         self.target_tilemap = Some(tilemap);
         godot_print!("⚙️ Engine: TileMap target assigned.");
+    }
+
+    #[func]
+    pub fn apply_chunks_to_tilemap(&mut self) {
+        if let Some(tilemap) = self.target_tilemap.as_mut() {
+            for chunk in self.sync.drain_chunks() {
+                for (pos, tile_info) in chunk.tiles {
+                    let pos_vec = Vector2i::new(pos.x, pos.y);
+                    let atlas_vec = Vector2i::new(tile_info.atlas_coords.x, tile_info.atlas_coords.y);
+
+                    tilemap.set_cell_ex(0, pos_vec)
+                        .source_id(tile_info.source_id)
+                        .atlas_coords(atlas_vec)
+                        .alternative_tile(tile_info.alternate_id)
+                        .done();
+                }
+            }
+        }
     }
 
     #[func]
@@ -199,13 +305,30 @@ impl AetherionEngine {
         }
     }
 
+    // 📊 Diagnostics
     #[func]
     pub fn ping(&self) {
+        self.sync.debug_id(); // 🧵 Trace sync ID on ping
         godot_print!("⚙️ Engine: Ping received. Standing by.");
     }
 
     #[func]
     pub fn get_status(&self) -> String {
-        self.current_status.clone()
+        let status = if self.current_status.is_empty() {
+            "No status available"
+        } else {
+            &self.current_status
+        };
+        self.sync.debug_id(); // 🧵 Trace sync ID on status query
+        godot_print!("📡 get_status() → {}", status);
+        status.to_string()
+    }
+
+    #[func]
+    pub fn set_signals_node(&mut self, node: Gd<AetherionSignals>) {
+        self.signals_node = Some(node);
+        godot_print!("📡 Engine: Signals node assigned.");
     }
 }
+
+*/

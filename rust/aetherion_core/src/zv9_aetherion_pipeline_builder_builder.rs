@@ -1,6 +1,5 @@
 use crate::zv9_prelude::*;
-use crate::zv9_aetherion_generator_noise_config::generate_grid_from_config;
-use crate::zv9_aetherion_generator_noise_config::NoiseConfig;
+use crate::zv9_aetherion_generator_noise_config::{generate_grid_from_config, NoiseConfig};
 use crate::zv9_aetherion_generator_noise::NoiseType;
 use crate::pipeline::builder::{ChunkStreamer, ChunkDelivery};
 use crate::pipeline::data::{SerializableVector2i, MapDataChunk, TileInfo};
@@ -27,16 +26,19 @@ pub fn spawn_map_builder<D: ChunkDelivery + Send + 'static>(
     rayon::spawn(move || {
         let start_time = Instant::now();
 
+        // 🚦 Initialization signals
         {
             let sync = streamer.sync();
             sync.add_signal(EngineMessage::Start);
-            sync.add_signal(EngineMessage::Status("🧬 Building terrain...".to_string()));
+            sync.add_signal(EngineMessage::Status("🧬 Building terrain...".into()));
         }
 
+        // 🧮 Generate tile positions
         let positions: Vec<SerializableVector2i> = (0..config.height as i32)
             .flat_map(|y| (0..config.width as i32).map(move |x| SerializableVector2i { x, y }))
             .collect();
 
+        // 🧱 Build chunks in parallel
         let chunks: Vec<MapDataChunk> = positions
             .par_chunks(batch_size)
             .map(|batch| {
@@ -63,24 +65,22 @@ pub fn spawn_map_builder<D: ChunkDelivery + Send + 'static>(
             })
             .collect();
 
+        // 🚚 Deliver chunks with progress signals
         for (i, chunk) in chunks.into_iter().enumerate() {
             let percent = (((i + 1) * batch_size).min(total_tiles) * 100 / total_tiles) as i32;
 
-            {
-                let sync = streamer.sync();
-                sync.add_signal(EngineMessage::Progress(percent));
-            }
-
+            streamer.sync().add_signal(EngineMessage::Progress(percent));
             streamer.enqueue_chunk(chunk);
             thread::sleep(Duration::from_millis(2));
         }
 
         streamer.try_deliver();
 
+        // 🏁 Completion signals
         {
             let sync = streamer.sync();
             sync.add_signal(EngineMessage::Progress(100));
-            sync.add_signal(EngineMessage::Status("✅ Terrain generation complete.".to_string()));
+            sync.add_signal(EngineMessage::Status("✅ Terrain generation complete.".into()));
             sync.add_signal(EngineMessage::Complete {
                 width: config.width as i32,
                 height: config.height as i32,

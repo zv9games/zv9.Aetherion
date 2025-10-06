@@ -1,8 +1,4 @@
 use godot::prelude::*;
-use godot_macros::gdextension;
-
-#[allow(unused_imports)]
-use crate::zv9_prelude::*;
 
 /// 📦 Version info
 pub const VERSION: &str = "0.1.0";
@@ -34,22 +30,23 @@ pub fn init_all() {
         "engine",
         format!("Aetherion boot sequence started (v{})", VERSION)
     );
+
+    godot_print!("🧭 init_all() → Boot sequence logged.");
 }
 
 //
 // ─── Modular Includes ──────────────────────────────────────────────────────────
 //
 
-#[path = "zv9_aetherion_engine_queue.rs"]
+// Engine Modules
+mod zv9_godot_interface_api_engine_core;
+mod zv9_godot_interface_api_engine_signals;
+mod zv9_godot_interface_api_engine_util; // optional utilities
+
+// Other Interface Modules
 mod zv9_aetherion_engine_queue;
-
-#[path = "zv9_godot_interface_emulator.rs"]
 mod zv9_godot_interface_emulator;
-
-#[path = "zv9_godot_interface_map_ext.rs"]
 mod zv9_godot_interface_map_ext;
-
-#[path = "zv9_lib_interface.rs"]
 mod zv9_lib_interface;
 
 //
@@ -61,14 +58,12 @@ pub use zv9_prelude::*;
 
 // Core
 pub use aetherion_core::core::*;
-#[allow(unused_imports)]
 pub use aetherion_core::zv9_aetherion_core_conductor::{Conductor, ProcCommand};
-#[allow(unused_imports)]
-use aetherion_core::zv9_aetherion_core_runtime::start as start_runtime;
 
-// Interface
-pub use zv9_lib_interface::*;
-pub use zv9_godot_interface_map_ext::MapDataChunkExt;
+// Engine Interface
+pub use zv9_godot_interface_api_engine_core::*;
+pub use zv9_godot_interface_api_engine_signals::*;
+pub use zv9_godot_interface_api_engine_util::*;
 
 // Emulator
 pub use zv9_godot_interface_emulator::{
@@ -79,6 +74,9 @@ pub use zv9_godot_interface_emulator::{
 
 // Queue Inspector
 pub use zv9_aetherion_engine_queue::inspect_pending_queue;
+
+// Map Extensions
+pub use zv9_godot_interface_map_ext::MapDataChunkExt;
 
 // Pipeline
 pub use aetherion_core::pipeline::data::MapDataChunk;
@@ -107,13 +105,13 @@ mod integration_tests {
 // ─── Godot Extension Entry ─────────────────────────────────────────────────────
 //
 
+#[derive(Default)]
 struct AetherionEXT;
 
 #[gdextension]
 unsafe impl ExtensionLibrary for AetherionEXT {
-    fn on_level_init(level: InitLevel) {
-        if level == InitLevel::Scene {
-            godot_print!("🚀 Aetherion is summoned.");
-        }
+    fn on_level_init(_level: InitLevel) {
+        godot_print!("🚀 Aetherion is summoned.");
+        init_all();
     }
 }

@@ -1,4 +1,3 @@
-//C:/ZV9/zv9.aetherion/rust/src/zv9_godot_interface_api_config.rs
 use godot::prelude::*;
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;

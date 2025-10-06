@@ -101,32 +101,41 @@ impl<D: ChunkDelivery> Conductor<D> {
                     }
 
                     log_info("conductor", &format!("🧨 Final tile count: {}", total_tiles));
+                    self.push_status("Terrain generation complete");
                 }
 
                 ProcCommand::OverlayStructure => {
                     log_info("conductor", "🏗 Overlaying structure...");
                     // TODO: Implement structure overlay logic post-Pacman 2.0
+                    self.push_status("Structure overlay complete");
                 }
 
                 ProcCommand::ApplyModifier(f) => {
                     log_info("conductor", "🖌 Applying modifier...");
                     f(chunk);
                     log_info("conductor", "🖌 Modifier applied.");
+                    self.push_status("Modifier applied");
                 }
 
                 ProcCommand::EmitSignal(msg) => {
                     log_info("conductor", &format!("📢 Emitting signal: {}", msg));
-                    // TODO: Use streamer.sync().emit_custom(msg) if needed
+                    self.push_status(&msg);
                 }
 
                 ProcCommand::WaitTicks(n) => {
                     log_info("conductor", &format!("⏳ Pausing for {} ticks...", n));
                     self.ticks_waiting = n;
+                    self.push_status(&format!("Waiting {} ticks", n));
                 }
             }
         }
 
         log_info("conductor", &format!("✅ Tick {} complete", tick));
+    }
+
+    /// Pushes a status message using the delivery trait.
+    fn push_status(&mut self, msg: &str) {
+        self.streamer.delivery_mut().push_status(msg);
     }
 
     /// Returns true if there are pending commands or active wait.

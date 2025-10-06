@@ -29,7 +29,7 @@ enabled=PackedStringArray("res://addons/S2O_godot_plugin/plugin.cfg")
 
 [gdextension]
 
-//load="res://aetherion.gdextension"
+load="res://aetherion.gdextension"
 
 [rendering]
 
