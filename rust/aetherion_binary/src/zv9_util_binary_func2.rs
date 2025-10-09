@@ -1,12 +1,8 @@
-
-
 use walkdir::WalkDir;
-#[allow(unused_imports)] //hidden post compiler
+use std::path::Path;
+#[allow(unused_imports)] // hidden post compiler
 use aetherion_core::trailkeeper::{LogEntry, EventType};
 use aetherion_core::log_event;
-
-
-use std::path::Path;
 
 /// 📦 Prints a tree of Rust modules across all workspace crates
 pub fn print_module_tree() {
@@ -28,7 +24,6 @@ pub fn print_module_tree() {
         println!("🔍 Crate: {}\n", path.display());
 
         for entry in WalkDir::new(&path)
-            .follow_links(false)
             .into_iter()
             .filter_map(Result::ok)
             .filter(|e| e.path().extension().map_or(false, |ext| ext == "rs"))
@@ -42,19 +37,23 @@ pub fn print_module_tree() {
     println!("✅ Module scan complete.\n");
 }
 
-
 /// 🧪 Scans for GDScript-callable Rust methods exposed via #[func]
 pub fn print_godot_api_surface() {
     use std::collections::HashMap;
     use std::fs;
-    use walkdir::WalkDir;
     use regex::Regex;
 
     println!("🧪 API scan triggered");
     println!("📡 Recursively scanning for GDScript-callable API...\n");
 
-    let class_marker = Regex::new(r"#\[\s*(derive\s*\(\s*GodotClass\s*\)|class\s*\(.*?\))").unwrap();
-    let method_marker = Regex::new(r"#\[\s*(func|method)\s*\]").unwrap();
+    let class_marker = Regex::new(r"#
+
+\[\s*(derive\s*\(\s*GodotClass\s*\)|class\s*\(.*?\))").unwrap();
+    let method_marker = Regex::new(r"#
+
+\[\s*(func|method)\s*\]
+
+").unwrap();
     let fn_signature = Regex::new(r"^\s*(pub\s+)?fn\s+(\w+)\s*\(([^)]*)\)\s*(->\s*.+)?").unwrap();
     let struct_decl = Regex::new(r"^\s*(pub\s+)?struct\s+(\w+)").unwrap();
     let impl_decl = Regex::new(r"^\s*impl\s+(\w+)").unwrap();
@@ -170,7 +169,3 @@ pub fn print_godot_api_surface() {
         "Scanned GDScript-callable API surface"
     );
 }
-
-
-
-// the end

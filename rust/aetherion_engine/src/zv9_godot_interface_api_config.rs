@@ -30,38 +30,26 @@ pub struct AetherionConfig {
 
 #[godot_api]
 impl AetherionConfig {
-	#[allow(dead_code)]
-    fn init(_base: Base<Node>) -> Self {
-        Self {
-            tile_size: 16,
-            chunk_width: 8,
-            chunk_height: 8,
-            seed: rand::random_range(0..=i64::MAX),
+    
 
-            enable_voxel_mode: false,
-        }
-    }
     #[func]
     fn _ready(&self) {
         godot_print!("⚙️ AetherionConfig loaded.");
-        log_component!("AetherionConfig", "Configuration node for procedural engine settings"); // ✅ No macro import needed
+        log_component!("AetherionConfig", "Configuration node for procedural engine settings");
     }
 
     /// Returns the total number of tiles in a chunk.
     #[func]
     fn get_chunk_area(&self) -> i32 {
-        self.chunk_width * self.chunk_height
+        let area = self.chunk_width * self.chunk_height;
+        godot_print!("📐 Chunk area: {} tiles ({}×{})", area, self.chunk_width, self.chunk_height);
+        area
     }
 
     /// Regenerates the procedural seed.
     #[func]
     fn regenerate_seed(&mut self) {
-        self.seed = rand::random_range(0..=i64::MAX)
-
-
+        self.seed = rand::random_range(0..=i64::MAX);
+        godot_print!("🌱 Seed regenerated → {}", self.seed);
     }
 }
-
-
-
-// the end

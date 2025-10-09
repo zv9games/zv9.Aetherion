@@ -4,11 +4,11 @@ use std::str::FromStr;
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
 use crate::zv9_godot_interface_messaging_sync::{GodotDelivery, GodotSync};
-use aetherion_core::log_component;
 use aetherion_core::pipeline::builder::spawn_map_builder;
 use aetherion_core::generator::{NoiseConfig, NoiseType, GodotNoiseType};
 use aetherion_core::shared::SerializableVector2i;
 use aetherion_core::zv9_aetherion_pipeline_builder_streamer::{ChunkStreamer, SyncBridge};
+use aetherion_core::log_component;
 
 /// 🧭 ControlPanel — UI node for interacting with the Aetherion runtime.
 #[derive(GodotClass)]

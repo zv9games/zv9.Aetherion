@@ -1,7 +1,7 @@
 use godot::prelude::*;
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
-use aetherion_core::log_component;
+//use aetherion_core::log_component;
 
 /// 🌱 AetherionGenerator — Godot-facing node for procedural tile creation.
 #[derive(GodotClass)]
@@ -10,21 +10,13 @@ pub struct AetherionGenerator;
 
 #[godot_api]
 impl AetherionGenerator {
-	#[allow(dead_code)]
-    fn init(_base: Base<Node>) -> Self {
-        Self
-    }
-
-    #[func]
-    fn _ready(&self) {
-        godot_print!("🌱 AetherionGenerator ready.");
-        log_component!("AetherionGenerator", "Node for procedural tile creation");
-    }
+    
 
     /// Generates a tile using noise at the given coordinates and seed.
     #[func]
     fn generate_noise(&self, x: f32, y: f32, seed: i64) -> Dictionary {
         let tile = generate_noise_tile(x, y, seed);
+        godot_print!("🧪 Noise tile generated at ({}, {}) with seed {}", x, y, seed);
         Self::tile_to_dict(tile)
     }
 
@@ -32,6 +24,7 @@ impl AetherionGenerator {
     #[func]
     fn generate_pattern(&self, pattern_name: String, x: i32, y: i32) -> Dictionary {
         let tile = generate_pattern_tile(&pattern_name, x, y);
+        godot_print!("🎨 Pattern '{}' tile generated at ({}, {})", pattern_name, x, y);
         Self::tile_to_dict(tile)
     }
 
@@ -47,7 +40,6 @@ impl AetherionGenerator {
     }
 }
 
-/// 🧪 Generates a tile using noise at the given coordinates and seed.
 pub fn generate_noise_tile(x: f32, y: f32, seed: i64) -> TileInfo {
     let hash = ((x * 73856093.0) as i64 ^ (y * 19349663.0) as i64 ^ seed) & 0xFFFF;
     let alt = (hash % 4) as i32;
@@ -65,7 +57,6 @@ pub fn generate_noise_tile(x: f32, y: f32, seed: i64) -> TileInfo {
     }
 }
 
-/// 🎨 Generates a tile using a named pattern.
 pub fn generate_pattern_tile(pattern_name: &str, x: i32, y: i32) -> TileInfo {
     let alt = match pattern_name {
         "floor" => 1,
@@ -86,4 +77,5 @@ pub fn generate_pattern_tile(pattern_name: &str, x: i32, y: i32) -> TileInfo {
         animation_speed: None,
     }
 }
+
 

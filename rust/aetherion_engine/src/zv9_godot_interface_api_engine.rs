@@ -1,11 +1,12 @@
 // zv9_godot_interface_api_engine.rs
 
-mod zv9_godot_interface_api_engine_core;
-mod zv9_godot_interface_api_engine_signals;
-mod zv9_godot_interface_api_engine_util; // optional
+use crate::zv9_godot_interface_api_engine_core;
+use crate::zv9_godot_interface_api_engine_signals;
+pub use crate::zv9_godot_interface_api_engine_util; // optional
 
 pub use zv9_godot_interface_api_engine_core::*;
 pub use zv9_godot_interface_api_engine_signals::*;
+
 
 
 /*

@@ -2,7 +2,6 @@
 
 // API
 pub mod zv9_godot_interface_api_config         { include!("zv9_godot_interface_api_config.rs"); }
-pub mod zv9_godot_interface_api_engine         { include!("zv9_godot_interface_api_engine.rs"); }
 pub mod zv9_godot_interface_api_generator      { include!("zv9_godot_interface_api_generator.rs"); }
 pub mod zv9_godot_interface_api_map            { include!("zv9_godot_interface_api_map.rs"); }
 pub mod zv9_godot_interface_api_oracle         { include!("zv9_godot_interface_api_oracle.rs"); }
@@ -27,7 +26,6 @@ pub mod zv9_godot_interface_signals_dispatch      { include!("zv9_godot_interfac
 pub mod interface {
     // API
     pub use crate::zv9_lib_interface::zv9_godot_interface_api_config::*;
-    pub use crate::zv9_lib_interface::zv9_godot_interface_api_engine::*;
     pub use crate::zv9_lib_interface::zv9_godot_interface_api_generator::*;
     pub use crate::zv9_lib_interface::zv9_godot_interface_api_map::*;
     pub use crate::zv9_lib_interface::zv9_godot_interface_api_oracle::*;

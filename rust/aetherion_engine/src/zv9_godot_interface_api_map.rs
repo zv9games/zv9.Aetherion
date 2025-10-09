@@ -1,7 +1,5 @@
 use godot::builtin::{Array, Dictionary, Vector2i, Variant};
-use godot::classes::{Node, SceneTree, TileMap};
-use godot::meta::AsArg;
-use godot::obj::WithBaseField;
+use godot::classes::{Node,TileMap};
 use godot::prelude::*;
 use aetherion_core::log_component;
 
@@ -20,14 +18,7 @@ pub struct AetherionMap {
 
 #[godot_api]
 impl AetherionMap {
-	#[allow(dead_code)]
-    fn init(base: Base<Node>) -> Self {
-        Self {
-            base,
-            chunk: None,
-            tilemap: None,
-        }
-    }
+    
 
     #[func]
     fn _ready(&self) {
@@ -121,9 +112,29 @@ impl AetherionMap {
     /// 🧪 Simulates generation and placement of a test chunk.
     #[func]
     fn test_chunk_placement(&mut self) {
-        let tree: Gd<SceneTree> = self.base().get_tree().unwrap();
-        let root = tree.get_root().unwrap();
-        let tilemap: Gd<TileMap> = root.get_node_as("aetheriontester/main/expansive_tilemap");
+        let tree = match self.base().get_tree() {
+            Some(t) => t,
+            None => {
+                godot_warn!("🧩 SceneTree not found.");
+                return;
+            }
+        };
+
+        let root = match tree.get_root() {
+            Some(r) => r,
+            None => {
+                godot_warn!("🧩 Root node not found.");
+                return;
+            }
+        };
+
+        let tilemap = match root.try_get_node_as::<TileMap>("aetheriontester/main/expansive_tilemap") {
+            Some(t) => t,
+            None => {
+                godot_warn!("🧩 expansive_tilemap node not found.");
+                return;
+            }
+        };
 
         self.set_tilemap(tilemap);
 
@@ -135,7 +146,8 @@ impl AetherionMap {
             let _ = dict.insert("alternate_id", 0);
             let _ = dict.insert("rotation", 0);
             let _ = dict.insert("layer", 0);
-            tiles.push(dict.to_variant().into_arg());
+            tiles.push(dict.to_variant().to_godot());
+
         }
 
         self.load_chunk(tiles);

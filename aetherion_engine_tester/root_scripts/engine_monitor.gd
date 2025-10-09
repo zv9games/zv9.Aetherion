@@ -7,11 +7,11 @@ func set_engine(engine: Object) -> void:
 	engine_ref = engine
 	print("✅ EngineMonitor: Engine linked.")
 
-	if engine_ref.has_signal("map_building_status"):
-		engine_ref.connect("map_building_status", Callable(self, "_on_map_building_status"))
-		print("📶 EngineMonitor: Connected to 'map_building_status' signal.")
+	if engine_ref.has_signal("status_updated"):
+		engine_ref.connect("status_updated", Callable(self, "_on_status_updated"))
+		print("📶 EngineMonitor: Connected to 'status_updated' signal.")
 	else:
-		push_warning("⚠️ EngineMonitor: Engine missing 'map_building_status' signal.")
+		push_warning("⚠️ EngineMonitor: Engine missing 'status_updated' signal.")
 
 func update_status() -> void:
 	if engine_ref == null:
@@ -25,6 +25,6 @@ func update_status() -> void:
 	status = engine_ref.call("get_status")
 	print("📡 EngineMonitor: Polled status → %s" % status)
 
-func _on_map_building_status(status_msg: String) -> void:
+func _on_status_updated(status_msg: String) -> void:
 	status = status_msg
 	print("📡 EngineMonitor: Received status → %s" % status)

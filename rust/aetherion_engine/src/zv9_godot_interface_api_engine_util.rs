@@ -1,7 +1,7 @@
 // zv9_godot_interface_api_engine_util.rs
 
 use crate::zv9_prelude::*;
-use aetherion_core::pipeline::data::MapBuildOptions;
+use aetherion_core::structure::MapBuildOptions;
 
 pub fn build_map_config(
     width: i32,

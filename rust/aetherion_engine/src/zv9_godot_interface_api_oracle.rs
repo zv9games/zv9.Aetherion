@@ -15,20 +15,16 @@ pub struct AetherionOracle {
 
 #[godot_api]
 impl AetherionOracle {
-	#[allow(dead_code)]
-    fn init(base: Base<Node>) -> Self {
-        Self {
-            base,
-            engine: None,
-            tick_count: 0,
-        }
+    
+
+    /// Called when the node enters the scene tree.
+    #[func]
+    fn _ready(&mut self) {
+        godot_print!("🔮 Oracle is online. I await the ignition.");
+        log_component!("AetherionOracle", "Node for manually driving the AetherionEngine");
+        self.base_mut().set_process(true);
+
     }
-	#[allow(dead_code)]
-    fn ready(&mut self) {
-		godot_print!("🔮 Oracle is online. I await the ignition.");
-		log_component!("AetherionOracle", "Node for manually driving the AetherionEngine");
-		self.base.to_init_gd().set_process(true);
-	}
 
     /// Links the Oracle to a target engine node.
     #[func]
@@ -40,12 +36,15 @@ impl AetherionOracle {
     /// Sends a tick to the linked engine.
     #[func]
     pub fn tick(&mut self) {
-        if let Some(engine) = self.engine.as_mut() {
-            godot_print!("🔮 Oracle: Tick {} → Engine", self.tick_count);
-            engine.call("tick", &[Variant::from(self.tick_count)]);
-            self.tick_count += 1;
-        } else {
-            godot_warn!("⚠️ Oracle: No engine linked. Tick aborted.");
+        match self.engine.as_mut() {
+            Some(engine) => {
+                godot_print!("🔮 Oracle: Tick {} → Engine", self.tick_count);
+                engine.call("tick", &[Variant::from(self.tick_count)]);
+                self.tick_count += 1;
+            }
+            None => {
+                godot_warn!("⚠️ Oracle: No engine linked. Tick aborted.");
+            }
         }
     }
 
@@ -68,7 +67,3 @@ impl AetherionOracle {
         self.tick_count
     }
 }
-
-
-
-// the end

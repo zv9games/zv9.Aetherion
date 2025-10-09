@@ -70,27 +70,21 @@ pub use aetherion_core::zv9_trailkeeper_scan::*;
 pub use aetherion_core::zv9_trailkeeper_watch::*;
 
 // ─── Godot Messaging & Sync ────────────────────────────────────────────────────
-pub use crate::zv9_lib_interface::zv9_godot_interface_messaging_messages::*;
-pub use crate::zv9_lib_interface::zv9_godot_interface_messaging_sync::*;
+//pub use crate::zv9_godot_interface_messaging_messages::*;
+pub use crate::zv9_godot_interface_messaging_sync::*;
 
 // ─── Godot API Modules ─────────────────────────────────────────────────────────
-pub use crate::zv9_lib_interface::{
-    zv9_godot_interface_api_config::*,
-    zv9_godot_interface_api_engine::*,
-    zv9_godot_interface_api_generator::*,
-    zv9_godot_interface_api_map::*,
-    zv9_godot_interface_api_oracle::*,
-    zv9_godot_interface_api_signals::*,
-};
+pub use crate::zv9_godot_interface_api_config::*;
+pub use crate::zv9_godot_interface_api_engine::*;
+pub use crate::zv9_godot_interface_api_generator::*;
+pub use crate::zv9_godot_interface_api_map::*;
+pub use crate::zv9_godot_interface_api_oracle::*;
+pub use crate::zv9_godot_interface_api_signals::*;
 
 // ─── Diagnostics & Controls ────────────────────────────────────────────────────
-pub use crate::zv9_lib_interface::{
-    zv9_godot_interface_interface_controls::*,
-    zv9_godot_interface_interface_diagnostics::*,
-};
+pub use crate::zv9_godot_interface_interface_controls::*;
+pub use crate::zv9_godot_interface_interface_diagnostics::*;
 
 // ─── Signal Definitions & Dispatch ─────────────────────────────────────────────
-pub use crate::zv9_lib_interface::{
-    zv9_godot_interface_signals_definitions::*,
-    zv9_godot_interface_signals_dispatch::*,
-};
+pub use crate::zv9_godot_interface_signals_definitions::*;
+pub use crate::zv9_godot_interface_signals_dispatch::*;

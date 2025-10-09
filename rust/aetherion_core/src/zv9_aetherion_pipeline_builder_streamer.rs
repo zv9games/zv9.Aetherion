@@ -1,4 +1,3 @@
-
 #[allow(unused_imports)]
 use crate::zv9_prelude::*;
 use crate::pipeline::data::MapDataChunk;
@@ -17,8 +16,13 @@ pub trait ChunkDelivery: Send {
 
     /// 💬 Pushes a status message into the signal stream.
     fn push_status(&mut self, msg: &str) {
-        self.sync().add_signal(EngineMessage::Status(msg.to_string()));
+        let signal = EngineMessage::Status(msg.to_string());
+        log::info!("📤 ChunkDelivery pushing status: {:?}", signal);
+        self.sync().add_signal(signal);
     }
+
+    /// 🧵 Returns the sync ID for tracing.
+    fn sync_id(&self) -> usize;
 }
 
 //
@@ -33,7 +37,6 @@ pub struct Conductor<D: ChunkDelivery> {
 }
 
 impl<D: ChunkDelivery> Conductor<D> {
-    /// Creates a new conductor with a delivery streamer.
     pub fn new(streamer: ChunkStreamer<D>) -> Self {
         Self {
             queue: VecDeque::new(),
@@ -42,48 +45,47 @@ impl<D: ChunkDelivery> Conductor<D> {
         }
     }
 
-    /// Queues a chunk for future delivery.
     pub fn enqueue_chunk(&mut self, chunk: MapDataChunk) {
+        log::info!("📦 Conductor enqueued chunk with {} tiles", chunk.len());
         self.queue.push_back(chunk);
     }
 
-    /// Advances the conductor by one tick.
     pub fn tick(&mut self) {
+        log::info!("⏱️ Conductor tick");
+
         if self.ticks_waiting > 0 {
             self.ticks_waiting -= 1;
+            log::info!("⏸️ Tick paused, {} remaining", self.ticks_waiting);
             return;
         }
 
         if let Some(chunk) = self.queue.pop_front() {
-			self.streamer.sync().add_signal(EngineMessage::ChunkReady(chunk.clone()));
-			self.streamer.enqueue_chunk(chunk);
-		}
-
+            log::info!("📤 Conductor delivering chunk with {} tiles", chunk.len());
+            self.streamer.sync().add_signal(EngineMessage::ChunkReady(chunk.clone()));
+            self.streamer.enqueue_chunk(chunk);
+        }
 
         self.streamer.try_deliver();
     }
 
-    /// Pauses delivery.
     pub fn pause(&mut self) {
+        log::info!("⏸️ Conductor paused");
         self.streamer.pause();
     }
 
-    /// Resumes delivery.
     pub fn resume(&mut self) {
+        log::info!("▶️ Conductor resumed");
         self.streamer.resume();
     }
 
-    /// Returns true if there are pending chunks or active wait.
     pub fn has_pending(&self) -> bool {
         !self.queue.is_empty() || self.streamer.has_pending()
     }
 
-    /// Returns the number of queued chunks.
     pub fn queue_len(&self) -> usize {
         self.queue.len()
     }
 
-    /// Provides mutable access to the underlying streamer.
     pub fn streamer_mut(&mut self) -> &mut ChunkStreamer<D> {
         &mut self.streamer
     }
@@ -103,7 +105,6 @@ pub struct ChunkStreamer<D: ChunkDelivery> {
 }
 
 impl<D: ChunkDelivery> ChunkStreamer<D> {
-    /// Creates a new streamer with a delivery backend and interval.
     pub fn new(delivery: D, interval_ms: u64) -> Self {
         Self {
             queue: VecDeque::new(),
@@ -114,52 +115,54 @@ impl<D: ChunkDelivery> ChunkStreamer<D> {
         }
     }
 
-    /// Queues a chunk for delivery.
     pub fn enqueue_chunk(&mut self, chunk: MapDataChunk) {
+        log::info!("📦 Streamer enqueued chunk with {} tiles", chunk.len());
         self.queue.push_back(chunk);
     }
 
-    /// Attempts to deliver a chunk if interval has passed.
     pub fn try_deliver(&mut self) {
-        if self.paused || self.queue.is_empty() {
+        if self.paused {
+            log::info!("⏸️ Streamer delivery paused");
+            return;
+        }
+
+        if self.queue.is_empty() {
+            log::info!("📭 Streamer queue empty");
             return;
         }
 
         let now = Instant::now();
         if now.duration_since(self.last_delivery) >= self.delivery_interval {
             if let Some(chunk) = self.queue.pop_front() {
+                log::info!("🚚 Streamer delivering chunk with {} tiles", chunk.len());
                 self.delivery.deliver(chunk);
                 self.last_delivery = now;
             }
         }
     }
 
-    /// Pauses delivery.
     pub fn pause(&mut self) {
         self.paused = true;
+        log::info!("⏸️ Streamer paused");
     }
 
-    /// Resumes delivery.
     pub fn resume(&mut self) {
         self.paused = false;
+        log::info!("▶️ Streamer resumed");
     }
 
-    /// Returns true if there are pending chunks.
     pub fn has_pending(&self) -> bool {
         !self.queue.is_empty()
     }
 
-    /// Returns the number of queued chunks.
     pub fn queue_len(&self) -> usize {
         self.queue.len()
     }
 
-    /// Accesses the sync bridge.
     pub fn sync(&mut self) -> &mut SyncBridge {
         self.delivery.sync()
     }
 
-    /// Provides mutable access to the delivery backend.
     pub fn delivery_mut(&mut self) -> &mut D {
         &mut self.delivery
     }
@@ -176,24 +179,23 @@ pub struct SyncBridge {
 }
 
 impl SyncBridge {
-    /// Creates a new sync bridge.
     pub fn new() -> Self {
         Self {
             signals: Vec::new(),
         }
     }
 
-    /// Queues a signal message.
     pub fn add_signal(&mut self, signal: EngineMessage) {
+        log::info!("📥 SyncBridge received signal: {:?}", signal);
         self.signals.push(signal);
     }
 
-    /// Retrieves and clears all queued signals.
     pub fn drain_signals(&mut self) -> Vec<EngineMessage> {
-        std::mem::take(&mut self.signals)
+        let drained = std::mem::take(&mut self.signals);
+        log::info!("🧹 SyncBridge drained {} signals", drained.len());
+        drained
     }
 
-    /// Returns true if there are pending signals.
     pub fn has_signals(&self) -> bool {
         !self.signals.is_empty()
     }

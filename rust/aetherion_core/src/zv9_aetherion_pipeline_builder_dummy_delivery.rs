@@ -1,7 +1,7 @@
 use crate::zv9_aetherion_pipeline_builder_streamer::{ChunkDelivery, SyncBridge};
 use crate::pipeline::data::MapDataChunk;
 
-/// 🧪 Dummy delivery backend for Rust-side testing and emulation.
+/// 🧪 DummyDelivery — mock delivery backend for Rust-side testing and emulation.
 pub struct DummyDelivery {
     bridge: SyncBridge,
 }
@@ -24,5 +24,10 @@ impl ChunkDelivery for DummyDelivery {
     /// Returns a mutable reference to the internal sync bridge.
     fn sync(&mut self) -> &mut SyncBridge {
         &mut self.bridge
+    }
+
+    /// Returns a dummy sync ID for testing purposes.
+    fn sync_id(&self) -> usize {
+        0 // Static ID for dummy backend
     }
 }

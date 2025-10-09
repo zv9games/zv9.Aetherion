@@ -4,7 +4,7 @@ extends Node2D
 @onready var engine_monitor: Node = $/root/aetheriontester/main/AetherionEngine/EngineMonitor
 
 func _ready() -> void:
-	clock_timer.connect("timeout", Callable(self, "_on_clock_tick"))
+	clock_timer.timeout.connect(_on_clock_tick)
 	clock_timer.start()
 
 func enter_idle_state() -> void:
@@ -15,26 +15,27 @@ func enter_idle_state() -> void:
 	var signals := get_node("AetherionSignals")
 
 	if oracle and engine:
-		print("🔗 Main: Linking Oracle to Engine...")
+		print("🔗 Linking Oracle to Engine...")
 		oracle.call("set_engine", engine)
 
-		print("📡 Main: Linking EngineMonitor to Engine...")
+		print("📡 Linking EngineMonitor to Engine...")
 		if engine_monitor:
 			engine_monitor.call("set_engine", engine)
 
 			if signals:
+				print("📶 Connecting Engine to AetherionSignals...")
+				engine.call("set_signals_node", signals)
 				signals.connect("map_building_status", Callable(engine_monitor, "_on_map_building_status"))
-
-				print("📶 Main: EngineMonitor connected to status signal.")
+				print("✅ EngineMonitor connected to status signal.")
 			else:
-				push_warning("⚠️ Main: AetherionSignals node not found. Signal connection skipped.")
+				push_warning("⚠️ AetherionSignals node not found. Signal connection skipped.")
 
-		print("🔮 Main: Oracle linked. Delivering first pulse...")
+		print("🔮 Oracle linked. Delivering first pulse...")
 		oracle.call("tick")
 
-		print("⚙️ Main: Engine confirmed idle.")
+		print("⚙️ Engine confirmed idle.")
 	else:
-		push_error("❌ Main: Failed to link Oracle and Engine. Invocation aborted.")
+		push_error("❌ Failed to link Oracle and Engine. Invocation aborted.")
 
 func _on_clock_tick() -> void:
 	print("🕰️ Clock tick.")

@@ -4,26 +4,22 @@ use aetherion_core::log_component;
 /// 🛰️ AetherionSignals — Godot-facing signal node for engine events.
 /// Connected in GDScript to receive updates from the Rust core.
 #[derive(GodotClass)]
-#[class(base = Node)]
+#[class(init, base = Node)]
 pub struct AetherionSignals {
     #[base]
     base: Base<Node>,
 }
 
 #[godot_api]
-impl INode for AetherionSignals {
-    fn init(base: Base<Node>) -> Self {
-        Self { base }
-    }
+impl AetherionSignals {
+    
 
-    fn ready(&mut self) {
-        godot_print!("📡 AetherionSignals initialized.");
+    #[func]
+    fn _ready(&mut self) {
+        godot_print!("📡 AetherionSignals online.");
         log_component!("AetherionSignals", "Signal node for engine events");
     }
-}
 
-#[godot_api]
-impl AetherionSignals {
     // ✅ Core generation signals
     #[signal] fn build_map_start();
     #[signal] fn generation_progress(percent: i32);
