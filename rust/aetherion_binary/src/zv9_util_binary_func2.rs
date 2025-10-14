@@ -1,8 +1,8 @@
 use walkdir::WalkDir;
 use std::path::Path;
 #[allow(unused_imports)] // hidden post compiler
-use aetherion_core::trailkeeper::{LogEntry, EventType};
-use aetherion_core::log_event;
+//use aetherion_core::trailkeeper::{LogEntry, EventType};
+use aetherion_shared::zv9_util_logging::log_info;
 
 /// 📦 Prints a tree of Rust modules across all workspace crates
 pub fn print_module_tree() {
@@ -46,21 +46,13 @@ pub fn print_godot_api_surface() {
     println!("🧪 API scan triggered");
     println!("📡 Recursively scanning for GDScript-callable API...\n");
 
-    let class_marker = Regex::new(r"#
-
-\[\s*(derive\s*\(\s*GodotClass\s*\)|class\s*\(.*?\))").unwrap();
-    let method_marker = Regex::new(r"#
-
-\[\s*(func|method)\s*\]
-
-").unwrap();
+    let class_marker = Regex::new(r"#\[\s*derive\s*\(\s*GodotClass\s*\)\s*]").unwrap();
+    let method_marker = Regex::new(r"#\[\s*func\s*]").unwrap();
     let fn_signature = Regex::new(r"^\s*(pub\s+)?fn\s+(\w+)\s*\(([^)]*)\)\s*(->\s*.+)?").unwrap();
     let struct_decl = Regex::new(r"^\s*(pub\s+)?struct\s+(\w+)").unwrap();
     let impl_decl = Regex::new(r"^\s*impl\s+(\w+)").unwrap();
 
     let ignored_impls = ["crate", "std", "Default", "From", "fmt", "WithSignals"];
-    let mut last_struct = String::new();
-    let mut current_class = String::new();
     let mut godot_api: HashMap<(String, String), Vec<String>> = HashMap::new();
     let mut file_count = 0;
     let mut orphan_methods = 0;
@@ -81,19 +73,18 @@ pub fn print_godot_api_surface() {
 
         if let Ok(content) = fs::read_to_string(entry.path()) {
             let mut lines = content.lines().peekable();
+            let mut last_struct = String::new();
+            let mut current_class = String::new();
 
             while let Some(line) = lines.next() {
                 let line = line.trim();
-
-                if line.contains("error[E0277]") {
-                    continue;
-                }
 
                 if class_marker.is_match(line) {
                     for _ in 0..20 {
                         if let Some(next_line) = lines.peek() {
                             if let Some(caps) = struct_decl.captures(next_line.trim()) {
                                 last_struct = caps[2].to_string();
+                                println!("🔍 Found GodotClass struct: {} in {}", last_struct, file_path);
                                 break;
                             }
                             lines.next();
@@ -105,6 +96,7 @@ pub fn print_godot_api_surface() {
                     let candidate = caps[1].to_string();
                     if candidate == last_struct && !ignored_impls.contains(&candidate.as_str()) {
                         current_class = candidate;
+                        println!("🔧 Matched impl block for: {}", current_class);
                     }
                 }
 
@@ -130,6 +122,7 @@ pub fn print_godot_api_surface() {
                         let signature = format!("fn {}({}) {}", name, params, return_type);
 
                         if !current_class.is_empty() {
+                            println!("✅ Found #[func] method: {} in {}", name, current_class);
                             let key = (current_class.clone(), file_path.clone());
                             godot_api.entry(key).or_default().push(signature);
                         } else {
@@ -163,9 +156,6 @@ pub fn print_godot_api_surface() {
 
     println!("\n✅ GDScript-callable methods printed.\n");
 
-    log_event!(
-        EventType::System,
-        "AetherionBinary",
-        "Scanned GDScript-callable API surface"
-    );
+    log_info("AetherionBinary", "Scanned GDScript-callable API surface");
+
 }

@@ -1,8 +1,7 @@
-//C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_generator_patterns.rs
 
 
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
+use aetherion_shared::zv9_prelude::*;
 
 /// 🟫 Checkerboard pattern: alternating tiles.
 pub fn checkerboard(x: i32, y: i32) -> bool {

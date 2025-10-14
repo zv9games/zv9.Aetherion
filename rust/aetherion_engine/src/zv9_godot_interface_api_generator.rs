@@ -1,6 +1,6 @@
 use godot::prelude::*;
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
+use aetherion_shared::zv9_prelude::*;
 //use aetherion_core::log_component;
 
 /// 🌱 AetherionGenerator — Godot-facing node for procedural tile creation.

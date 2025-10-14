@@ -1,7 +1,7 @@
 //C:/ZV9/zv9.aetherion/rust/src/zv9__aetherion__codegen__dsl.rs
 
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
+use aetherion_shared::zv9_prelude::*;
 
 use serde::{Deserialize, Serialize};
 

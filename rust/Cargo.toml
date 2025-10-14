@@ -2,6 +2,8 @@
 members = [
     "aetherion_core",
     "aetherion_engine",
-    "aetherion_binary"
+    "aetherion_binary",
+	"aetherion_trailkeeper",
+	"aetherion_shared"
 ]
-resolver = "3"
+resolver = "2"

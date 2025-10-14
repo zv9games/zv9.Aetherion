@@ -1,6 +1,6 @@
 //C:/ZV9/zv9.aetherion/rust/src/zv9_util_profiling.rs
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
+use aetherion_shared::zv9_prelude::*;
 use std::time::{Duration, Instant};
 
 /// ⏱ Lightweight profiling timer for scoped diagnostics.

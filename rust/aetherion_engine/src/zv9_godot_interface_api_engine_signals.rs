@@ -1,10 +1,10 @@
 use godot::prelude::*;
 use godot::global::Error;
-use godot::classes::TileMap;
-use aetherion_core::shared::EngineMessage;
+//use godot::classes::TileMap;
 
 use crate::zv9_godot_interface_map_ext::MapDataChunkExt;
 use crate::zv9_godot_interface_api_engine_core::AetherionEngine;
+use aetherion_shared::shared::EngineMessage;
 
 /// 📡 Emits all pending signals from engine and conductor into Godot.
 pub fn emit_pending_signals(engine: &mut AetherionEngine) {
@@ -74,6 +74,7 @@ pub fn apply_chunks_to_tilemap(engine: &mut AetherionEngine) {
 }
 
 /// 🧪 Places a debug tile at the given coordinates.
+
 pub fn debug_place_tile(engine: &mut AetherionEngine, x: i32, y: i32) {
     if let Some(tilemap) = engine.target_tilemap.as_mut() {
         godot_print!("🧪 Placing debug tile at ({}, {})", x, y);
@@ -87,8 +88,4 @@ pub fn debug_place_tile(engine: &mut AetherionEngine, x: i32, y: i32) {
     }
 }
 
-/// 🎯 Assigns a TileMap target to the engine.
-pub fn set_tilemap(engine: &mut AetherionEngine, tilemap: Gd<TileMap>) {
-    godot_print!("🎯 TileMap assigned to engine.");
-    engine.target_tilemap = Some(tilemap);
-}
+

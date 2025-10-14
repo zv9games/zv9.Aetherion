@@ -11,8 +11,7 @@ use std::io::{self, Write};
 
 use crossterm::event::{self, Event, KeyCode};
 
-use aetherion_core::zv9_util_logging::{init_logging, log_info};
-use aetherion_core::log_component;
+use aetherion_shared::zv9_util_logging::{init_logging, log_info};
 use zv9_util_binary_menu::{build_menu, print_menu};
 #[allow(unused_imports)]
 use zv9_util_binary_func::*;
@@ -25,7 +24,8 @@ fn wait_for_enter() {
 
 fn main() {
     // 🧠 Startup
-    log_component!("AetherionBinary", "Interactive CLI for engine diagnostics and control");
+    log_info("AetherionBinary", "Interactive CLI for engine diagnostics and control");
+
 
     init_logging();
     log_info("Startup", "Engine boot sequence initiated.");

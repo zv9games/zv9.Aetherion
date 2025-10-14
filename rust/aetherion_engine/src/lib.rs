@@ -5,13 +5,8 @@ mod zv9_godot_interface_api_engine;
 /// 📦 Version info
 pub const VERSION: &str = "0.1.0";
 
-//
-// ─── Prelude ───────────────────────────────────────────────────────────────────
-//
+pub mod zv9_aetherion_engine_config_godot;
 
-pub mod zv9_prelude {
-    include!("zv9_prelude.rs");
-}
 
 //
 // ─── Sync Bridge ───────────────────────────────────────────────────────────────
@@ -24,14 +19,13 @@ pub mod zv9_aetherion_sync_bridge;
 //
 
 pub fn init_all() {
-    use aetherion_core::log_event;
-    use aetherion_core::zv9_trailkeeper_entry::EventType;
+	pub use aetherion_trailkeeper::zv9_trailkeeper_entry::EventType;
 
-    log_event!(
-        EventType::System,
-        "engine",
-        format!("Aetherion boot sequence started (v{})", VERSION)
-    );
+
+    use aetherion_shared::zv9_util_logging::log_info;
+
+	log_info("engine", &format!("Aetherion boot sequence started (v{})", VERSION));
+
 
     godot_print!("🧭 init_all() → Boot sequence logged.");
 }
@@ -53,7 +47,6 @@ mod zv9_godot_interface_api_oracle;
 mod zv9_godot_interface_api_signals;
 
 // Messaging & Sync
-mod zv9_godot_interface_messaging_messages;
 mod zv9_godot_interface_messaging_sync;
 
 // Diagnostics & Controls
@@ -77,7 +70,7 @@ mod zv9_aetherion_engine_queue;
 //
 
 // Prelude
-pub use zv9_prelude::*;
+pub use aetherion_shared::zv9_prelude::*;
 
 // Core
 pub use aetherion_core::core::*;

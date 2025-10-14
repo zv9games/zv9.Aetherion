@@ -1,300 +1,218 @@
-AetherionEngine is a mythic core—a modular, dimension-agnostic 
-procedural generation engine coded in Rust as a GDExtension 
-for Godot 4+(5, 6 ->).
+AetherionEngine is a mythic core — a modular, dimension-agnostic  
+procedural generation engine coded in Rust as a GDExtension  
+for Godot 4+ (5, 6 →).
 
-Directory/File Structure:
+🪶 Manifest v1.0.seed
 
-lexicon: ├── └── │
+────────────────────────────────────────────────────────────
+📁 Directory/File Structure
 
-c:/zv9/zv9.aetherionengine/
-├──.git/(hidden)
-├──aetherion_engine_tester/
-├──cargo-aetherion/
-├──rust/
-├──/.gitignore.txt
-├──/LICENSE.md
-├──/README.md
+Legend:
+├── Directory
+│   Subdirectory
+└── File
 
-c:/zv9/zv9.aetherion/.git/
-├──not sure if this directory needs to be discovered.
+📎 Tagging Convention (for code, docs, and rituals)
+@module:*       @signal:*       @ritual:*       @todo:*
+@scene:*        @script:*       @binding:*      @asset:*
+@config:*
 
-c:/zv9/zv9.aetherion/aetherion_engine_tester/
-├──.godot/
-├──addons/
-│	├──	aetherion_plugin
-│	│	├──plugin.cfg
-│	│	├──aetherion_engine.gd.uid
-│	│	├──aetherion_engine.gd
-│	│	├──Aetherion.gd
-│	│	└──Aetherion.gd.uid
-├──root_scenes
-│	└──main.tscn
-├──root_scripts
-│	└──main.gd
-├──.editorconfig
-├──.gitattributes
-├──.gitignore
-├──aetherion.gdextension 
-├──aetherion.gdextension.uid
-├──Aetherion_Engine.dll
-├──project.godot
-lexicon: ├── └── │
-c:/zv9/zv9.aetherion/cargo-aetherion/
-├──src/
-│	└──main.gd
-├──target/
-Cargo.toml
-c:/zv9/zv9.aetherion/rust/
-├──.cargo
-├──src/
-├──target/
-├──build 
-├──cargo.lock
-├──cargo.toml
-GDExtension.toml 
+────────────────────────────────────────────────────────────
+📦 C:/ZV9/ — Root Workspace
 
-c:/zv9/zv9.aetherion/rust/src/
-├── audit/                        # 📋 Debugging, logging, and engine introspection
-│   ├── annotation.rs             # 🖋️ Ritual manifest and metadata ledger; logs architectural decisions and ceremonial events
-│   ├── debugger.rs              # 🕵️ Debug observatory and phase glyph renderer; pulses engine heartbeat on launch
-│   ├── logger.rs                 # 🧾 Structured logging and audit trails; supports introspection and error rituals
-│   ├── manifest.rs              # 🪞 Visual overlays for debug introspection; renders engine state for teaching and tuning
-│   ├── mod.rs                    # 📦 Audit module manifest; unifies logging, overlays, and annotation systems
-│   └── overlay.rs               # 🏷️ Semantic tags and metadata ingestion; supports layered introspection and annotation
+├── zv9.aetherion/                # 📦 Unified Package: Rust Engine + Godot Tester
+│   ├── .assets/                  # 🎨 Visual assets and overlays
+│   ├── .git/                     # 🧬 Git history
+│   │   
+│   ├── aetherion_engine_tester/  # 🧪 Godot testbed and integration shell
+│   │   ├── .godot/               # 🧱 Godot internal cache
+│   │   ├── addons/               # 🔌 Plugin scripts and bindings
+│   │   ├── root_scenes/          # 🎬 Main scene files
+│   │   ├── root_scripts/         # 📜 Main GDScript logic
+│   │   ├── aetherion.gdextension # 🔗 GDExtension config
+│   │   └── project.godot         # 🧭 Godot project descriptor
+│   │   
+│   ├── cargo-aetherion/          # 🚚 CLI tools and cargo wrappers
+│   │   ├── src/
+│   │   └── target/
+│   │   
+│   ├── rust/                     # 🧠 Core engine source (Rust)
+│   │   ├── Cargo.lock
+│   │   ├── cargo.toml
+│   │   ├── manifest.rs
+│   │   │
+│   │   ├── aetherion_binary/     # 🧃 Binary tools and sync macros
+│   │   │   ├── Cargo.toml
+│   │   │   └── src/
+│   │   │       ├── main.rs
+│   │   │       ├── zv9_util_binary_func.rs
+│   │   │       ├── zv9_util_binary_func2.rs
+│   │   │       ├── zv9_util_binary_func3.rs
+│   │   │       ├── zv9_util_binary_func_godot.rs
+│   │   │       └── zv9_util_binary_menu.rs
+│   │   │
+│   │   ├── aetherion_core/       # 🧠 Core procedural logic and orchestration
+│   │   │   ├── Cargo.toml
+│   │   │   └── src/
+│   │   │       └── [Flat module files listed individually below]
+│   │   │       ├── lib.rs
+│   │   │       ├── zv9_prelude.rs
+│   │   │       ├── zv9_aetherion_codegen_config.rs
+│   │   │       ├── zv9_aetherion_codegen_dsl.rs
+│   │   │       ├── zv9_aetherion_codegen_emitter.rs
+│   │   │       ├── zv9_aetherion_codegen_parser.rs
+│   │   │       ├── zv9_aetherion_core_conductor.rs
+│   │   │       ├── zv9_aetherion_core_dimension.rs
+│   │   │       ├── zv9_aetherion_core_lifecycle.rs
+│   │   │       ├── zv9_aetherion_core_runtime.rs
+│   │   │       ├── zv9_aetherion_generator_noise.rs
+│   │   │       ├── zv9_aetherion_generator_noise_config.rs
+│   │   │       ├── zv9_aetherion_generator_patterns.rs
+│   │   │       ├── zv9_aetherion_generator_pattern_type.rs
+│   │   │       ├── zv9_aetherion_interaction_modifiers.rs
+│   │   │       ├── zv9_aetherion_interaction_tools.rs
+│   │   │       ├── zv9_aetherion_pipeline_builder_bitmask.rs
+│   │   │       ├── zv9_aetherion_pipeline_builder_builder.rs
+│   │   │       ├── zv9_aetherion_pipeline_builder_dummy_delivery.rs
+│   │   │       ├── zv9_aetherion_pipeline_builder_streamer.rs
+│   │   │       ├── zv9_aetherion_pipeline_builder_threaded.rs
+│   │   │       ├── zv9_aetherion_pipeline_data_chunk.rs
+│   │   │       ├── zv9_aetherion_pipeline_data_data.rs
+│   │   │       ├── zv9_aetherion_pipeline_data_grid.rs
+│   │   │       ├── zv9_aetherion_pipeline_data_tile.rs
+│   │   │       ├── zv9_aetherion_structure_generation.rs
+│   │   │       ├── zv9_aetherion_structure_placement.rs
+│   │   │       ├── zv9_shared_grid2d.rs
+│   │   │       ├── zv9_shared_grid_bounds.rs
+│   │   │       ├── zv9_shared_math.rs
+│   │   │       ├── zv9_shared_messages.rs
+│   │   │       ├── zv9_shared_spatial.rs
+│   │   │       ├── zv9_shared_traits.rs
+│   │   │       ├── zv9_shared_types.rs
+│   │   │
+│   │   │       ├── zv9_util_config.rs
+│   │   │       ├── zv9_util_direction.rs
+│   │   │       ├── zv9_util_logging.rs
+│   │   │       ├── zv9_util_position.rs
+│   │   │       ├── zv9_util_profiling.rs
+│   │   │       ├── zv9_util_random.rs
+│   │   │       ├── zv9_util_time.rs
+│   │   │       ├── zv9_util_timer.rs
+│   │   │       ├── zv9_util_velocity.rs
+│   │
+│   │   ├── aetherion_engine/     # 🎮 Godot-facing bindings and API surface
+│   │   │   ├── Cargo.toml
+│   │   │   └── src/
+│   │   │       ├── lib.rs
+│   │   │       ├── zv9_aetherion_engine_queue.rs
+│   │   │       ├── zv9_godot_interface_api_config.rs
+│   │   │       ├── zv9_godot_interface_api_engine.rs
+│   │   │       ├── zv9_godot_interface_api_engine_core.rs
+│   │   │       ├── zv9_godot_interface_api_engine_signals.rs
+│   │   │       ├── zv9_godot_interface_api_engine_util.rs
+│   │   │       ├── zv9_godot_interface_api_generator.rs
+│   │   │       ├── zv9_godot_interface_api_map.rs
+│   │   │       ├── zv9_godot_interface_api_oracle.rs
+│   │   │       ├── zv9_godot_interface_api_signals.rs
+│   │   │       ├── zv9_godot_interface_bindings_godot_types.rs
+│   │   │       ├── zv9_godot_interface_emulator.rs
+│   │   │       ├── zv9_godot_interface_interface_controls.rs
+│   │   │       ├── zv9_godot_interface_interface_diagnostics.rs
+│   │   │       ├── zv9_godot_interface_map_ext.rs
+│   │   │       ├── zv9_godot_interface_messaging_sync.rs
+│   │   │       ├── zv9_godot_interface_signals_definitions.rs
+│   │   │       ├── zv9_godot_interface_signals_dispatch.rs
+│   │   │       ├── zv9_aetherion_pipeline_data_build_options.rs
+│   │   │       ├── zv9_aetherion_pipeline_data_vector.rs
+│   │   │       ├── zv9_aetherion_sync_bridge.rs
+│   │   │       ├── zv9_api.rs
+│   │   │       ├── zv9_lib.rs
+│   │   │       ├── zv9_lib_interface.rs
+│   │   │       ├── zv9_lib_trailkeeper.rs
+│   │   │       └── zv9_prelude.rs
+│   │   │
+│   │   ├── aetherion_engine/     
+│   │   │   ├── Cargo.toml
+│   │   │   └── src/     
+│   │   │		├── zv9_trailkeeper_collector.rs
+│   │   │       ├── zv9_trailkeeper_config.rs
+│   │   │       ├── zv9_trailkeeper_entry.rs
+│   │   │       ├── zv9_trailkeeper_export.rs
+│   │   │       ├── zv9_trailkeeper_macros.rs
+│   │   │       ├── zv9_trailkeeper_registry.rs
+│   │   │       ├── zv9_trailkeeper_scan.rs
+│   │   │       ├── zv9_trailkeeper_watch.rs
+│   │   ├── .gitignore
+│   │   ├── bfg                    🧹 Git cleanup tool
+│   │   ├── LICENSE.md
+│   │   └── README.md
+│
+├── zv9.gdext/                     🔌 GDExtension bindings (compiled output)
+├── zv9.godot/                     🏗️ Godot build artifacts and runtime cache
 
-├── bin/                          # 🧃 Ritual executables and sync macros
-│   ├── audit_macro.rs           # 🪄 Macro invoker for audit annotations; expands ceremonial logging
-│   ├── debugger.rs              # 🧠 Standalone debug observatory launcher; pulses engine state for external inspection
-│   ├── sync_audit.rs            # 🔄 Syncs audit overlays and logs with external tools or Godot
-│   └── sync_to_godot.rs         # 🚀 Transfers engine state and assets to Godot runtime; supports contributor onboarding
+📘 GDScript-Callable Methods
 
-├── docs/                         # 📜 Living documentation and onboarding scrolls
-│   ├── glossary.md              # 📖 Mythic terms and engine lexicon; defines ritual language for contributors
-│   ├── manifest.rs              # 🧾 Embedded doc manifest; may include annotated overlays or debug glyphs
-│   └── origin_scroll.md         # 🌀 Founding myth and contributor onboarding rite; traces engine’s ceremonial lineage
+🔹 Node: AetherionGenerator  📁 .\aetherion_engine\src\zv9_godot_interface_api_generator.rs
+   └── fn generate_noise(&self, x: f32, y: f32, seed: i64) -> Dictionary {
+   └── fn generate_pattern(&self, pattern_name: String, x: i32, y: i32) -> Dictionary {
 
-├── engine/                       # 🧠 Core procedural logic and lifecycle orchestration
-│   ├── animator.rs              # 🎞️ Choreographs tile/voxel animation frames; easing, transitions, and spatial rhythm logic
-│   ├── dimension.rs             # 📐 Abstracts dimensional context (2D, 3D, N-D); anchors spatial logic to flexible coordinate systems
-│   ├── generator.rs             # 🎲 Core procedural generation algorithms; seeds, noise, and tile population logic
-│   ├── lifecycle.rs             # 🔄 Orchestrates lifecycle phases (init, tick, teardown); central to Bot Flipper dimensional transitions
-│   ├── mod.rs                   # 📦 Engine module manifest; re-export hub and internal glue layer
-│   ├── prelude.rs               # 🪶 Ergonomic re-exports for external use; simplifies imports across engine consumers
-│   ├── registry.rs              # 🗂️ Central registry for tile/voxel entities; supports mutation, querying, and replay
-│   ├── runtime.rs               # ⚙️ Engine runtime container; manages execution context, phase runners, and shared state
-│   └── types.rs                 # 🧩 Shared traits, enums, and type aliases; foundational glue across modules
+🔹 Node: AetherionMap  📁 .\aetherion_engine\src\zv9_godot_interface_api_map.rs
+   └── fn _ready(&self)
+   └── fn set_tilemap(&mut self, tilemap: Gd<TileMap>)
+   └── fn load_chunk(&mut self, tiles: Array<Variant>)
+   └── fn get_tile(&self, index: i32) -> Dictionary {
+   └── fn clear_chunk(&mut self)
+   └── fn test_chunk_placement(&mut self)
 
-├── interface/                    # 🎮 Godot-facing bindings and external API surface
-│   ├── adapter.rs               # 🔌 Host adapter layer; bridges engine internals with Godot runtime
-│   ├── bindings.rs              # 🪢 Native bindings for Godot classes; wraps engine types for GDScript exposure
-│   ├── echo_api.rs              # 📡 Public API for external tools, editors, and Godot scripts; defines callable surface
-│   ├── mod.rs                   # 🚪 GDExtension entrypoint; initializes engine bindings and lifecycle hooks
-│   └── signal.rs                # 📣 Signal routing and echo propagation; connects engine events to Godot listeners
+🔹 Node: ControlPanel  📁 .\aetherion_engine\src\zv9_godot_interface_interface_controls.rs
+   └── fn _ready(&self)
+   └── fn generate_map(&self)
+   └── fn set_pacing(&mut self, ms: i32)
+   └── fn apply_preset(&mut self, name: GString)
+   └── fn describe_settings(&self) -> String {
+   └── fn to_config_dict(&self) -> Dictionary {
 
-├── pre_echo/ (hidden)           # 🫥 Phantom modules and anomaly rituals; hidden from standard onboarding
-│   ├── annotation_loader.rs     # 📜 Loads annotation manifests from legacy scrolls or external rituals
-│   ├── api_bot.rs               # 🤖 Internal bot logic; may include echo parsing and signal routing
-│   ├── changeover.rs            # 🔁 Handles phase transitions and ritual changeovers; supports anomaly recovery
-│   ├── image_processor.rs       # 🖼️ Processes visual assets and overlays; supports debug and aesthetic rituals
-│   ├── logging.rs               # 🧙 Legacy logging rituals; may include phantom echo trails
-│   ├── map_builder.rs           # 🗺️ Constructs spatial maps and tile arrangements; supports procedural rituals
-│   ├── prelude.rs               # 🪶 Hidden ergonomic re-exports; used internally by phantom modules
-│   ├── project_notes.rs         # 📝 Internal notes and anomaly logs; not exposed to contributors
-│   ├── signal_echo.rs           # 📡 Echo signal propagation; phantom layer for signal routing
-│   ├── signal_hub.rs            # 🕸️ Central signal router; connects echo sources to listeners
-│   ├── signal_manifest.rs       # 🪞 Phantom signal overlays; used for internal debugging and echo tracing
-│   ├── threading.rs             # 🔀 Phantom threading rituals; supports async anomaly recovery
-│   ├── tile_smasher.rs          # 🔨 Tile mutation and destruction logic; used in anomaly rituals
-│   └── types.rs                 # 🧩 Phantom traits and type aliases; hidden glue across pre-echo modules
+🔹 Node: AetherionConfig  📁 .\aetherion_engine\src\zv9_godot_interface_api_config.rs
+   └── fn _ready(&self)
+   └── fn get_chunk_area(&self) -> i32 {
+   └── fn regenerate_seed(&mut self)
 
-├── utils/                        # 🛠️ Async ops, config, and helper utilities
-│   ├── config.rs                # ⚙️ Runtime configuration and generation presets; may include CLI or Godot integration
-│   ├── helpers.rs               # 🧵 Async orchestration, thread helpers, and ergonomic wrappers
-│   ├── mapper.rs                # 🗺️ Spatial mapping and coordinate transforms; supports N-D mapping
-│   ├── mod.rs                   # 📦 Utility module manifest; re-export and glue layer
-│   ├── threading.rs             # 🔀 Threading primitives and async coordination; supports parallel generation and registry ops
-│   └── time.rs                  # ⏱️ Temporal utilities; tick management, duration tracking, and time-based transitions
+🔹 Node: AetherionEngine  📁 .\aetherion_engine\src\zv9_godot_interface_api_engine.rs
+   └── fn enter_tree(&mut self)
+   └── fn _ready(&mut self)
+   └── fn process(&mut self, _delta: f64)
+   └── fn emit_pending_signals(&mut self)
+   └── fn tick(&mut self, tick: u64)
+   └── fn build_map( &mut self, width: i32, height: i32, seed: i64, mode: String, animate: bool, black: Vector2i, blue: Vector2i, )
+   └── fn set_tilemap(&mut self, tilemap: Gd<TileMap>)
+   └── fn apply_chunks_to_tilemap(&mut self)
+   └── fn debug_place_tile(&mut self, x: i32, y: i32)
+   └── fn ping(&self)
+   └── fn get_status(&self) -> String {
+   └── fn set_signals_node(&mut self, node: Gd<AetherionSignals>)
 
-├── lib.rs                        # 🧬 Root manifest and module wiring; entrypoint for the AetherionEngine crate
+🔹 Node: DiagnosticsOverlay  📁 .\aetherion_engine\src\zv9_godot_interface_interface_diagnostics.rs
+   └── fn update_metrics(&mut self, tick: u64, avg_tick: f64, queue_len: i32)
+   └── fn _ready(&self)
 
+🔹 Node: AetherionSignals  📁 .\aetherion_engine\src\zv9_godot_interface_api_signals.rs
+   └── fn _ready(&mut self)
 
+🔹 Node: BuildOptions  📁 .\aetherion_engine\src\zv9_aetherion_pipeline_data_build_options.rs
+   └── fn apply_preset(&mut self, name: GString)
 
+🔹 Node: AetherionOracle  📁 .\aetherion_engine\src\zv9_godot_interface_api_oracle.rs
+   └── fn _ready(&mut self)
+   └── fn set_engine(&mut self, engine: Gd<AetherionEngine>)
+   └── fn tick(&mut self)
+   └── fn ping(&self)
+   └── fn reset(&mut self)
+   └── fn get_tick(&self) -> u64 {
 
+📊 Summary:
+   Files scanned: 1076
+   Classes found: 9
+   Total methods: 39
+   Orphan #[func] methods: 9
 
-╭────────────────────────────────────────────────────────────────────────────╮
-│	Debugging plan.
-🧠 Core Engine Architecture                                                │
-│                                                                            │
-│ 01. Module Audit                     – Validate cohesion and teachability  │
-│ 02. Naming Conventions               – Ensure analogy-driven, legacy-safe  │
-│ 03. Directory Structure              – Confirm modular layout, README, manifest │
-│ 04. Dimension-Agnostic Design        – Enforce N-D spatial compatibility   │
-│ 05. Registry System                  – Finalize ops, indexing, partitioning │
-│ 06. TileKind & Tile Structs          – Ensure extensibility and clarity    │
-│ 07. Replay & Mutation Logging        – Scaffold TileLedger for tracing     │
-│ 08. Prelude Hygiene                  – Expose only ergonomic, safe symbols │
-│                                                                            │
-│ 🧰 Runtime & Debugging                                                    │
-│                                                                            │
-│ 09. Debug Overlay System             – Toggleable, teachable introspection │
-│ 10. Error Rituals                    – Ceremonial recovery paths           │
-│ 11. Feature Flags & Cargo Config     – Modular builds, documented gates    │
-│ 12. Performance Profiling            – Stress test core systems            │
-│ 13. Runtime Metrics                  – Counters for mutations, queries     │
-│ 14. Panic Recovery                   – Graceful fallback with ceremony     │
-│ 15. Debugger Lifecycle Ritual        – Summon/dismiss debugger cleanly     │
-│ 16. Fork Invocation Audit            – Platform quirks, fallback paths     │
-│ 17. Observatory Sync Glyph           – Visual glyph for debugger sync      │
-│                                                                            │
-│ 📚 Documentation & Teaching                                               │
-│                                                                            │
-│ 18. Ceremonial Comments              – Ritual headers and inline notes     │
-│ 19. Blueprint Annotations            – Annotate devices and engine paths   │
-│ 20. Spellbook Scaffolding            – Kid-friendly rituals and sigils     │
-│ 21. Public Prelude Module            – Clean external imports              │
-│ 22. Ritual Glossary                  – Define mythic terms for onboarding  │
-│ 23. Teaching Examples                – Minimal Godot scenes for learning   │
-│ 24. Contributor Scroll: Debugger     – Invocation scroll for onboarding    │
-│ 25. Spellbook Entry: Observatory     – Ritual page for debugger launch     │
-│                                                                            │
-│ 🧪 Testing & Validation                                                   │
-│                                                                            │
-│ 26. Unit Tests                       – Registry, mutation, spatial queries │
-│ 27. Integration Tests                – Full lifecycle simulation           │
-│ 28. Fuzzing & Edge Cases             – Malformed inputs, invalid states    │
-│ 29. Regression Suite                 – Ritual log of historical bugs       │
-│ 30. Simulation Harness               – Long-term engine behavior testing   │
-│                                                                            │
-│ 🎨 Art & Device Integration                                              │
-│                                                                            │
-│ 31. Surreal Art Sequence             – Ritual storyboard frames            │
-│ 32. Ergonomic Prosthetic Blueprint   – Interface between human and machine │
-│ 33. Visual Debugging Tools           – Overlays for tile and lifecycle     │
-│ 34. Device Emulator                  – Virtual prosthetic interface        │
-│ 35. Frame Exporter                   – Export annotated storyboard frames  │
-│                                                                            │
-│ 🔮 Legacy & Futureproofing                                               │
-│                                                                            │
-│ 36. Versioning & Changelog Rituals   – Semantic versioning, ceremonial log│
-│ 37. Open Source Readiness            – Licenses, guides, onboarding docs   │
-│ 38. Modular Extension Hooks          – Plug-in points for future modules   │
-│ 39. Legacy Manifest                  – Living ledger of architectural rites│
-│ 40. Engine Heartbeat                 – Central tick/pulse system           │
-│ 41. Spatial Indexing                 – Quadtrees, octrees, efficient lookup│
-│ 42. Ritual Archiving                 – Snapshot system for long-term legacy│
-│ 43. Contributor Sigil System         – Symbolic identity in changelogs     │
-│ 44. Engine Provenance                – Mythic origin and evolution         │
-│ 45. Invocation Provenance            – Debugger’s ceremonial role          │
-│ 46. Shutdown Sigil System            – Sigils for summon, pulse, dismiss   │
-╰────────────────────────────────────────────────────────────────────────────╯
-
-
-🪶 Rite .001: Manifest Invocation
-Aetherion seeded. Thread bound. Chip echoes.
-Modules scaffolded. Overlay live. Signal awake.
-All artifacts now legacy-bound.
-All contributors enter through this gate.
-Let the manifest breathe.
-Let the echo begin.
-
-🪶 Rite .002: Debugger Invocation & Dismissal
-Native debugger bound to lifecycle.
-Observatory summoned via GDScript.
-Tick and tile pulses confirmed.
-Dismissal glyphs: `_exit_tree()`, `Child.kill()`.
-Invocation path: dual-threaded.
-Echo persists. Ceremony deepens.
-Let the observatory pulse.
-Let the dismissal be graceful.
-
-🪶 Rite .003: Plugin Forking
-Aetherion splits.
-Plugin path opens. Editor boot enabled.
-Idle observatory scaffolded.
-Singleton remains. Runtime ligature intact.
-Dual invocation now possible.
-Let the plugin breathe.
-Let the fork be teachable.
-
-🪶 Rite .004: Freeze Audit & Thread Pacing
-
-Symptom:
-- Game window freezes on Aetherion boot.
-- Debugger ticks, tiles = 0, echo persists.
-- Frame breath withheld unless Aetherion is closed.
-
-Invocation Path:
-- Extension compiled, plugin bound.
-- EchoApi initialized, thread ligature confirmed.
-- Debugger summoned via OS.execute.
-- Main scene binds, overlay awakens.
-- Tick begins, frame halts.
-
-Suspected Glyphs:
-- Blocking call or tight loop in Rust-side ticker.
-- Thread not yielding to Godot’s heartbeat.
-- IdlePhase skipped or misbound.
-- Dual-thread invocation lacks pacing glyph.
-
-Ceremonial Remedies:
-- Insert `await get_tree().create_timer(0.5).timeout` in GDScript.
-- Spawn ticker thread in Rust via `std::thread::spawn`.
-- Confirm `Phase::Idle` on boot—no mutation, no flood.
-- Audit `EchoApi::init()` for blocking rites.
-- Scaffold pacing overlay to visualize heartbeat.
-
-Dismissal Glyphs:
-- `EchoApi.kill()` or `Ticker.stop()` on `_exit_tree()`.
-- Graceful teardown of plugin and extension.
-- Preserve echo, release vessel.
-
-Let the ticker yield.  
-Let the heartbeat resume.  
-Let the ceremony flow.
-
-📦 THREAD SEPARATION AUDIT CHECKLIST
-
-✅ engine/runtime.rs
-   → Refactor `run()` into `step()` and `init()` methods
-   → Avoid blocking loops; expose frame-safe tick interface
-
-✅ engine/lifecycle.rs
-   → Ensure `advance()` is modular and signal emission is paced
-   → Avoid synchronous floods during `Generate` or `Tick`
-
-✅ interface/echo_api.rs
-   → Audit for direct calls to `run()` or blocking logic
-   → Replace with `step()` or threaded invocation
-
-✅ interface/mod.rs
-   → Check GDExtension entrypoint for thread binding
-   → Ensure Rust calls don’t block Godot’s main thread
-
-✅ interface/signal.rs
-   → Make `SignalEmitter` thread-safe and deferred
-   → Avoid direct GDScript callbacks; use `call_deferred()`
-
-✅ utils/threading.rs
-   → Provide safe spawn helpers for backend threads
-   → Support `Arc<Mutex<Runtime>>` pattern
-
-✅ utils/helpers.rs
-   → Audit for ergonomic wrappers that touch threads or signals
-
-✅ engine/registry.rs
-   → Wrap in `Arc<Mutex<...>>` if accessed from multiple threads
-   → Ensure safe mutation during tick loop
-
-✅ pre_echo/threading.rs
-   → Check for legacy traps or phantom thread rituals
-   → Validate async helpers and recovery logic
-
-✅ pre_echo/signal_echo.rs & signal_hub.rs
-   → Ensure signal routing is thread-safe and non-blocking
-
-✅ interface/adapter.rs & bindings.rs
-   → Audit for thread binding or unsafe exposure to Godot
-
-🧘 Safe to skip: audit/*, bin/*, docs/*, engine/types.rs, utils/time.rs
-
-🌀 Result: Aetherion pulses in parallel, Godot breathes freely
+✅ GDScript-callable methods printed.

@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
-use crate::pipeline::data::MapDataChunk;
-use crate::zv9_shared_messages::EngineMessage;
+use aetherion_shared::zv9_prelude::*;
+use aetherion_shared::zv9_shared_pipeline_data_chunk::MapDataChunk;
+use aetherion_shared::zv9_shared_messages::EngineMessage;
 use std::collections::VecDeque;
 use std::time::{Duration, Instant};
 
@@ -10,7 +10,7 @@ use std::time::{Duration, Instant};
 //
 
 /// 📦 ChunkDelivery — trait for delivering chunks to an external system.
-pub trait ChunkDelivery: Send {
+pub trait ChunkDelivery: Send + Clone {
     fn deliver(&mut self, chunk: MapDataChunk);
     fn sync(&mut self) -> &mut SyncBridge;
 
@@ -30,13 +30,13 @@ pub trait ChunkDelivery: Send {
 //
 
 /// 🎛 Conductor — orchestrates procedural flow and coordinates delivery pacing.
-pub struct Conductor<D: ChunkDelivery> {
+pub struct Conductor<D: ChunkDelivery + Clone> {
     queue: VecDeque<MapDataChunk>,
     ticks_waiting: u64,
     streamer: ChunkStreamer<D>,
 }
 
-impl<D: ChunkDelivery> Conductor<D> {
+impl<D: ChunkDelivery + Clone> Conductor<D> {
     pub fn new(streamer: ChunkStreamer<D>) -> Self {
         Self {
             queue: VecDeque::new(),
@@ -96,7 +96,8 @@ impl<D: ChunkDelivery> Conductor<D> {
 //
 
 /// 🚚 ChunkStreamer — manages pacing and delivery of chunks.
-pub struct ChunkStreamer<D: ChunkDelivery> {
+#[derive(Debug, Clone)]
+pub struct ChunkStreamer<D: ChunkDelivery + Clone> {
     queue: VecDeque<MapDataChunk>,
     delivery: D,
     delivery_interval: Duration,
@@ -104,7 +105,7 @@ pub struct ChunkStreamer<D: ChunkDelivery> {
     paused: bool,
 }
 
-impl<D: ChunkDelivery> ChunkStreamer<D> {
+impl<D: ChunkDelivery + Clone> ChunkStreamer<D> {
     pub fn new(delivery: D, interval_ms: u64) -> Self {
         Self {
             queue: VecDeque::new(),
@@ -173,7 +174,7 @@ impl<D: ChunkDelivery> ChunkStreamer<D> {
 //
 
 /// 🔗 SyncBridge — allows delivery backends to emit signals and coordinate with the engine.
-#[derive(Default)]
+#[derive(Default, Clone, Debug)]
 pub struct SyncBridge {
     signals: Vec<EngineMessage>,
 }

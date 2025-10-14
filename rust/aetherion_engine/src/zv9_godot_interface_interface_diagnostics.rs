@@ -3,8 +3,8 @@
 use godot::prelude::*;
 use godot::classes::Label;
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
-use aetherion_core::log_component;
+use aetherion_shared::zv9_prelude::*;
+use aetherion_shared::zv9_util_logging::log_info;
 
 /// 📊 DiagnosticsOverlay — UI label for displaying engine metrics.
 ///
@@ -38,7 +38,7 @@ impl DiagnosticsOverlay {
     #[func]
     fn _ready(&self) {
 		godot_print!("📊 DiagnosticsOverlay ready.");
-		log_component!("DiagnosticsOverlay", "UI label for displaying engine metrics");
+		log_info("DiagnosticsOverlay", "UI label for diagnostics overlay initialized");
 	}
 }
 

@@ -1,7 +1,10 @@
 // zv9_godot_interface_api_engine_util.rs
 
-use crate::zv9_prelude::*;
+use aetherion_shared::zv9_prelude::*;
+use aetherion_core::structure::ExternalNoiseType;
 use aetherion_core::structure::MapBuildOptions;
+use godot::builtin::Vector2i;
+
 
 pub fn build_map_config(
     width: i32,

@@ -1,8 +1,8 @@
 use std::str::FromStr;
 use std::fmt;
 use serde::{Serialize, Deserialize};
-use crate::zv9_prelude::*;
-use crate::zv9_aetherion_pipeline_data_tile::{TileInfo, tile_flags};
+use aetherion_shared::zv9_prelude::*;
+use aetherion_shared::zv9_shared_pipeline_data_tile::{TileInfo, tile_flags};
 use crate::zv9_aetherion_generator_noise::NoiseType;
 use crate::zv9_aetherion_generator_noise_config::NoiseConfig;
 

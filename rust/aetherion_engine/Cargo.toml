@@ -10,6 +10,9 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 aetherion_core = { path = "../aetherion_core" }
+aetherion_shared = { path = "../aetherion_shared" }
+aetherion_trailkeeper = { path = "../aetherion_trailkeeper" }
+
 
 # Godot bindings
 godot = { path = "../../../zv9.gdext/godot" }

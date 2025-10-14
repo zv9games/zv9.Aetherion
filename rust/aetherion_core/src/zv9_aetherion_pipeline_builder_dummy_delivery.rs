@@ -1,7 +1,8 @@
 use crate::zv9_aetherion_pipeline_builder_streamer::{ChunkDelivery, SyncBridge};
-use crate::pipeline::data::MapDataChunk;
+use aetherion_shared::zv9_shared_pipeline_data_chunk::MapDataChunk;
 
 /// 🧪 DummyDelivery — mock delivery backend for Rust-side testing and emulation.
+#[derive(Clone)]
 pub struct DummyDelivery {
     bridge: SyncBridge,
 }

@@ -1,7 +1,7 @@
 
 //use crate::zv9_prelude::*;
 use rand::Rng;
-use crate::pipeline::data::MapDataChunk;
+use aetherion_shared::zv9_shared_pipeline_data_chunk::MapDataChunk;
 use crate::pipeline::data::SerializableVector2i;
 use crate::pipeline::data::TileInfo;
 

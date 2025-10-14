@@ -1,55 +1,68 @@
 use godot::prelude::*;
-#[allow(unused_imports)]
-use crate::zv9_prelude::*;
-use aetherion_core::log_component;
+// use aetherion_core::log_component;
+use aetherion_shared::zv9_shared_config::EngineConfig;
+use aetherion_shared::zv9_util_logging::log_info;
+use crate::zv9_aetherion_engine_config_godot::EngineConfigGodot;
 
-/// ⚙️ AetherionConfig — Configuration node for exposing procedural engine settings to Godot.
 #[derive(GodotClass)]
 #[class(init, base = Node)]
 pub struct AetherionConfig {
-    /// Size of each tile in pixels.
     #[export]
     pub tile_size: i32,
-
-    /// Width of each chunk in tiles.
     #[export]
     pub chunk_width: i32,
-
-    /// Height of each chunk in tiles.
     #[export]
     pub chunk_height: i32,
-
-    /// Procedural seed used for generation.
     #[export]
     pub seed: i64,
-
-    /// Enables voxel-based rendering mode.
     #[export]
     pub enable_voxel_mode: bool,
 }
 
 #[godot_api]
 impl AetherionConfig {
-    
-
     #[func]
     fn _ready(&self) {
         godot_print!("⚙️ AetherionConfig loaded.");
-        log_component!("AetherionConfig", "Configuration node for procedural engine settings");
+        log_info("AetherionConfig", "Configuration node initialized");
     }
 
-    /// Returns the total number of tiles in a chunk.
     #[func]
     fn get_chunk_area(&self) -> i32 {
         let area = self.chunk_width * self.chunk_height;
-        godot_print!("📐 Chunk area: {} tiles ({}×{})", area, self.chunk_width, self.chunk_height);
+        godot_print!(
+            "📐 Chunk area: {} tiles ({}×{})",
+            area,
+            self.chunk_width,
+            self.chunk_height
+        );
         area
     }
 
-    /// Regenerates the procedural seed.
     #[func]
     fn regenerate_seed(&mut self) {
         self.seed = rand::random_range(0..=i64::MAX);
         godot_print!("🌱 Seed regenerated → {}", self.seed);
+    }
+
+    #[func]
+    fn to_engine_config(&self) -> Gd<EngineConfigGodot> {
+        Gd::from_init_fn(|_base| EngineConfigGodot {
+            tile_size: self.tile_size,
+            chunk_width: self.chunk_width,
+            chunk_height: self.chunk_height,
+            seed: self.seed,
+            enable_voxel_mode: self.enable_voxel_mode,
+        })
+    }
+
+    #[func]
+    fn apply_engine_config(&mut self, config: Gd<EngineConfigGodot>) {
+        let config = config.bind();
+        self.tile_size = config.tile_size;
+        self.chunk_width = config.chunk_width;
+        self.chunk_height = config.chunk_height;
+        self.seed = config.seed;
+        self.enable_voxel_mode = config.enable_voxel_mode;
     }
 }

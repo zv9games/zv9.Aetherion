@@ -2,13 +2,13 @@
 use std::process::Command;
 use std::io::{self, Write};
 #[allow(unused_imports)]
-use aetherion_core::trailkeeper::{
-    Trailkeeper,
-    check_config_change,
-    scan_git_diff,
-    LogEntry,
-    EventType,
-};
+//use aetherion_core::trailkeeper::{
+//    Trailkeeper,
+//    check_config_change,
+//    scan_git_diff,
+//    LogEntry,
+//   EventType,
+//};
 
 
 #[allow(unused_imports)]
@@ -31,7 +31,7 @@ pub fn run_cargo_tests() {
 }
 
 
-
+/*
 /// 🔍 Runs a Trailkeeper scan for changes and config diffs
 pub fn run_trailkeeper_scan() {
     println!("🔍 Running Trailkeeper scan...\n");
@@ -45,8 +45,9 @@ pub fn run_trailkeeper_scan() {
 
     println!("\n✅ Trailkeeper scan complete.\n");
 }
-
-/// 📜 Interactive viewer for Trailkeeper logs
+*/
+// 📜 Interactive viewer for Trailkeeper logs
+/*
 #[allow(dead_code)]
 pub fn view_trailkeeper_logs() {
     println!("\n📜 Trailkeeper Log Registry:\n");
@@ -76,6 +77,8 @@ pub fn view_trailkeeper_logs() {
     println!("\n✅ Log inspection complete.\n");
 }
 
+*/
+/*
 /// 🧾 Prints a formatted Trailkeeper log entry
 #[allow(dead_code)]
 pub fn print_log_entry(index: usize, log: &LogEntry) {
@@ -89,3 +92,4 @@ pub fn print_log_entry(index: usize, log: &LogEntry) {
     println!("⚠️ Status: {:?}", log.status);
     println!("──────────────────────────────────────────────");
 }
+*/

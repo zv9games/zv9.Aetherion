@@ -1,15 +1,7 @@
-//C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_structure_placements.rs
+use aetherion_shared::zv9_prelude::*;
+use aetherion_shared::zv9_shared_pipeline_data_grid::{MapGrid, TileType};
 
-use crate::zv9_prelude::*;
-use crate::pipeline::data::MapGrid;
-use crate::pipeline::data::TileType;
-
-use crate::zv9_util_position::Position;
-use crate::zv9_trailkeeper_collector::Trailkeeper;
-use crate::zv9_trailkeeper_entry::{LogEntry, EventType, LogStatus};
-
-
-/// 🏗 Dummy structure placement function for testing and integration.
+// 🏗 Dummy structure placement function for testing and integration.
 pub fn place_structure_stub(grid: &mut MapGrid, pos: Position) {
     // Define a 3×3 region starting from the given position
     let bounds = GridBounds::new(
@@ -24,7 +16,8 @@ pub fn place_structure_stub(grid: &mut MapGrid, pos: Position) {
         grid.set(position, tile_type);
     }
 
-    // Log the placement event
+    // Optional: Log the placement event
+    /*
     Trailkeeper::record(LogEntry {
         event_type: EventType::StructurePlacement,
         timestamp: chrono::Utc::now(),
@@ -33,12 +26,12 @@ pub fn place_structure_stub(grid: &mut MapGrid, pos: Position) {
         affected_components: vec![format!("{:?}", bounds)],
         status: LogStatus::Success,
     });
+    */
 }
 
 #[cfg(test)]
 mod stress_tests {
     use super::*;
-    //use crate::zv9_prelude::*;
 
     #[test]
     fn stress_structure_placement_centered() {
@@ -56,11 +49,7 @@ mod stress_tests {
         );
         for p in structure_bounds.iter() {
             let placed = grid.get(Position { x: p.x, y: p.y });
-            if let Some(tile) = placed {
-                assert_eq!(tile, TileType::Chunk);
-            } else {
-                panic!("Expected TileType::Chunk, but got None at {:?}", p);
-            }
+            assert_eq!(placed, Some(TileType::Chunk));
         }
     }
 
@@ -100,6 +89,3 @@ mod stress_tests {
         assert!(total_chunks >= 90); // 10 placements × ~9 tiles each
     }
 }
-
-
-// the end

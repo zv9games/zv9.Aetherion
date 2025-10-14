@@ -1,0 +1,18 @@
+[package]
+name = "aetherion_shared"
+version = "0.1.0"
+edition = "2021"
+description = "Shared types, traits, and utilities for AetherionEngine modules"
+license = "MIT"
+
+[dependencies]
+chrono = "0.4"          # For timestamps, used in LogEntry
+serde = { version = "1.0", features = ["derive"] }  # For serializable types
+lazy_static = "1.4"     # Optional, if shared statics are needed
+once_cell = "1.18"
+log = "0.4"
+rand = { version = "0.8", features = ["small_rng"] }
+rayon = "1.8"
+thiserror = "1.0"
+serde_json = "1.0"
+env_logger = "0.10"

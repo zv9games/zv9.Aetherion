@@ -1,7 +1,8 @@
 use godot::prelude::*;
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
-use aetherion_core::log_component;
+use aetherion_core::zv9_prelude::*;
+use aetherion_shared::zv9_util_logging::log_info;
+use crate::AetherionEngine;
 
 /// 🔮 AetherionOracle — Godot-facing node for manually driving the AetherionEngine.
 #[derive(GodotClass)]
@@ -21,7 +22,7 @@ impl AetherionOracle {
     #[func]
     fn _ready(&mut self) {
         godot_print!("🔮 Oracle is online. I await the ignition.");
-        log_component!("AetherionOracle", "Node for manually driving the AetherionEngine");
+        log_info("AetherionOracle", "Node for map oracle initialized");
         self.base_mut().set_process(true);
 
     }

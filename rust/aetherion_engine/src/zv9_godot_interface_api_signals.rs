@@ -1,5 +1,5 @@
 use godot::prelude::*;
-use aetherion_core::log_component;
+use aetherion_shared::zv9_util_logging::log_info;
 
 /// 🛰️ AetherionSignals — Godot-facing signal node for engine events.
 /// Connected in GDScript to receive updates from the Rust core.
@@ -17,7 +17,7 @@ impl AetherionSignals {
     #[func]
     fn _ready(&mut self) {
         godot_print!("📡 AetherionSignals online.");
-        log_component!("AetherionSignals", "Signal node for engine events");
+        log_info("AetherionSignals", "Signal node initialized");
     }
 
     // ✅ Core generation signals

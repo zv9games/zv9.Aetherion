@@ -34,7 +34,6 @@ var engine_tick_count := 0
 # 🧭 Boot Sequence
 func _ready() -> void:
 	engine_timer_label.text = "✅ Label is alive"
-
 	clock_timer.timeout.connect(_on_clock_timer_timeout)
 	engine_timer.timeout.connect(_on_engine_timer_timeout)
 	engine_timer.wait_time = 1.0
@@ -45,7 +44,6 @@ func _ready() -> void:
 	_connect_signals()
 
 	var tileset: TileSet = expansive_tilemap.get_tileset()
-
 	if tileset:
 		tile_size = tileset.get_tile_size()
 
@@ -94,7 +92,6 @@ func _connect_signals() -> void:
 func _process(_delta: float) -> void:
 	if aetherion_engine.has_method("get_status"):
 		var status: String = aetherion_engine.call("get_status")
-
 		status_label.text = "🧠 Engine Status: %s" % status
 
 # 🚀 Generation Trigger
@@ -107,11 +104,10 @@ func _on_generate_pressed() -> void:
 	var placement := placement_mode_selector.get_item_text(placement_mode_selector.selected).to_lower()
 
 	if width <= 0 or height <= 0 or width * height > 1_000_000_000:
-		status_label.text = "⚠️ Invalid grid size. Must be positive and total tiles must not exceed 1 billion."
+		status_label.text = "⚠️ Invalid grid size."
 		return
 
 	var seed := int(seed_text) if seed_text.is_valid_int() else randi() % 1_000_000
-
 	if not seed_text.is_valid_int():
 		seed_input.text = str(seed)
 		status_label.text = "⚠️ Invalid seed. Using random seed: %d" % seed
@@ -131,20 +127,25 @@ func _on_generate_pressed() -> void:
 	aetherion_engine.call("set_signals_node", aetherion_signals)
 	aetherion_engine.call("set_tilemap", expansive_tilemap)
 	aetherion_engine.call("build_map", width, height, seed, mode, animate, Vector2i(0, 0), Vector2i(1, 0))
+	print("🧪 ControlPanel: build_map called with seed %d" % seed)
 
 # 📡 Signal Handlers
 func _on_build_map_start() -> void:
+	print("📡 Signal: build_map_start")
 	status_label.text = "🚀 Map generation started..."
 
 func _on_map_building_status(status_message: String) -> void:
+	print("📡 Signal: map_building_status - %s" % status_message)
 	status_label.text = "📢 %s" % status_message
 
 func _on_generation_progress(percent: int) -> void:
+	print("📡 Signal: generation_progress - %d%%" % percent)
 	progress_bar.value = percent
 	last_percent = percent
 	expansive_tilemap.force_update(0)
 
 func _on_generation_complete(results: Dictionary) -> void:
+	print("📡 Signal: generation_complete")
 	progress_bar.visible = false
 	generate_button.disabled = false
 	engine_timer.stop()
@@ -154,13 +155,11 @@ func _on_generation_complete(results: Dictionary) -> void:
 	var mode: String = results.get("mode", "unknown")
 	var animate: bool = results.get("animate", false)
 	var duration: float = results.get("duration", 0.0)
-
 	var elapsed := engine_timer.wait_time - engine_timer.time_left
 
-	status_label.text = "✅ Map generation complete: %dx%d, mode: %s, animate: %s\n⏱️ Duration: %.2fs (%.2fs elapsed)" % [
+	status_label.text = "✅ Map complete: %dx%d, mode: %s, animate: %s\n⏱️ Duration: %.2fs (%.2fs elapsed)" % [
 		width, height, mode, str(animate), duration, elapsed
 	]
-
 	engine_timer_label.text = "⏱️ Final Runtime: %.2fs" % elapsed
 
 	camera_tilemap.global_position = Vector2(width * tile_size.x / 2, height * tile_size.y / 2)

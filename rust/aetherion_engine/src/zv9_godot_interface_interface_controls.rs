@@ -1,14 +1,14 @@
 use godot::prelude::*;
 use std::str::FromStr;
+use godot::classes::Control;
 
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
+use aetherion_shared::zv9_prelude::*;
 use crate::zv9_godot_interface_messaging_sync::{GodotDelivery, GodotSync};
 use aetherion_core::pipeline::builder::spawn_map_builder;
 use aetherion_core::generator::{NoiseConfig, NoiseType, GodotNoiseType};
-use aetherion_core::shared::SerializableVector2i;
-use aetherion_core::zv9_aetherion_pipeline_builder_streamer::{ChunkStreamer, SyncBridge};
-use aetherion_core::log_component;
+use aetherion_shared::zv9_shared_types::SerializableVector2i;use aetherion_core::zv9_aetherion_pipeline_builder_streamer::{ChunkStreamer, SyncBridge};
+use aetherion_shared::zv9_util_logging::log_info;
 
 /// 🧭 ControlPanel — UI node for interacting with the Aetherion runtime.
 #[derive(GodotClass)]
@@ -54,7 +54,7 @@ impl ControlPanel {
     #[func]
     fn _ready(&self) {
         godot_print!("🧭 ControlPanel ready.");
-        log_component!("ControlPanel", "UI node for interacting with the Aetherion runtime");
+        log_info("ControlPanel", "UI node for interface controls initialized");
     }
 
     /// 🚀 Dispatches a map generation request to the engine using current settings.
@@ -85,10 +85,11 @@ impl ControlPanel {
             bridge: SyncBridge::default(),
         };
 
-        let streamer = ChunkStreamer::new(delivery, pacing as u64);
+        let mut streamer = ChunkStreamer::new(delivery, pacing as u64);
+
 
         spawn_map_builder(
-            streamer,
+            &mut streamer,
             config,
             mode,
             self.animate,

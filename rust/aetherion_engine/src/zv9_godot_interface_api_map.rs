@@ -1,10 +1,10 @@
 use godot::builtin::{Array, Dictionary, Vector2i, Variant};
 use godot::classes::{Node,TileMap};
 use godot::prelude::*;
-use aetherion_core::log_component;
 
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
+use aetherion_core::zv9_prelude::*;
+use aetherion_shared::zv9_util_logging::log_info;
 
 /// 🧩 AetherionMap — Godot-facing node for chunk loading and tile inspection.
 #[derive(GodotClass)]
@@ -23,7 +23,7 @@ impl AetherionMap {
     #[func]
     fn _ready(&self) {
         godot_print!("🧩 AetherionMap initialized.");
-        log_component!("AetherionMap", "Node for chunk loading and tile inspection");
+        log_info("AetherionMap", "Node for chunk map initialized");
     }
 
     /// 🧱 Assigns a TileMap for rendering.

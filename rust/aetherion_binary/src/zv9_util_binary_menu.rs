@@ -1,7 +1,7 @@
 use aetherion_core::core::start;
 use aetherion_core::zv9_aetherion_pipeline_builder_dummy_delivery::DummyDelivery;
 #[allow(unused_imports)]
-use crate::zv9_util_binary_func::{run_cargo_tests, run_trailkeeper_scan, view_trailkeeper_logs};
+use crate::zv9_util_binary_func::run_cargo_tests; /*run_trailkeeper_scan, view_trailkeeper_logs};*/
 use crate::zv9_util_binary_func2::{print_godot_api_surface, print_module_tree};
 use crate::zv9_util_binary_func3::{run_bitmask_conversion, run_max_grid_benchmark, test_generation_and_placement_cli};
 #[allow(unused_imports)]
@@ -36,7 +36,7 @@ pub fn build_menu() -> Vec<MenuItem> {
         MenuItem { 
             key: '3', 
             label: "⚠️ Run: Trailkeeper Scan [zv9_util_binary_func.rs]", 
-            action: Box::new(run_trailkeeper_scan),
+            action: Box::new(|| println!("TODO: Trailkeeper scan not yet implemented.")),
         },
         MenuItem { 
             key: '4', 

@@ -1,41 +1,6 @@
-//C:/ZV9/zv9.aetherion/rust.src/zv9)util_velocity.rs
 
-// ✅ Suggestions for util/velocity.rs
-
-// 🔧 Add directional helpers:
-//     - `fn is_zero(&self) -> bool`
-//     - `fn direction(&self) -> (f32, f32)` or normalized vector
-//     - Useful for movement logic and AI steering
-
-// 🧩 Add integration with `Vector2` or `Vector2i`:
-//     - `fn to_vector2(&self) -> Vector2`
-//     - Enables Godot interop and physics calculations
-
-// 🚦 Improve precision handling:
-//     - Consider using `f64` internally if high-precision movement is needed
-//     - Prevents rounding errors in long simulations
-
-// 📚 Document coordinate assumptions:
-//     - Clarify whether velocity is in pixels, tiles, or units
-//     - Note how `apply()` handles float-to-int conversion
-
-// 🧪 Add unit tests for `apply`, `scale`, and `increase`:
-//     - Validate rounding behavior and edge cases
-//     - Ensure consistent movement across frames
-
-// 🧼 Optional: Add arithmetic operators:
-//     - `impl Add for Velocity`, `impl Mul<f32>`
-//     - Improves ergonomics for physics and animation systems
-
-// 🚀 Future: Add acceleration or damping support:
-//     - `fn apply_acceleration(&mut self, accel: Velocity)`
-//     - Enables smoother motion and physics-style updates
-
-// 🧠 Consider exposing velocity to GDScript:
-//     - Wrap in a Godot-friendly struct or export via utility node
-//     - Useful for runtime control or editor tweaking
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
+use aetherion_shared::zv9_prelude::*;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Velocity {

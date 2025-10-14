@@ -1,38 +1,8 @@
-//C:/ZV9/zv9.aetherion/rust/src/zv9_aetherion_core_dimension.rs
-
-// ✅ Suggestions for aetherion/core/dimension.rs
-
-// 🔧 Add support for dynamic dimension switching:
-//     - Consider a `DimensionContext` struct to manage current state and transitions
-//     - Useful for hybrid games or editor modes
-
-// 🧩 Add integration hooks:
-//     - `fn to_godot_layer()` or `fn to_render_mode()`
-//     - Useful for mapping dimension to engine-specific rendering or physics layers
-
-// 🚦 Add validation or constraints:
-//     - Prevent switching dimensions mid-frame unless explicitly allowed
-//     - Could be tied to lifecycle or runtime state
-
-// 📚 Add documentation for intended use cases:
-//     - Clarify how this enum interacts with tilemaps, meshes, and procedural systems
-//     - Could include examples in doc comments
-
-// 🧪 Add unit tests for `flipped()` and `as_str()`
-//     - Ensure consistent behavior across future refactors
-
-// 🧼 Optional: Add serialization support
-//     - `#[derive(Serialize, Deserialize)]` if needed for config or save files
-
-// 🚀 Future: Expand to support higher dimensions or projection modes
-//     - e.g. `FourD`, `Isometric`, `Orthographic`, `Perspective`
-
-
 
 // Handles abstraction between 2D and 3D dimensions.
 // Will evolve to support dynamic switching, shared logic, and editor integration.
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
+use aetherion_shared::zv9_prelude::*;
 
 
 use std::fmt;

@@ -1,6 +1,6 @@
 
 
-use crate::pipeline::data::MapDataChunk;
+use aetherion_shared::zv9_shared_pipeline_data_chunk::MapDataChunk;
 
 /// Marker trait for editor tools that operate on map chunks.
 pub trait TileTool {

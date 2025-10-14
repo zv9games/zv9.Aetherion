@@ -6,6 +6,8 @@ edition = "2024"
 [dependencies]
 aetherion_core = { path = "../aetherion_core" }
 aetherion_engine = { path = "../aetherion_engine" }  # ← Add this line
+aetherion_shared = { path = "../aetherion_shared" }
+
 crossterm = "0.27"
 log = "0.4"
 env_logger = "0.10"

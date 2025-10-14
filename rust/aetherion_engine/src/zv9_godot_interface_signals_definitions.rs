@@ -1,6 +1,6 @@
 
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
+use aetherion_core::zv9_prelude::*;
 
 
 pub const SIGNALS: &[&str] = &[

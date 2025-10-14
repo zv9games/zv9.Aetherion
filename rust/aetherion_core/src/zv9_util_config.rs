@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
+use aetherion_shared::zv9_prelude::*;
 use serde::{Deserialize, Serialize};
 
 /// ⚙️ Configuration for the Aetherion engine runtime.

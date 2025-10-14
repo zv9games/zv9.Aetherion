@@ -1,5 +1,5 @@
 use godot::prelude::*;
-use crate::zv9_prelude::*;
+use aetherion_core::zv9_prelude::*;
 
 /// Local wrapper for converting SerializableVector2i into Godot's native Vector2i.
 #[derive(Debug, Clone, Copy)]

@@ -3,7 +3,7 @@ use rand::SeedableRng;
 use std::str::FromStr;
 
 #[allow(unused_imports)]
-use crate::zv9_prelude::*;
+use aetherion_shared::zv9_prelude::*;
 
 /// 🔊 Basic sine-cosine hybrid noise function.
 /// Placeholder: replace with a real algorithm later.

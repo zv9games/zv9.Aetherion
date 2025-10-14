@@ -1,16 +1,18 @@
-use crate::zv9_prelude::*;
+use aetherion_shared::zv9_prelude::*;
 use crate::zv9_aetherion_generator_noise_config::{generate_grid_from_config, NoiseConfig};
 use crate::zv9_aetherion_generator_noise::NoiseType;
 use crate::pipeline::builder::{ChunkStreamer, ChunkDelivery};
-use crate::pipeline::data::{SerializableVector2i, MapDataChunk, TileInfo};
+use aetherion_shared::zv9_shared_pipeline_data_chunk::MapDataChunk;
+use aetherion_shared::shared::SerializableVector2i;
+use aetherion_shared::zv9_shared_pipeline_data_tile::TileInfo;
 
 use rayon::slice::ParallelSlice;
 use std::time::{Duration, Instant};
 use std::thread;
 
 /// 🚀 Spawns a threaded terrain builder using noise configuration and delivery pacing.
-pub fn spawn_map_builder<D: ChunkDelivery + Send + 'static>(
-    mut streamer: ChunkStreamer<D>,
+pub fn spawn_map_builder<D: ChunkDelivery + Send + Clone + 'static>(
+    streamer: &mut ChunkStreamer<D>,
     config: NoiseConfig,
     mode: NoiseType,
     animate: bool,
@@ -18,8 +20,10 @@ pub fn spawn_map_builder<D: ChunkDelivery + Send + 'static>(
     blue: SerializableVector2i,
 ) {
     let grid = generate_grid_from_config(&config, mode);
-    let total_tiles = (config.width * config.height) as usize;
-    let batch_size = ((total_tiles / 100).max(500).min(10_000)) as usize;
+    let total_tiles = config.width * config.height;
+    let batch_size = (total_tiles / 100).max(500).min(10_000);
+
+    let mut streamer = streamer.clone(); // assumes ChunkStreamer<D> implements Clone
 
     rayon::spawn(move || {
         let start_time = Instant::now();
@@ -29,14 +33,8 @@ pub fn spawn_map_builder<D: ChunkDelivery + Send + 'static>(
         // 🚦 Initialization signals
         {
             let sync = streamer.sync();
-            let start_signal = EngineMessage::Start;
-            let status_signal = EngineMessage::Status("🧬 Building terrain...".into());
-
-            log::info!("📤 Pushing signal: {:?}", start_signal);
-            sync.add_signal(start_signal);
-
-            log::info!("📤 Pushing signal: {:?}", status_signal);
-            sync.add_signal(status_signal);
+            sync.add_signal(EngineMessage::Start);
+            sync.add_signal(EngineMessage::Status("🧬 Building terrain...".into()));
         }
 
         // 🧮 Generate tile positions
@@ -72,12 +70,11 @@ pub fn spawn_map_builder<D: ChunkDelivery + Send + 'static>(
         // 🚚 Deliver chunks with progress signals
         for (i, chunk) in chunks.into_iter().enumerate() {
             let percent = (((i + 1) * batch_size).min(total_tiles) * 100 / total_tiles) as i32;
-            let progress_signal = EngineMessage::Progress(percent);
 
             {
                 let sync = streamer.sync();
-                log::info!("📤 Pushing signal: {:?}", progress_signal);
-                sync.add_signal(progress_signal);
+                sync.add_signal(EngineMessage::Progress(percent));
+                sync.add_signal(EngineMessage::Chunk(chunk.clone()));
             }
 
             streamer.enqueue_chunk(chunk);
@@ -87,27 +84,18 @@ pub fn spawn_map_builder<D: ChunkDelivery + Send + 'static>(
         streamer.try_deliver();
 
         // 🏁 Completion signals
+        let duration = start_time.elapsed().as_secs_f64();
         {
             let sync = streamer.sync();
-
-            let final_progress = EngineMessage::Progress(100);
-            let final_status = EngineMessage::Status("✅ Terrain generation complete.".into());
-            let complete_signal = EngineMessage::Complete {
+            sync.add_signal(EngineMessage::Progress(100));
+            sync.add_signal(EngineMessage::Status("✅ Terrain generation complete.".into()));
+            sync.add_signal(EngineMessage::Complete {
                 width: config.width as i32,
                 height: config.height as i32,
                 mode: mode.as_str().to_string(),
                 animate,
-                duration: start_time.elapsed().as_secs_f64(),
-            };
-
-            log::info!("📤 Pushing signal: {:?}", final_progress);
-            sync.add_signal(final_progress);
-
-            log::info!("📤 Pushing signal: {:?}", final_status);
-            sync.add_signal(final_status);
-
-            log::info!("📤 Pushing signal: {:?}", complete_signal);
-            sync.add_signal(complete_signal);
+                duration,
+            });
         }
     });
 }
