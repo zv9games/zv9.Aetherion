@@ -95,7 +95,7 @@
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║ 🌀 CREDITS                                                              	║
 ║                                                                          	║
-║ Built by Greg. (zv9games)                                              	║
+║ GDO 2025 v9$TqLx#2mB7w                                                   	║
 ║ Inspired by the sacred geometry of open-source, weed, and stupid programs.║
 ║ Special thanks to the Pacman2.0 project for revealing the need.			║
 ╚═══════════════════════════════════════════════════════════════════════════╝
