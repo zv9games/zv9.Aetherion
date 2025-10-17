@@ -1,0 +1,15 @@
+[package]
+name = "aetherion_generate"
+edition = "2021" 
+
+[dependencies]
+# Internal dependencies (Local Crates)
+aetherion_shared = { path = "../aetherion_shared" }
+aetherion_math = { path = "../aetherion_math" }
+aetherion_sync = { path = "../aetherion_sync" }
+
+# External dependency (Workspace-Inherited)
+image = { workspace = true }
+rayon = { workspace = true }
+rand = { workspace = true }
+log = { workspace = true }

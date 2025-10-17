@@ -1,0 +1,20 @@
+[package]
+name = "aetherion_cli"
+edition = "2021"
+
+[[bin]]
+name = "aetherion"
+path = "src/main.rs"
+
+[dependencies]
+# Internal Dependencies (Local Crates)
+aetherion_shared = { path = "../aetherion_shared" }
+aetherion_engine_ffi = { path = "../aetherion_engine_ffi" }
+aetherion_tools = { path = "../aetherion_tools" }
+
+# External Dependencies (Workspace-Inherited)
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+anyhow = { workspace = true }
+env_logger = { workspace = true }
+log = { workspace = true }
+chrono = { workspace = true }

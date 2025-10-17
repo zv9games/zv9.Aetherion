@@ -1,0 +1,13 @@
+[package]
+name = "aetherion_sync"
+edition = "2021" 
+
+[dependencies]
+# Internal dependencies (Local Crates)
+aetherion_shared = { path = "../aetherion_shared" }
+
+# External dependency (Workspace-Inherited)
+log = { workspace = true } 
+crossbeam = { workspace = true }
+crossbeam-channel = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread"] }

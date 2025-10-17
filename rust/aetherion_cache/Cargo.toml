@@ -1,0 +1,12 @@
+[package]
+name = "aetherion_cache"
+edition = "2021"
+
+[dependencies]
+# Internal Dependencies (Local Crates)
+aetherion_shared = { path = "../aetherion_shared" }
+aetherion_sync = { path = "../aetherion_sync" }
+
+# External Dependencies (Workspace-Inherited)
+bincode = { workspace = true }
+sha2 = { workspace = true }

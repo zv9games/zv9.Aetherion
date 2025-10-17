@@ -34,3 +34,4 @@ load="res://aetherion.gdextension"
 [rendering]
 
 renderer/rendering_method="mobile"
+driver/threads/thread_model=2

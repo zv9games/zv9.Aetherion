@@ -1,0 +1,10 @@
+[package]
+name = "aetherion_godot"
+edition = "2021" 
+
+[dependencies]
+# Internal dependencies (Local Crates)
+aetherion_engine_ffi = { path = "../aetherion_engine_ffi" }
+
+# External dependency (Workspace-Inherited)
+log = { workspace = true }

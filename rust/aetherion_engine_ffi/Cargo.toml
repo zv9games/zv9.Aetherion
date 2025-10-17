@@ -1,0 +1,16 @@
+[package]
+name = "aetherion_engine_ffi"
+edition = "2021" 
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# Internal dependencies (Local Crates)
+aetherion_shared = { path = "../aetherion_shared" }
+aetherion_generate = { path = "../aetherion_generate" }
+aetherion_sync = { path = "../aetherion_sync" }
+aetherion_cache = { path = "../aetherion_cache" }
+
+# External dependency (Workspace-Inherited)
+log = { workspace = true }

@@ -43,9 +43,10 @@ func _ready() -> void:
 	_setup_ui()
 	_connect_signals()
 
-	var tileset: TileSet = expansive_tilemap.get_tileset()
-	if tileset:
-		tile_size = tileset.get_tile_size()
+	if expansive_tilemap and expansive_tilemap is TileMap:
+		var tileset: TileSet = expansive_tilemap.get_tileset()
+		if tileset:
+			tile_size = tileset.get_tile_size()
 
 # 🧩 UI Setup
 func _setup_ui() -> void:
@@ -79,29 +80,40 @@ func _connect_signals() -> void:
 	generate_button.pressed.connect(_on_generate_pressed)
 	toggle_terminal_button.pressed.connect(_on_toggle_terminal_button_pressed)
 
-	if not aetherion_signals.build_map_start.is_connected(_on_build_map_start):
-		aetherion_signals.build_map_start.connect(_on_build_map_start)
-	if not aetherion_signals.map_building_status.is_connected(_on_map_building_status):
-		aetherion_signals.map_building_status.connect(_on_map_building_status)
-	if not aetherion_signals.generation_progress.is_connected(_on_generation_progress):
-		aetherion_signals.generation_progress.connect(_on_generation_progress)
-	if not aetherion_signals.generation_complete.is_connected(_on_generation_complete):
-		aetherion_signals.generation_complete.connect(_on_generation_complete)
+	if aetherion_signals:
+		if not aetherion_signals.build_map_start.is_connected(_on_build_map_start):
+			aetherion_signals.build_map_start.connect(_on_build_map_start)
+		if not aetherion_signals.map_building_status.is_connected(_on_map_building_status):
+			aetherion_signals.map_building_status.connect(_on_map_building_status)
+		if not aetherion_signals.generation_progress.is_connected(_on_generation_progress):
+			aetherion_signals.generation_progress.connect(_on_generation_progress)
+		if not aetherion_signals.generation_complete.is_connected(_on_generation_complete):
+			aetherion_signals.generation_complete.connect(_on_generation_complete)
 
 # 🔄 Engine Status Poll
 func _process(_delta: float) -> void:
-	if aetherion_engine.has_method("get_status"):
+	if aetherion_engine and aetherion_engine.has_method("get_status"):
 		var status: String = aetherion_engine.call("get_status")
 		status_label.text = "🧠 Engine Status: %s" % status
 
 # 🚀 Generation Trigger
 func _on_generate_pressed() -> void:
+	# Guards
+	if not aetherion_engine:
+		push_error("AetherionEngine not found.")
+		return
+	if not aetherion_signals:
+		push_error("AetherionSignals not found.")
+		return
+	if not (expansive_tilemap and expansive_tilemap is TileMap):
+		push_error("expansive_tilemap is not a valid TileMap.")
+		return
+
 	var width := int(grid_width.value)
 	var height := int(grid_height.value)
 	var seed_text := seed_input.text
 	var animate := animate_checkbox.button_pressed
 	var mode := tile_type_selector.get_item_text(tile_type_selector.selected).to_lower()
-	var placement := placement_mode_selector.get_item_text(placement_mode_selector.selected).to_lower()
 
 	if width <= 0 or height <= 0 or width * height > 1_000_000_000:
 		status_label.text = "⚠️ Invalid grid size."
@@ -111,6 +123,12 @@ func _on_generate_pressed() -> void:
 	if not seed_text.is_valid_int():
 		seed_input.text = str(seed)
 		status_label.text = "⚠️ Invalid seed. Using random seed: %d" % seed
+
+	# Configure dependencies first, then init, then build
+	aetherion_engine.call("set_signals_node", aetherion_signals)
+	aetherion_engine.call("set_tilemap", expansive_tilemap)
+	if aetherion_engine.has_method("init_engine"):
+		aetherion_engine.call("init_engine")
 
 	progress_bar.value = 0
 	progress_bar.visible = true
@@ -124,9 +142,10 @@ func _on_generate_pressed() -> void:
 	camera_tilemap.make_current()
 	camera_tilemap.zoom = Vector2(1.0, 1.0)
 
-	aetherion_engine.call("set_signals_node", aetherion_signals)
-	aetherion_engine.call("set_tilemap", expansive_tilemap)
-	aetherion_engine.call("build_map", width, height, seed, mode, animate, Vector2i(0, 0), Vector2i(1, 0))
+	aetherion_engine.call(
+		"build_map",
+		width, height, seed, mode, animate, Vector2i(0, 0), Vector2i(1, 0)
+	)
 	print("🧪 ControlPanel: build_map called with seed %d" % seed)
 
 # 📡 Signal Handlers
@@ -141,8 +160,10 @@ func _on_map_building_status(status_message: String) -> void:
 func _on_generation_progress(percent: int) -> void:
 	print("📡 Signal: generation_progress - %d%%" % percent)
 	progress_bar.value = percent
+	# Throttle visual updates to reduce main-thread stress
+	if percent % 5 == 0 and percent != last_percent:
+		expansive_tilemap.queue_redraw()
 	last_percent = percent
-	expansive_tilemap.force_update(0)
 
 func _on_generation_complete(results: Dictionary) -> void:
 	print("📡 Signal: generation_complete")
@@ -162,9 +183,13 @@ func _on_generation_complete(results: Dictionary) -> void:
 	]
 	engine_timer_label.text = "⏱️ Final Runtime: %.2fs" % elapsed
 
-	camera_tilemap.global_position = Vector2(width * tile_size.x / 2, height * tile_size.y / 2)
-	camera_tilemap.zoom = Vector2(1.0 / max(width / 10.0, 1.0), 1.0 / max(height / 10.0, 1.0))
-	expansive_tilemap.force_update(0)
+	# Center and clamp camera zoom
+	camera_tilemap.global_position = Vector2(width * tile_size.x / 2.0, height * tile_size.y / 2.0)
+	var zx = 1.0 / max(width / 10.0, 1.0)
+	var zy = 1.0 / max(height / 10.0, 1.0)
+	camera_tilemap.zoom = Vector2(clamp(zx, 0.05, 10.0), clamp(zy, 0.05, 10.0))
+
+	expansive_tilemap.queue_redraw()
 
 # 🕒 Clock Update
 func _on_clock_timer_timeout() -> void:
