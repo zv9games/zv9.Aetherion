@@ -61,9 +61,9 @@
 ║	├── /iteration5															║
 ║                															║
 ╠═══════════════════════════════════════════════════════════════════════════╣
-║ 🛠 ROADMAP                                                              	║ 	
+║ 🛠 ROADMAP                                                              	║
 ║   																		║
-║ ✓ Aetherion Super Massive Expansive Update 6												║
+║ ✓ Aetherion Super Massive Expansive Update 6								║
 ║ ☐ Core Data Structs Finalized												║
 ║ ☐ Safe Memory Cache implemented											║
 ║ ☐ Async Synchronization Layer											    ║
@@ -75,7 +75,7 @@
 ║ ☐ External Data Serialization												║
 ║ ☐ Comprehensive CLI Tooling												║
 ║ ☐ Continuous Integration (CI) Setup										║
-║ ☐ Code Coverage Baseline													║	
+║ ☐ Code Coverage Baseline													║
 ║ ☐ Release Build Profile			                               			║
 ║                                                                           ║
 ╠═══════════════════════════════════════════════════════════════════════════╣
