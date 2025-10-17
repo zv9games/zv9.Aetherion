@@ -3,7 +3,7 @@
 </p>
 
 
-# zv9.Aetherion 
+# zv9.Aetherion (AETHERION SUPER MASSIVE EXPANSIVE UPDATE 6)
 2D/3D procedural gen core rust gdextension. 
 
 ```text
