@@ -12,9 +12,15 @@ aetherion_shared = { path = "../aetherion_shared" }
 aetherion_engine_ffi = { path = "../aetherion_engine_ffi" }
 aetherion_tools = { path = "../aetherion_tools" }
 
-# External Dependencies (Workspace-Inherited)
+
+# --- External Dependencies (Workspace-Inherited) 
 tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 anyhow = { workspace = true }
 env_logger = { workspace = true }
 log = { workspace = true }
 chrono = { workspace = true }
+
+crossterm = { workspace = true } 
+walkdir = { workspace = true }   
+regex = { workspace = true }     
+rayon = { workspace = true }     
