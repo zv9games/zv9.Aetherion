@@ -1,13 +1,20 @@
 [package]
 name = "aetherion_sync"
-edition = "2021" 
+version = "0.6.0"
+edition = "2021"
 
 [dependencies]
-# Internal dependencies (Local Crates)
+# --- INTERNAL DEPENDENCIES ---
+# Required for shared data types and the canonical error type
 aetherion_shared = { path = "../aetherion_shared" }
 
-# External dependency (Workspace-Inherited)
-log = { workspace = true } 
-crossbeam = { workspace = true }
-crossbeam-channel = { workspace = true }
-tokio = { workspace = true, features = ["rt-multi-thread"] }
+# --- EXTERNAL CONCURRENCY & DIAGNOSTICS ---
+# Primary async runtime
+tokio               = { workspace = true, features = ["rt-multi-thread"] }
+# High-performance channel types
+crossbeam           = { workspace = true }
+crossbeam-channel   = { workspace = true }
+# High-performance sync primitives (like RwLock, often preferred over std::sync)
+parking_lot         = { workspace = true }
+# Ensure we use the workspace's standard logging framework
+tracing             = { workspace = true }

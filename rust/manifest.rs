@@ -17,15 +17,63 @@ Legend:
 📦 zv9.aetherion/ — Unified Workspace Root
 
 rust/                                # Workspace Member Root
-   ├── aetherion_cache/             # 💾 Data Caching and Chunk Storage
-   ├── aetherion_cli/               # 🧰 Interactive Console, Benchmarks, and Diagnostics
-   ├── aetherion_engine_ffi/        # 🔗 Low-level C FFI Bridge for Godot Communication
-   ├── aetherion_generate/          # ⚙️ Core Generation Algorithms (Noise, Pattern Mapping)
-   ├── aetherion_godot/             # 🎮 High-level Godot Bindings (GDExtension API)
-   ├── aetherion_math/              # 📐 Mathematical Primitives and Coordinate Systems
-   ├── aetherion_shared/            # 🧱 Global Data Primitives (Chunk, Tile, Grid Types)
-   ├── aetherion_sync/              # 🚦 Concurrency Primitives and Thread Safety
-   ├── aetherion_tools/             # 🔧 Utility Logic (Configuration, Logging, Profiling)
+	├── aetherion_cache/             # 💾 Data Caching and Chunk Storage
+		├── cargo.toml
+		├── /src
+			├──lib.rs
+	├── aetherion_cli/               # 🧰 Interactive Console, Benchmarks, and Diagnostics
+		├── cargo.toml
+		├── src/
+			├──cli_util_actions.rs
+			├──cli_util_bench.rs
+			├──cli_util_inspect.rs
+			├──cli_util_menu.rs
+			├──main.rs
+	├── aetherion_engine_ffi/        # 🔗 Low-level C FFI Bridge for Godot Communication
+		├──cargo.toml
+		├── src/
+			├──lib.rs
+   
+	├── aetherion_generate/          # ⚙️ Core Generation Algorithms (Noise, Pattern Mapping)
+		├──cargo.toml
+		├── src/
+			├──lib.rs
+   
+	├── aetherion_godot/             # 🎮 High-level Godot Bindings (GDExtension API)
+		├──cargo.toml
+		├── src/
+			├──lib.rs
+   
+	├── aetherion_math/              # 📐 Mathematical Primitives and Coordinate Systems
+		├──cargo.toml
+		├── src/
+			├──lib.rs
+			├──coordinate_system.rs
+			├──generation_utils.rs
+			├──hashing.rs
+			
+   
+	├── aetherion_shared/            # 🧱 Global Data Primitives (Chunk, Tile, Grid Types)
+		├──cargo.toml
+		├── src/
+			├──lib.rs
+			├──chunk_data.rs
+			├──errors.rs
+			├──grid_bounds.rs
+			├──math_primitives.rs
+			├──tile_data.rs
+			├──tile_type.rs
+   
+	├── aetherion_sync/              # 🚦 Concurrency Primitives and Thread Safety
+		├──cargo.toml
+		├── src/
+			├──lib.rs
+   
+	├── aetherion_tools/             # 🔧 Utility Logic (Configuration, Logging, Profiling)
+		├──cargo.toml
+		├── src/
+			├──lib.rs
+   
    └── iteration5/                  # 🗑️ Obsolete/Temporary Directory (For cleanup)
 
 // -------------------------------------------------------------------------------------------------

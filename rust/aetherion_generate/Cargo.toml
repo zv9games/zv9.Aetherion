@@ -1,15 +1,20 @@
 [package]
 name = "aetherion_generate"
-edition = "2021" 
+version = "0.6.0"
+edition = "2021"
 
 [dependencies]
-# Internal dependencies (Local Crates)
+# --- INTERNAL DEPENDENCIES (Foundation Layer) ---
 aetherion_shared = { path = "../aetherion_shared" }
-aetherion_math = { path = "../aetherion_math" }
-aetherion_sync = { path = "../aetherion_sync" }
+aetherion_math   = { path = "../aetherion_math" }
+aetherion_sync   = { path = "../aetherion_sync" }
 
-# External dependency (Workspace-Inherited)
-image = { workspace = true }
-rayon = { workspace = true }
-rand = { workspace = true }
-log = { workspace = true }
+# --- EXTERNAL DEPENDENCIES (Core Computation) ---
+# For parallel execution of generation algorithms
+rayon            = { workspace = true }
+# Core randomness library
+rand             = { workspace = true }
+# Used for saving/loading bitmap images (optional textures/noise visualizations)
+image            = { workspace = true }
+# Ensure we use the workspace's standard logging framework
+tracing          = { workspace = true }

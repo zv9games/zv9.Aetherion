@@ -1,5 +1,6 @@
 [package]
 name = "aetherion_cli"
+version = "0.6.0"
 edition = "2021"
 
 [[bin]]
@@ -7,20 +8,26 @@ name = "aetherion"
 path = "src/main.rs"
 
 [dependencies]
-# Internal Dependencies (Local Crates)
-aetherion_shared = { path = "../aetherion_shared" }
+# --- INTERNAL DEPENDENCIES (Foundation & FFI) ---
+# CLI needs access to all core data types for diagnostics and the FFI layer to test the runtime.
+aetherion_shared     = { path = "../aetherion_shared" }
 aetherion_engine_ffi = { path = "../aetherion_engine_ffi" }
-aetherion_tools = { path = "../aetherion_tools" }
+aetherion_tools      = { path = "../aetherion_tools" }
+aetherion_generate   = { path = "../aetherion_generate" }
 
-
-# --- External Dependencies (Workspace-Inherited) 
-tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
-anyhow = { workspace = true }
-env_logger = { workspace = true }
-log = { workspace = true }
-chrono = { workspace = true }
-
-crossterm = { workspace = true } 
-walkdir = { workspace = true }   
-regex = { workspace = true }     
-rayon = { workspace = true }     
+# --- EXTERNAL DEPENDENCIES (Execution & UI) ---
+# Asynchronous runtime and macros
+tokio           = { workspace = true, features = ["rt-multi-thread", "macros"] }
+# Workspace standard logging framework (replaces log/env_logger)
+tracing         = { workspace = true }
+# Time utilities, often needed for logging/benchmarking output
+chrono          = { workspace = true }
+# Interactive Console UI library
+crossterm       = { workspace = true }
+# File system traversal (for module tree inspector)
+walkdir         = { workspace = true }
+# Parallel processing (for running benchmarks)
+rayon           = { workspace = true }
+# Regular expressions (for any complex parsing tasks)
+regex           = { workspace = true }
+tracing-subscriber = { workspace = true }

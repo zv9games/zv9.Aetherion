@@ -1,13 +1,15 @@
 [package]
 name = "aetherion_shared"
+version = "0.6.0" # Standardized version number
 edition = "2021"
 
 [dependencies]
 # Internal dependencies (Local Crates)
-anyhow = { workspace = true } 
-serde = { workspace = true } 
-log = { workspace = true }
-thiserror = { workspace = true }
+serde       = { workspace = true }
+bincode     = { workspace = true }
+thiserror   = { workspace = true }
+# CRITICAL FIX: Adding anyhow so it can be re-exported in src/lib.rs for macro usage.
+anyhow      = { workspace = true }
 
 # External dependency (Workspace-Inherited)
-chrono = { workspace = true }
+tracing     = { workspace = true }

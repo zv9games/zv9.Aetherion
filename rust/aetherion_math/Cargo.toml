@@ -1,10 +1,17 @@
 [package]
 name = "aetherion_math"
-edition = "2021" 
+version = "0.1.0"
+edition.workspace = true
 
 [dependencies]
 # Internal dependencies (Local Crates)
 aetherion_shared = { path = "../aetherion_shared" }
 
-# External dependency (Workspace-Inherited)
-glam = { workspace = true }
+# External dependencies (Workspace-Inherited)
+# FIX: Explicitly re-enable the 'serde' feature for glam.
+# This ensures IVec3 implements Serialize/Deserialize, resolving the E0277 errors.
+glam = { workspace = true, features = ["serde"] }
+serde = { workspace = true }
+thiserror = { workspace = true } # Added for defining local crate Result type
+tracing = { workspace = true }
+sha2 = { workspace = true }

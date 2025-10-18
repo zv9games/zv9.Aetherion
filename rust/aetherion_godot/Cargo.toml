@@ -1,10 +1,22 @@
 [package]
 name = "aetherion_godot"
-edition = "2021" 
+version = "0.6.0"
+edition = "2021"
 
 [dependencies]
-# Internal dependencies (Local Crates)
+# --- INTERNAL DEPENDENCIES ---
+# The Godot interface needs access to all the FFI bridging to call Rust logic
 aetherion_engine_ffi = { path = "../aetherion_engine_ffi" }
+aetherion_shared     = { path = "../aetherion_shared" }
+aetherion_math       = { path = "../aetherion_math" }
 
-# External dependency (Workspace-Inherited)
-log = { workspace = true }
+# --- EXTERNAL DEPENDENCIES ---
+# FIX: Switched from crates.io version to a local path dependency.
+# 
+# IMPORTANT FIX: Removed the 'gdext' feature, which appears to be outdated or 
+# incorrectly named in your local clone, leading to a compilation error. 
+# We keep 'serde' as it is a standard requirement.
+godot                = { path = "C:/zv9/zv9.gdext/godot", features = ["serde"] } 
+
+# Workspace standard logging framework
+tracing              = { workspace = true }

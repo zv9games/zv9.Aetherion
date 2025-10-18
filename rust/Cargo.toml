@@ -1,15 +1,17 @@
 [workspace]
+# Defines the members (crates) of the Aetherion Engine workspace, grouped by
+# their architectural layer as defined in the development plan.
 members = [
-    # 1. Foundation Layer (Core Data & Primitives)
+    # 1. Foundation Layer (Core Data & Primitives - P1)
     "aetherion_shared",
     "aetherion_math",
     "aetherion_sync",
 
-    # 2. Processing Layer (Computation & Persistence)
+    # 2. Processing Layer (Computation & Persistence - P2)
     "aetherion_generate",
     "aetherion_cache",
 
-    # 3. Interface Layer (External Bridges)
+    # 3. Interface Layer (External Bridges - P3)
     "aetherion_engine_ffi",
     "aetherion_godot",
 
@@ -17,56 +19,57 @@ members = [
     "aetherion_tools",
     "aetherion_cli",
 ]
-resolver = "2"
+resolver = "2" # Use the new cargo feature resolver
 
 [workspace.package]
 edition = "2021"
 license = "MIT OR Apache-2.0"
-rust-version = "1.75"
+rust-version = "1.75" # Set a standard base Rust version
 
 [workspace.dependencies]
 # ------------------------------------------------------------------
-# CORE UTILITIES
+# CORE UTILITIES & DATA MANAGEMENT
 # ------------------------------------------------------------------
-serde             = { version = "1.0", features = ["derive"] }
-serde_json        = "1.0"
-bincode           = "1.3"
-log               = "0.4"
-env_logger        = "0.11"
-thiserror         = "1.0"
-anyhow            = "1.0" 
-tracing           = "0.1" # Core tracing library
-tracing-subscriber = "0.3" # Used to manage and output tracing data
-uuid              = { version = "1.8", features = ["v4", "fast-rng"] } # v4 is random, fast-rng is efficient
+serde               = { version = "1.0", features = ["derive"] }
+serde_json          = "1.0"
+bincode             = "1.3"
+thiserror           = "1.0"  # Canonical error definition (used by aetherion_shared)
+uuid                = { version = "1.8", features = ["v4", "fast-rng"] }
+# FIX: Added anyhow to workspace dependencies to resolve the inheritance error.
+anyhow              = "1.0" 
+
+# ------------------------------------------------------------------
+# TRACING AND DIAGNOSTICS
+# ------------------------------------------------------------------
+tracing             = "0.1" # Core tracing library (replaces 'log')
+tracing-subscriber  = "0.3" # Used to manage and output tracing data (replaces 'env_logger')
 
 # ------------------------------------------------------------------
 # TIME, RANDOMNESS, AND PARSING
 # ------------------------------------------------------------------
-chrono            = { version = "0.4", features = ["serde"] } 
-rand              = { version = "0.8", features = ["small_rng"] }
-rand_pcg          = "0.9"
-nom               = "7.1"
-regex             = "1.11"
-once_cell         = "1.19"
-lazy_static       = "1.5"
+chrono              = { version = "0.4", features = ["serde"] } 
+rand                = { version = "0.8", features = ["small_rng"] }
+rand_pcg            = "0.9"
+nom                 = "7.1"
+regex               = "1.11"
+once_cell           = "1.19" # Preferred over lazy_static for statics
 
 # ------------------------------------------------------------------
 # CONCURRENCY AND MATH
 # ------------------------------------------------------------------
-tokio             = { version = "1.35", features = ["rt-multi-thread"] }
-rayon             = "1.10"
-crossbeam         = "0.8"
-crossbeam-channel = "0.5"
-parking_lot       = "0.12" 
-glam              = "0.25"
-sha2              = "0.10"
-image             = "0.24"
-
+tokio               = { version = "1.35", features = ["rt-multi-thread"] } # The primary async runtime
+rayon               = "1.10" # Used for parallel synchronous processing
+crossbeam           = "0.8"
+crossbeam-channel   = "0.5"
+parking_lot         = "0.12" # High-performance synchronization primitives
+glam                = "0.25" # High-performance linear algebra library (Vectors, Matrices)
+sha2                = "0.10"
+image               = "0.24" # For image processing in aetherion_tools
 # ------------------------------------------------------------------
 # CLI AND CONSOLE UTILITIES
 # ------------------------------------------------------------------
-crossterm         = "0.27" # Added for interactive console menu in aetherion_cli
-walkdir           = "2.5"  # Added (assuming you need a version for the module tree feature)
+crossterm           = "0.27" 
+walkdir             = "2.5" 
 
 [workspace.lints.rust]
 unsafe_code      = "deny"
