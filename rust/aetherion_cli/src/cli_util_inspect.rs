@@ -1,38 +1,66 @@
 // aetherion_cli/src/cli_util_inspect.rs
-
 use walkdir::WalkDir;
 use std::path::Path;
-use regex::Regex;
-use std::fs;
-// FIX 1: Replace log import with tracing import.
+use regex::Regex; 
 use tracing::{info, warn, error};
+
 
 /// 📦 Prints a tree of Rust modules across all workspace crates
 pub fn print_module_tree() {
 	println!("\n📦 Scanning for Rust modules across workspace (using WalkDir)...");
 
-	// Define paths relative to the workspace root for scanning
+	// Corrected Crate list based on manifest.rs
 	let crate_dirs = [
-        // Whitespace cleaned on all lines below
-		"../aetherion_core/src",
-		"../aetherion_engine/src",
-		"src", // aetherion_cli/src
+		"aetherion_cache/src",
+		"aetherion_engine_ffi/src",
+		"aetherion_generate/src",
+		"aetherion_godot/src",
+		"aetherion_math/src",
+		"aetherion_shared/src",
+		"aetherion_sync/src",
+		"aetherion_tools/src",
+		"aetherion_cli/src", // aetherion_cli/src
 	];
 
 	for crate_dir in crate_dirs {
-        // Whitespace cleaned on all lines below
-		// NOTE: Path resolution might need adjustment based on how you run the binary.
-		// For cargo run from the root, this is often tricky.
-		println!("🔍 Crate: {} (Placeholder check)", crate_dir);
-		// Placeholder implementation for now:
-		if Path::new(crate_dir).exists() {
-			info!("Path exists. (Full tree generation skipped for brevity)");
+        let crate_path = Path::new(crate_dir);
+		println!("\n🔍 Crate: {}", crate_dir);
+
+		if crate_path.exists() && crate_path.is_dir() {
+            // Use WalkDir to traverse the directory
+			for entry in WalkDir::new(crate_path) {
+				match entry {
+					Ok(e) => {
+                        let path = e.path();
+                        // Only process files that end with `.rs`
+                        if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
+                            // Print a simple tree-like structure
+                            let prefix = if path.file_name().map_or(false, |name| name == "lib.rs" || name == "main.rs") {
+                                // Important files are highlighted
+                                "├── [CORE] "
+                            } else {
+                                "│   └── "
+                            };
+                            
+                            // Get the path relative to the crate's src folder
+                            if let Ok(relative_path) = path.strip_prefix(crate_path) {
+                                println!("{} {}", prefix, relative_path.display());
+                            } else {
+                                println!("{} {}", prefix, path.display());
+                            }
+                        }
+					},
+					Err(e) => warn!("Error walking directory {}: {}", crate_dir, e),
+				}
+			}
 		} else {
-			warn!("Path does not exist: {}", crate_dir);
+			warn!("Path does not exist or is not a directory: {}", crate_dir);
 		}
 	}
 	println!("\n✅ Module scan complete.\n");
 }
+
+// ... (print_godot_api_surface() remains the same for now)
 
 /// 🧪 Scans for GDScript-callable Rust methods exposed via #[func] (Placeholder)
 pub fn print_godot_api_surface() {

@@ -21,6 +21,7 @@ rust/                                # Workspace Member Root
 		├── cargo.toml
 		├── /src
 			├──lib.rs
+	
 	├── aetherion_cli/               # 🧰 Interactive Console, Benchmarks, and Diagnostics
 		├── cargo.toml
 		├── src/
@@ -29,6 +30,7 @@ rust/                                # Workspace Member Root
 			├──cli_util_inspect.rs
 			├──cli_util_menu.rs
 			├──main.rs
+	
 	├── aetherion_engine_ffi/        # 🔗 Low-level C FFI Bridge for Godot Communication
 		├──cargo.toml
 		├── src/
