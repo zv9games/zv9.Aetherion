@@ -10,11 +10,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║ 🌌 AETHERION GRAPHICS PROCESSOR — zv9.aetherion                         	║
 ║                                                                           ║
-║ Yo. This is Aetherion. It’s the procedural brainstem of Godot,            ║
-║ written in Rust, and it shreds in both 2D and 3D. Modular, signal-driven  ║
-║ and introspectable like a corvette.                                       ║
-║                                                                           ║
-║ > “Every tile’s a glyph. Every signal’s a chant. Aetherion listens.”      ║
+║ Yo. Pacman. Aetherion. Rust.                                                      ║
 ║                                                                          	║
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║ ✨ FEATURES                                                              	║
