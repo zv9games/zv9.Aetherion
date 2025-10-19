@@ -277,21 +277,6 @@ script = ExtResource("1_3lhfi")
 [node name="main" type="Node2D" parent="."]
 script = ExtResource("2_kvte3")
 
-[node name="AetherionMap" type="AetherionMap" parent="main"]
-
-[node name="AetherionConfig" type="AetherionConfig" parent="main"]
-
-[node name="AetherionGenerator" type="AetherionGenerator" parent="main"]
-
-[node name="AetherionSignals" type="AetherionSignals" parent="main"]
-
-[node name="AetherionEngine" type="AetherionEngine" parent="main"]
-
-[node name="EngineMonitor" type="Node" parent="main/AetherionEngine"]
-script = ExtResource("3_6byaw")
-
-[node name="AetherionOracle" type="AetherionOracle" parent="main"]
-
 [node name="expansive_tilemap" type="TileMap" parent="main"]
 tile_set = SubResource("TileSet_kwdps")
 format = 2
@@ -461,6 +446,9 @@ anchor_mode = 0
 position = Vector2(552, 304)
 
 [node name="scenescanner" type="Node" parent="main"]
+
+[node name="EngineMonitor" type="Node" parent="main"]
+script = ExtResource("3_6byaw")
 
 [node name="init" type="Node" parent="."]
 script = ExtResource("6_ragr5")

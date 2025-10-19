@@ -5,7 +5,6 @@ edition.workspace = true
 
 [dependencies]
 # Internal dependencies (Local Crates)
-aetherion_shared = { path = "../aetherion_shared" }
 
 # External dependencies (Workspace-Inherited)
 # FIX: Explicitly re-enable the 'serde' feature for glam.

@@ -2,28 +2,25 @@
 
 // FIX: Replace the log import with the tracing import.
 use tracing::warn;
-use crate::cli_util_actions::{run_cargo_tests, start_aetherion_runtime, launch_headless_godot};
+// NEW IMPORT: Add the new function to be called from the menu
+use crate::cli_util_actions::{run_cargo_tests, start_aetherion_runtime, launch_headless_godot, run_priority_1_tests};
 use crate::cli_util_inspect::{print_godot_api_surface, print_module_tree};
 use crate::cli_util_bench::{run_bitmask_conversion, run_max_grid_benchmark, test_generation_and_placement_cli};
 
 /// 🧩 Menu item definition
 pub struct MenuItem {
 	pub key: char,
-    // Whitespace cleaned here
 	pub label: &'static str,
-    // Whitespace cleaned here
 	pub action: Box<dyn Fn()>,
 }
 
 /// 🧭 Builds the interactive dev console menu
 pub fn build_menu() -> Vec<MenuItem> {
-    // Whitespace cleaned throughout this block
 	vec![
 		// ✅ Core Actions & Inspection
 		MenuItem { key: '0', label: "✅ Run: Cargo Test Suite", action: Box::new(run_cargo_tests) },
 		MenuItem { key: '1', label: "✅ Inspect: Godot-Callable API Surface", action: Box::new(print_godot_api_surface) },
 		MenuItem { key: '2', label: "✅ Inspect: Rust Module Tree", action: Box::new(print_module_tree) },
-		// FIX: The warn! macro now uses the tracing implementation
 		MenuItem { key: '3', label: "⚠️ Run: Trailkeeper Scan (TODO)", action: Box::new(|| warn!("TODO: Trailkeeper scan not yet implemented.")) },
 		
 		// 🚀 Runtime & Benchmarks
@@ -39,16 +36,16 @@ pub fn build_menu() -> Vec<MenuItem> {
 		MenuItem { key: '9', label: "✅ Exit", action: Box::new(|| {}) },
 
 		// 🔮 Future Expansion / TODOs
-		// FIX: The warn! macro now uses the tracing implementation
 		MenuItem { key: 'A', label: "🔮 TODO: Export Chunk Hashes for Streaming", action: Box::new(|| warn!("TODO: Chunk hashing not yet implemented.")) },
-		// FIX: The warn! macro now uses the tracing implementation
 		MenuItem { key: 'B', label: "🔮 TODO: Signal Inspector / Live Feed", action: Box::new(|| warn!("TODO: Signal inspector not yet implemented.")) },
-		// ...
+		// NEW ITEM: Dedicated Phase 1 validation test
+		MenuItem { key: 'C', label: "✅ Validate: Phase 1 Final Integration Check", action: Box::new(run_priority_1_tests) },
 	]
 }
 
 /// 🖥 Prints the menu to the console
 pub fn print_menu(menu: &[MenuItem]) {
+  
 	println!("\n🧭 Aetherion Engine Dev Console\n");
 	for item in menu {
 		println!("[{}] {}", item.key, item.label);

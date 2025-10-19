@@ -20,7 +20,7 @@ use tracing_subscriber::{self, filter::LevelFilter, prelude::*};
 
 // --- INTERNAL IMPORTS ---
 use crate::cli_util_menu::{build_menu, print_menu};
-use aetherion_engine_ffi::aetherion_initialize_engine; // To be called once on startup
+use aetherion_engine::aetherion_initialize_engine; // To be called once on startup
 
 /// 🖐️ Optional pause after action
 fn wait_for_enter() {

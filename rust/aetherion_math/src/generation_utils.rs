@@ -1,7 +1,9 @@
 // aetherion_math/src/generation_utils.rs
 //! Placeholder module for utility functions used by the generation pipeline.
 
-use aetherion_shared::AetherionData;
+// --- FIX: Corrected the module path from 'math_primitives' to 'primitives' ---
+use crate::primitives::AetherionData; 
+use crate::primitives::Vec2i;
 
 /// Processes the input data, applying a placeholder mathematical transformation.
 ///
@@ -15,8 +17,8 @@ use aetherion_shared::AetherionData;
 /// # Returns
 ///
 /// A simple derived u64 value.
-pub fn process_data(data: &AetherionData) -> u64 {
-    // Simple placeholder logic: return the sum of the ID and the length of the value string.
-    let processed_value = data.id + data.value.len() as u64;
+pub fn process_data(data: &impl AetherionData) -> u64 {
+    // Uses the trait methods defined on AetherionData in aetherion_math/src/primitives.rs
+    let processed_value = data.get_id() + data.get_value_len() as u64;
     processed_value
 }

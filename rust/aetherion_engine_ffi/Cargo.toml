@@ -4,6 +4,7 @@ version = "0.6.0"
 edition = "2021"
 
 [lib]
+name = "aetherion_engine"
 # Required for generating the dynamic library (.dll/.so) needed for Godot GDExtension, 
 # and a standard Rust library (.rlib).
 crate-type = ["cdylib", "rlib"]

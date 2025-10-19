@@ -9,6 +9,7 @@ edition = "2021"
 aetherion_engine_ffi = { path = "../aetherion_engine_ffi" }
 aetherion_shared     = { path = "../aetherion_shared" }
 aetherion_math       = { path = "../aetherion_math" }
+aetherion_generate   = { path = "../aetherion_generate" }
 
 # --- EXTERNAL DEPENDENCIES ---
 # FIX: Switched from crates.io version to a local path dependency.

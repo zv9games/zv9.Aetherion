@@ -18,3 +18,5 @@ rand             = { workspace = true }
 image            = { workspace = true }
 # Ensure we use the workspace's standard logging framework
 tracing          = { workspace = true }
+tokio            = { workspace = true }
+noise            = { workspace = true }

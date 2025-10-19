@@ -1,69 +1,82 @@
 //! Defines the canonical set of fundamental types that a Tile can represent.
 //!
 //! This enum is used by the generation modules to assign meaning to raw noise values,
-//! and by the rendering engine to select the correct visual asset.
+//! and by the rendering engine (Godot) to select the correct visual asset.
 
 use serde::{Serialize, Deserialize};
 
-/// The fundamental, physical classification of a tile.
+/// The fundamental, physical classification of a tile, aligned with the MVG schema.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[repr(u8)] // Ensures compact storage
+#[repr(u8)] // Ensures compact storage for cache serialization
 pub enum TileType {
-    /// 0: The default, empty, or uninitialized state. (Non-solid, non-traversable).
+    /// 0: The default, empty, or uninitialized state (Void/Air).
     Void = 0,
-    /// 1: Represents solid, traversable land or a basic ground surface (e.g., Grass, Dirt, Stone).
-    Land = 1,
-    /// 2: Represents a water body (e.g., Lake, Ocean, River).
-    Water = 2,
-    /// 3: Represents a structured object or built environment (e.g., Wall, Floor, Road).
-    Structure = 3,
-    /// 4: Represents atmospheric elements or height boundaries (e.g., Cloud, Deep Space).
-    Atmospheric = 4,
-    /// 5: Represents a boundary or special-condition tile that cannot be traversed or modified easily.
-    Boundary = 5,
-    /// Reserved for future expansion or custom user types.
+    /// 1: Represents a water body (V < 0.3).
+    Water = 1,
+    /// 2: Represents standard ground/plains (0.3 <= V < 0.6).
+    Grass = 2,
+    /// 3: Represents high-elevation terrain (V >= 0.6).
+    Mountain = 3,
+    /// 4: Represents a boundary or special-condition tile that cannot be traversed or modified easily.
+    Boundary = 4,
+    /// 5: Reserved for future structured objects/built environment (Structure/Roads).
+    Structure = 5,
+    /// 6-7: Reserved for future expansion or custom user types.
     Custom1 = 6,
-    /// Reserved for future expansion or custom user types.
     Custom2 = 7,
 }
 
+// ---------------------------
+// IMPL: Default and Conversion
+// ---------------------------
+
 impl Default for TileType {
+    /// The default state of a tile is non-solid and empty.
     fn default() -> Self {
         TileType::Void
     }
 }
 
 impl TileType {
-    /// Helper function to check if the tile type indicates a traversable surface.
-    pub fn is_walkable(&self) -> bool {
-        match self {
-            TileType::Land | TileType::Structure => true,
-            _ => false,
-        }
+    /// Helper function to convert the enum variant into its underlying u8 representation.
+    #[inline] // Hint to the compiler for potential inlining for performance
+    pub const fn to_u8(self) -> u8 {
+        self as u8
     }
 
-    /// Helper function to check if the tile type is one that typically requires fluid dynamics simulation.
-    pub fn is_fluid(&self) -> bool {
-        matches!(self, TileType::Water)
-    }
-
-    /// Converts the enum variant into its underlying u8 representation.
-    pub fn to_u8(&self) -> u8 {
-        *self as u8
-    }
-
-    /// Attempts to convert a u8 into a TileType.
+    /// Attempts to convert a u8 into a TileType. Returns None if the value is outside the defined range.
     pub fn from_u8(value: u8) -> Option<Self> {
         match value {
             0 => Some(TileType::Void),
-            1 => Some(TileType::Land),
-            2 => Some(TileType::Water),
-            3 => Some(TileType::Structure),
-            4 => Some(TileType::Atmospheric),
-            5 => Some(TileType::Boundary),
+            1 => Some(TileType::Water),
+            2 => Some(TileType::Grass),
+            3 => Some(TileType::Mountain),
+            4 => Some(TileType::Boundary),
+            5 => Some(TileType::Structure),
             6 => Some(TileType::Custom1),
             7 => Some(TileType::Custom2),
             _ => None,
         }
+    }
+}
+
+// ---------------------------
+// IMPL: Gameplay Logic Helpers
+// ---------------------------
+
+impl TileType {
+    /// Checks if the tile type indicates a ground-based, traversable surface.
+    pub const fn is_walkable(self) -> bool {
+        matches!(self, TileType::Grass | TileType::Mountain | TileType::Structure)
+    }
+
+    /// Checks if the tile type indicates a liquid that typically requires fluid dynamics simulation.
+    pub const fn is_fluid(self) -> bool {
+        matches!(self, TileType::Water)
+    }
+
+    /// Checks if the tile is a placeholder state that hasn't been generated yet.
+    pub const fn is_empty(self) -> bool {
+        matches!(self, TileType::Void)
     }
 }

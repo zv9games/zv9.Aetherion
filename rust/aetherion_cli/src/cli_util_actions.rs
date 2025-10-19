@@ -1,48 +1,74 @@
 // aetherion_cli/src/cli_util_actions.rs
 
 use std::process::Command;
-// FIX 1: Replace log import with tracing import.
 use tracing::{info, warn, error};
+
+// PHASE 2 TRANSITION: Import the new runtime entry point
+use aetherion_generate::start_runtime_placeholder;
 
 /// 🚀 Runs the full Rust test suite via Cargo
 pub fn run_cargo_tests() {
 	println!("🚀 Running full cargo test suite (Placeholder)...");
 
 	let status = Command::new("cargo")
-        // Whitespace cleaned here
 		.args(&["test", "--", "--nocapture"])
 		.status()
 		.expect("Failed to run cargo test");
 
-    // Whitespace cleaned here
 	if status.success() {
 		info!("✅ All tests passed.");
 	} else {
-		// FIX 2: Replace log::error! with tracing::error!
 		error!("❌ Some tests failed.");
 	}
 }
 
-/// ⚠️ Placeholder for starting the Aetherion core runtime (Conductor)
+/// 🚀 Starts the Aetherion core runtime (Conductor) structure check.
+///
+/// This executes the Phase 2 immediate priority: Conductor initialization and graceful shutdown.
 pub fn start_aetherion_runtime() {
-	// FIX 3: Replace log::warn! with tracing::warn!
-	warn!("⚠️ Placeholder: Starting Aetherion Runtime...");
-	// NOTE: This will be replaced by a call like aetherion_core::core::start(DummyDelivery::new())
-	// For now, it's just a log message.
-	info!("Runtime placeholder started. Execution complete.");
+    // FIX: Execute the Conductor structural test.
+    start_runtime_placeholder();
+    info!("🚀 Runtime structural test complete (Conductor booted and shut down gracefully).");
 }
 
 /// 🎮 Placeholder to launch headless Godot
 pub fn launch_headless_godot() {
-	// FIX 4: Replace log::warn! with tracing::warn!
 	warn!("🎮 Placeholder: Attempting to launch headless Godot...");
 	// NOTE: Replace paths with your actual environment variables later.
-	let godot_path = "C:/ZV9/Godot/Godot.exe";	
+	let godot_path = "C:/zv9/zv9.aetherion/rust/godot.windows.editor.x86_64.exe";	
 
 	// Simplified status check for the placeholder
 	match Command::new(godot_path).arg("--version").status() {
 		Ok(status) if status.success() => info!("🚀 Headless Godot launch command ready (path check OK)."),
-		// FIX 5: Replace log::error! with tracing::error!
 		_ => error!("❌ Godot executable not found or command failed. Check path: {}", godot_path),
 	}
+}
+
+/// Runs only the unit tests defined in the Phase 1 Foundation Layer packages.
+///
+/// This serves as the final integration check before progressing to Phase 2.
+pub fn run_priority_1_tests() {
+    info!("Running Phase 1 Foundation Layer (P1) test suite...");
+
+    // Target packages: aetherion_shared, aetherion_math, aetherion_sync
+    // Using --all-targets to include integration tests if they exist.
+    let result = Command::new("cargo")
+        .arg("test")
+        .arg("--package")
+        .arg("aetherion_shared")
+        .arg("--package")
+        .arg("aetherion_math")
+        .arg("--package")
+        .arg("aetherion_sync")
+        .arg("--all-targets")
+        .status();
+
+    match result {
+        Ok(status) if status.success() => {
+            info!("✅ Phase 1 Validation Complete: All foundation tests passed successfully.");
+        }
+        _ => {
+            error!("❌ Phase 1 Validation Failed. Check the errors above.");
+        }
+    }
 }

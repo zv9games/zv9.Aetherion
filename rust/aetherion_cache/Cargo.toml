@@ -6,7 +6,10 @@ edition = "2021"
 # Internal Dependencies (Local Crates)
 aetherion_shared = { path = "../aetherion_shared" }
 aetherion_sync = { path = "../aetherion_sync" }
+aetherion_math = { path = "../aetherion_math" }
 
 # External Dependencies (Workspace-Inherited)
 bincode = { workspace = true }
 sha2 = { workspace = true }
+glam = { workspace = true }
+tracing = { workspace = true }
