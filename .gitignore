@@ -28,3 +28,5 @@ Thumbs.db
 *.bak
 *.tmp
 
+# Ignore Godot binary
+rust/godot.windows.editor.x86_64.exe
