@@ -59,7 +59,7 @@
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║ 🛠 ROADMAP                                                              	║
 ║   																		║
-║ ✓ Aetherion Super Massive Expansive Update 6								║
+║ ✓ Aetherion Super Massive Expansive Update 7								║
 ║ ☐ Core Data Structs Finalized												║
 ║ ☐ Safe Memory Cache implemented											║
 ║ ☐ Async Synchronization Layer											    ║
