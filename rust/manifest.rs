@@ -1,3 +1,8 @@
+You need to do a better job on this. need to itemize everything,
+if you don't identify every file at the very least, the code
+won't line up in the end. Line up from the plugin, .gdextension,
+through the modules. you're super close, and it's saved, so think about it.
+
 #intro
 
 Aetherion is a mythic core — a modular, dimension-agnostic  

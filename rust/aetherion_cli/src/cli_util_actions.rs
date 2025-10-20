@@ -11,19 +11,21 @@ use std::io::{self, Write}; // io::Write for flush()
 use ctrlc; // Used for graceful shutdown handling
 use std::env; // Used to get the Current Working Directory (CWD)
 
-// FIX: Removed unused import `std::path::PathBuf`.
-// use std::path::PathBuf; // Used for path manipulation (cleaned up duplicate)
-
-
 // PHASE 2 TRANSITION: Import the Conductor types
-// FIX: Removed unused import 'ConductorState'
 use aetherion_generate::conductor::{Conductor, ConductorStatus}; 
+
+// --- CONSTANTS ---
+// FIX: Consolidate path constants for re-use in multiple launch functions
+const GODOT_EXE_PATH: &str = "./godot.windows.editor.x86_64.exe"; 
+const RELATIVE_PROJECT_PATH_FRAGMENT: &str = "../aetherion_engine_tester"; 
+const GODOT_TEST_SCENE: &str = "res://test_scene/test_ffi_data.tscn"; 
+
 
 // --- CORE CLI ACTIONS ---
 
 /// 🚀 Runs the full Rust test suite via Cargo
 pub fn run_cargo_tests() {
-	println!("🚀 Running full cargo test suite (Placeholder)...");
+	println!("🚀 Running full cargo test suite...");
 
 	let status = Command::new("cargo")
 		.args(&["test", "--", "--nocapture"])
@@ -37,34 +39,68 @@ pub fn run_cargo_tests() {
 	}
 }
 
-/// 🚀 Starts the Aetherion core runtime (Conductor) structural test.
-///
-/// This serves as a quick check that the Conductor can initialize and shut down cleanly.
-pub fn start_aetherion_runtime() {
-    warn!("🚀 Running Conductor structural test...");
-    // FIX: Pass None to Conductor::new() to satisfy the updated signature. (Error E0061 Fix #1)
-    match Conductor::new(None) {
-        Ok((conductor, _state)) => {
-            info!("✅ Conductor initialized successfully.");
-            // FIX: Use the renamed consuming method for full teardown.
-            conductor.graceful_teardown(); 
-            info!("✅ Conductor shut down gracefully.");
+// REMOVED: pub fn start_aetherion_runtime()
+// The structural test is now primarily covered by `run_priority_1_tests` 
+// and the successful initialization within the GDExtension tests.
+
+/// Helper to calculate the absolute path to the Godot project tester directory.
+fn get_godot_project_abs_path() -> Result<String, String> {
+    let mut current_dir = env::current_dir()
+        .map_err(|e| format!("Failed to determine CWD: {}", e))?;
+
+    current_dir.push(RELATIVE_PROJECT_PATH_FRAGMENT);
+    
+    current_dir.canonicalize()
+        .map(|p| p.to_string_lossy().to_string())
+        .map_err(|e| format!("Cannot resolve project path fragment '{}': {}. Does the directory exist?", RELATIVE_PROJECT_PATH_FRAGMENT, e))
+}
+
+// -----------------------------------------------------------------------------
+// PHASE 8: NON-HEADLESS CLIENT LAUNCH (NEW FUNCTION)
+// -----------------------------------------------------------------------------
+
+/// 🚀 Launches the full Godot editor or game client (non-headless) with the project loaded.
+/// (CLI Menu [4] update for Phase 8)
+pub fn launch_godot_client() {
+    info!("🚀 LAUNCHING: Godot Client (Non-Headless)...");
+
+    let project_path_abs = match get_godot_project_abs_path() {
+        Ok(path) => path,
+        Err(e) => {
+            error!("❌ Launch failed: {}", e);
+            return;
+        }
+    };
+    
+    info!("Attempting to launch Godot from: {}", GODOT_EXE_PATH);
+    info!("Loading project at (Absolute Path): {}", project_path_abs);
+
+    // Launch the Godot process without the --headless flag
+    // We expect the user to manually close this process.
+    match Command::new(GODOT_EXE_PATH)
+        .arg("--path")
+        .arg(&project_path_abs)
+        .spawn() // Use spawn() instead of status() or output() for non-blocking launch
+    {
+        Ok(_) => {
+            info!("✅ Godot client spawned successfully. Please close the Godot window to continue CLI use.");
         }
         Err(e) => {
-            error!("❌ Failed to initialize Conductor/Runtime: {}", e);
+            error!("❌ Failed to execute Godot command: {}", e);
+            warn!("Please ensure the Godot executable is in the current directory: {}", GODOT_EXE_PATH);
         }
     }
 }
 
+
 /// 🎮 Placeholder to launch headless Godot
 pub fn launch_headless_godot() {
-	warn!("🎮 Placeholder: Attempting to launch headless Godot...");
-	let godot_path = "./godot.windows.editor.x86_64.exe"; // Path updated to reflect CWD
-
+	warn!("🎮 Placeholder: Attempting to launch headless Godot (simple path check)...");
+	
 	// Simplified status check for the placeholder
-	match Command::new(godot_path).arg("--version").status() {
+	match Command::new(GODOT_EXE_PATH).arg("--version").status() {
 		Ok(status) if status.success() => info!("🚀 Headless Godot launch command ready (path check OK)."),
-		_ => error!("❌ Godot executable not found or command failed. Check path: {}", godot_path),
+		_ => error!("❌ Godot executable not found or command failed. Check path: {}", GODOT_EXE_PATH),
 	}
 }
 
@@ -77,30 +113,10 @@ pub fn launch_headless_godot() {
 pub fn run_ffi_bridge_validation() {
     info!("🔥 STARTING: FFI Bridge and GDExtension Integration Validation...");
     
-    // --- 1. Define Godot Paths and Test Project Settings ---
-    // Godot executable path (relative to CWD: C:\zv9\zv9.aetherion\rust)
-    const GODOT_EXE_PATH: &str = "./godot.windows.editor.x86_64.exe"; 
-    // The path fragment, relative to CWD, that points to the Godot project root:
-    const RELATIVE_PROJECT_PATH_FRAGMENT: &str = "../aetherion_engine_tester"; 
-    // The specific test scene to launch (using the --scene flag):
-    const GODOT_TEST_SCENE: &str = "res://test_scene/test_ffi_data.tscn"; 
-    
-    // --- 2. Calculate Absolute Path to Godot Project ---
-    let project_path_abs = match env::current_dir() {
-        Ok(mut current_dir) => {
-            // CWD is C:\zv9\zv9.aetherion\rust. Append "../aetherion_engine_tester".
-            current_dir.push(RELATIVE_PROJECT_PATH_FRAGMENT);
-            
-            match current_dir.canonicalize() {
-                Ok(abs_path) => abs_path.to_string_lossy().to_string(),
-                Err(e) => {
-                    error!("❌ Cannot resolve project path fragment '{}': {}. Does the directory exist?", RELATIVE_PROJECT_PATH_FRAGMENT, e);
-                    return;
-                }
-            }
-        },
+    let project_path_abs = match get_godot_project_abs_path() {
+        Ok(path) => path,
         Err(e) => {
-            error!("❌ Failed to determine current working directory: {}", e);
+            error!("❌ Validation failed: {}", e);
             return;
         }
     };
@@ -113,7 +129,7 @@ pub fn run_ffi_bridge_validation() {
         .arg("--headless") // Run without a GUI
         .arg("--path")
         .arg(&project_path_abs) // Pass the calculated absolute path
-        .arg("--scene") // KEY CHANGE: Using --scene instead of --script
+        .arg("--scene") 
         .arg(GODOT_TEST_SCENE) 
         .output();
 
@@ -182,7 +198,6 @@ pub fn start_signal_inspector() {
     warn!("🔮 Initializing Conductor and starting Signal Inspector (Real-Time Feed)...");
 
     // 1. Initialize Conductor and retrieve the thread-safe state
-    // FIX: Pass None to Conductor::new() to satisfy the updated signature. (Error E0061 Fix #2)
     let (conductor, state) = match Conductor::new(None) {
         Ok(result) => result,
         Err(e) => {
@@ -192,25 +207,21 @@ pub fn start_signal_inspector() {
     };
     
     // Wrap Conductor in Arc<Mutex<Option<>>> for safe, single consumption by the ctrlc handler.
-    // We move the Conductor to a dedicated variable that will be consumed on shutdown.
     let conductor_shutdown_safe = Arc::new(Mutex::new(Some(conductor)));
     let shutdown_clone = conductor_shutdown_safe.clone();
     
     // 2. Setup atomic flag for graceful exit via Ctrl-C
     let running = Arc::new(AtomicBool::new(true));
-    let r_for_handler = running.clone(); // Clone for the handler closure
+    let r_for_handler = running.clone(); 
 
     // Set a Ctrl-C handler to stop the loop and shut down the Conductor
     if let Err(e) = ctrlc::set_handler(move || {
-        // Signal the main loop to stop
         r_for_handler.store(false, Ordering::SeqCst);
         
         // Atomically take the Conductor out of the Mutex and shut it down once.
         if let Some(c) = shutdown_clone.lock().unwrap().take() {
-            // FIX: Use the renamed consuming method.
             c.graceful_teardown();
         }
-        // Print message directly to console
         let _ = writeln!(io::stdout(), "\nInspector: Shutdown signal received. Waiting for Conductor...");
     }) {
         error!("Could not set Ctrl-C handler: {}", e);
@@ -244,12 +255,9 @@ pub fn start_signal_inspector() {
         
         // Check for internal shutdown signals (e.g., error in Conductor)
         if status == ConductorStatus::ShuttingDown || status == ConductorStatus::Error {
-            // Signal the loop to stop
             running.store(false, Ordering::SeqCst); 
             
-            // If the Conductor hasn't already been consumed by ctrlc handler, shut it down here
             if let Some(c) = conductor_shutdown_safe.lock().unwrap().take() {
-                // FIX: Use the renamed consuming method.
                 c.graceful_teardown();
             }
             break; 
@@ -260,7 +268,9 @@ pub fn start_signal_inspector() {
     }
     
     // 4. Cleanup: Clear the line after exiting the loop
-    // Print a newline after the carriage return overwrite to ensure clean console
     let _ = writeln!(io::stdout(), "\r{: <200}", " "); // Overwrite and clear the line
     info!("Inspector shutdown complete. Conductor runtime terminated.");
 }
+
+// NOTE: Add your cli_util_bench functions here or ensure they are imported/defined elsewhere
+// for the menu to work correctly, but for this exercise, we only focus on cli_util_actions.

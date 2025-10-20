@@ -1,15 +1,14 @@
-// aetherion_cli/src/cli_util_menu.rs
-
 // FIX: Replace the log import with the tracing import.
 use tracing::warn;
 // NEW IMPORT: Add the new function to be called from the menu
 use crate::cli_util_actions::{
     run_cargo_tests, 
-    start_aetherion_runtime, 
+    // FIX: Renaming this to reflect the Phase 8 goal: launch the actual Godot client.
+    launch_godot_client, // <--- NEW ACTION (Replaced start_aetherion_runtime)
     launch_headless_godot, 
     run_priority_1_tests, 
     start_signal_inspector,
-    run_ffi_bridge_validation, // <--- 💡 ADDED THE NEW FFI VALIDATION FUNCTION
+    run_ffi_bridge_validation,
 }; 
 use crate::cli_util_inspect::{print_godot_api_surface, print_module_tree};
 use crate::cli_util_bench::{run_bitmask_conversion, run_max_grid_benchmark, test_generation_and_placement_cli};
@@ -31,34 +30,36 @@ pub fn build_menu() -> Vec<MenuItem> {
 		MenuItem { key: '3', label: "⚠️ Run: Trailkeeper Scan (TODO)", action: Box::new(|| warn!("TODO: Trailkeeper scan not yet implemented.")) },
 		
 		// 🚀 Runtime & Benchmarks
-		MenuItem { key: '4', label: "🚀 Start: Aetherion Runtime (Placeholder)", action: Box::new(start_aetherion_runtime) },
+		// FIX: Update to the Phase 8 goal: Launch the full Godot client.
+		MenuItem { 
+            key: '4', 
+            label: "🚀 Launch: Godot Client (Non-Headless)", 
+            action: Box::new(launch_godot_client) // <--- UPDATED ACTION
+        },
 		MenuItem { key: '5', label: "🧪 Test: Generation & Placement CLI", action: Box::new(test_generation_and_placement_cli) },
 		MenuItem { key: '6', label: "✅ Perform: Bitmask PNG Conversion", action: Box::new(run_bitmask_conversion) },
 		MenuItem { key: '7', label: "🧪 Benchmark: Max Grid Placement", action: Box::new(run_max_grid_benchmark) },
 		
-		// 🎮 Engine Integration (Phase 7 Focus)
+		// 🎮 Engine Integration (Phase 8 Focus)
 		MenuItem { 
             key: '8', 
             label: "🎮 Launch: Headless Godot (External)", 
             action: Box::new(launch_headless_godot) 
         },
-        // 🔥 IMMEDIATE PRIORITY FOR V7.0 FFI_FINALIZATION
+		// FIX: The FFI test is now confirmed successful (✅) and moved to a final validation status.
 		MenuItem { 
             key: '9', 
-            label: "🔥 Validate: FFI Bridge Data Transfer (Godot E2E)", // Updated label to reflect E2E test
-            action: Box::new(run_ffi_bridge_validation) // <--- NEW ACTION
+            label: "✅ Validate: FFI Bridge Data Transfer (E2E Final)", 
+            action: Box::new(run_ffi_bridge_validation) 
         },
 		
 		// 🚪 Exit
-		MenuItem { key: 'E', label: "✅ Exit", action: Box::new(|| {}) }, // Using 'E' for Exit to free '9'
+		MenuItem { key: 'E', label: "✅ Exit", action: Box::new(|| {}) },
 		
-		// 🔮 Future Expansion / TODOs
+		// 🔮 Future Expansion / TODOs / Final Checks
 		MenuItem { key: 'A', label: "🔮 TODO: Export Chunk Hashes for Streaming", action: Box::new(|| warn!("TODO: Chunk hashing not yet implemented.")) },
-		// 🔥 PHASE 4: Signal Inspector is now a callable action
 		MenuItem { key: 'B', label: "🔮 Start: Signal Inspector / Live Feed", action: Box::new(start_signal_inspector) }, 
-		// NEW ITEM: Dedicated Phase 1 validation test
 		MenuItem { key: 'C', label: "✅ Validate: Phase 1 Final Integration Check", action: Box::new(run_priority_1_tests) },
-        // We removed the old exit on key '9' and used it for the new, critical FFI test.
 	]
 }
 
