@@ -43,9 +43,6 @@ pub use conductor::Conductor;
 // EXPOSED BENCHMARK FUNCTION: This resolves the E0432 error in aetherion_cli
 pub use benchmark_logic::benchmark_generation_workload;
 
-// REMOVED: pub use crate::Generator; 
-// The E0255 error is caused by attempting to re-export the Generator trait 
-// that is already defined as public in the current file.
 // -------------------------------------------------------------------------------------------------
 // PUBLIC API FOR CLI/FFI (Validation Entry Points)
 // -------------------------------------------------------------------------------------------------
@@ -55,7 +52,8 @@ use tracing::{info, error};
 ///
 /// NOTE: This is the **structural validation test for CLI Menu [4]** (Start Runtime).
 pub fn start_runtime_placeholder() {
-    match Conductor::new() {
+    // FIX: Pass None as the config_path argument to satisfy the updated Conductor::new signature.
+    match Conductor::new(None) {
         // FIX: Properly destructure the (Conductor, ConductorState) tuple.
         Ok((conductor, _state)) => {
             // FIX: Updated info message to match the new method name.

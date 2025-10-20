@@ -73,6 +73,8 @@ noise               = "0.9"
 crossterm           = "0.27" 
 walkdir             = "2.5" 
 ctrlc               = "3.4"
+godot = { version = "0.4.0", features = ["serde"] } 
+gdextension = "0.0.1"
 
 [workspace.lints.rust]
 unsafe_code      = "deny"

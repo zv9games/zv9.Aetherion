@@ -10,21 +10,21 @@ use std::io;
 // NEW: Cache and Math imports for Phase 6
 use aetherion_cache::ChunkCache;
 use aetherion_math::Vec2i;
-use aetherion_math::prelude::ChunkKey; // FIX: Resolved E0432 for ChunkKey based on compiler hint
-use glam::IVec3; // Used to construct ChunkKey from Vec2i
+use aetherion_math::prelude::ChunkKey; 
+use glam::IVec3; 
 
 // --- INTERNAL CRATE DEPENDENCIES ---
 use crate::Generator;
 use crate::perlin_generator::PerlinGenerator;
 use crate::cellular_automata_generator::{
     CellularAutomataGenerator, 
-    RULE_BASIC_CAVE, // NEW: Import ruleset constants
+    RULE_BASIC_CAVE, 
     RULE_MAZE
 };
 
 // --- EXTERNAL CRATE DEPENDENCIES ---
 use aetherion_shared::chunk_data::ChunkData;
-use aetherion_tools::get_config; // NEW: Import configuration utility
+use aetherion_tools::get_config_from_path; // FIX: Import path-aware function
 
 // FIX: Define a type alias that includes Send + Sync bounds for thread-safe trait objects
 type DynGenerator = Box<dyn Generator + Send + Sync>;
@@ -109,9 +109,11 @@ pub struct Conductor {
 impl Conductor {
     /// Initializes the Conductor, starts the runtime, and returns a thread-safe
     /// copy of its state for external monitoring.
-    pub fn new() -> Result<(Self, ConductorState), io::Error> {
+    /// FIX: Added config_path parameter to resolve Godot CWD issues.
+    pub fn new(config_path: Option<&str>) -> Result<(Self, ConductorState), io::Error> {
         // Load configuration first
-        let config = get_config(); 
+        // FIX: Use the path-aware function, propagating the error if it fails 
+        let config = get_config_from_path(config_path)?; 
 
         // --- Runtime Setup ---
         let runtime = tokio::runtime::Builder::new_multi_thread()
@@ -201,9 +203,6 @@ impl Conductor {
         info!("Aetherion Conductor full teardown complete.");
     }
     
-    // NOTE: The previous `pub fn shutdown(self)` has been replaced by `graceful_teardown(self)`
-    // and `signal_shutdown_graceful(&self)`.
-
     // --- Generator Management & Core Pipeline ---
 
     /// Changes the algorithm used for subsequent generation tasks.

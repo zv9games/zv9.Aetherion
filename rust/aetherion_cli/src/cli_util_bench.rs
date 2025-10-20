@@ -21,7 +21,8 @@ pub fn test_generation_and_placement_cli() {
     warn!("🧪 Running CLI Test: Generation and Placement (Conductor Validation)...");
 
     // 1. Initialize Conductor and retrieve state
-    let (mut conductor, _state) = match Conductor::new() {
+    // FIX: Pass None to Conductor::new() to satisfy the updated signature.
+    let (mut conductor, _state) = match Conductor::new(None) {
         Ok(result) => result,
         Err(e) => {
             error!("❌ Failed to initialize Conductor/Runtime: {}", e);
@@ -105,6 +106,8 @@ pub fn run_max_grid_benchmark() {
     let ticker_counter_clone = processed_tiles.clone();
 
     // --- 2. START THE WORKLOAD (GENERATION) THREAD ---
+    // NOTE: Conductor::new() is called inside benchmark_generation_workload 
+    // and is assumed to be fixed there (to pass None).
     let workload_handle = thread::spawn(move || {
         // NOTE: The function signature in aetherion_generate now includes the counter.
         benchmark_generation_workload(WORKLOAD_TILES, workload_counter_clone); 

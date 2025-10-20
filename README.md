@@ -3,14 +3,14 @@
 </p>
 
 
-# zv9.Aetherion (AETHERION SUPER MASSIVE EXPANSIVE ARC UPDATE 7)
+# zv9.Aetherion (AETHERION SUPER MASSIVE EXPANSIVE ARC UPDATE 8)
 2D/3D procedural gen core rust gdextension. 
 
 ```text
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║ 🌌 AETHERION GRAPHICS PROCESSOR — zv9.aetherion                         	║
 ║                                                                           ║
-║ Yo. Pacman. Aetherion. Rust.                                                      ║
+║ Yo. Pacman. Aetherion. Rust. There are code updates not listed here.      ║
 ║                                                                          	║
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║ ✨ FEATURES                                                              	║
@@ -59,7 +59,7 @@
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║ 🛠 ROADMAP                                                              	║
 ║   																		║
-║ ✓ Aetherion Super Massive Expansive Update 7								║
+║ ✓ Aetherion Super Massive Expansive Update 8								║
 ║ ☐ Core Data Structs Finalized												║
 ║ ☐ Safe Memory Cache implemented											║
 ║ ☐ Async Synchronization Layer											    ║

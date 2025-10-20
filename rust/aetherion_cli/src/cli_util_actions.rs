@@ -9,6 +9,11 @@ use std::thread;
 use std::time::Duration;
 use std::io::{self, Write}; // io::Write for flush()
 use ctrlc; // Used for graceful shutdown handling
+use std::env; // Used to get the Current Working Directory (CWD)
+
+// FIX: Removed unused import `std::path::PathBuf`.
+// use std::path::PathBuf; // Used for path manipulation (cleaned up duplicate)
+
 
 // PHASE 2 TRANSITION: Import the Conductor types
 // FIX: Removed unused import 'ConductorState'
@@ -37,7 +42,8 @@ pub fn run_cargo_tests() {
 /// This serves as a quick check that the Conductor can initialize and shut down cleanly.
 pub fn start_aetherion_runtime() {
     warn!("🚀 Running Conductor structural test...");
-    match Conductor::new() {
+    // FIX: Pass None to Conductor::new() to satisfy the updated signature. (Error E0061 Fix #1)
+    match Conductor::new(None) {
         Ok((conductor, _state)) => {
             info!("✅ Conductor initialized successfully.");
             // FIX: Use the renamed consuming method for full teardown.
@@ -53,7 +59,7 @@ pub fn start_aetherion_runtime() {
 /// 🎮 Placeholder to launch headless Godot
 pub fn launch_headless_godot() {
 	warn!("🎮 Placeholder: Attempting to launch headless Godot...");
-	let godot_path = "C:/zv9/zv9.aetherion/rust/godot.windows.editor.x86_64.exe";	
+	let godot_path = "./godot.windows.editor.x86_64.exe"; // Path updated to reflect CWD
 
 	// Simplified status check for the placeholder
 	match Command::new(godot_path).arg("--version").status() {
@@ -61,6 +67,82 @@ pub fn launch_headless_godot() {
 		_ => error!("❌ Godot executable not found or command failed. Check path: {}", godot_path),
 	}
 }
+
+// -----------------------------------------------------------------------------
+// PHASE 7: FFI BRIDGE VALIDATION (IMMEDIATE PRIORITY)
+// -----------------------------------------------------------------------------
+
+/// 🔥 Runs an end-to-end test of the FFI bridge by launching Godot headless 
+/// to load the dedicated GDExtension test scene and validate data transfer.
+pub fn run_ffi_bridge_validation() {
+    info!("🔥 STARTING: FFI Bridge and GDExtension Integration Validation...");
+    
+    // --- 1. Define Godot Paths and Test Project Settings ---
+    // Godot executable path (relative to CWD: C:\zv9\zv9.aetherion\rust)
+    const GODOT_EXE_PATH: &str = "./godot.windows.editor.x86_64.exe"; 
+    // The path fragment, relative to CWD, that points to the Godot project root:
+    const RELATIVE_PROJECT_PATH_FRAGMENT: &str = "../aetherion_engine_tester"; 
+    // The specific test scene to launch (using the --scene flag):
+    const GODOT_TEST_SCENE: &str = "res://test_scene/test_ffi_data.tscn"; 
+    
+    // --- 2. Calculate Absolute Path to Godot Project ---
+    let project_path_abs = match env::current_dir() {
+        Ok(mut current_dir) => {
+            // CWD is C:\zv9\zv9.aetherion\rust. Append "../aetherion_engine_tester".
+            current_dir.push(RELATIVE_PROJECT_PATH_FRAGMENT);
+            
+            match current_dir.canonicalize() {
+                Ok(abs_path) => abs_path.to_string_lossy().to_string(),
+                Err(e) => {
+                    error!("❌ Cannot resolve project path fragment '{}': {}. Does the directory exist?", RELATIVE_PROJECT_PATH_FRAGMENT, e);
+                    return;
+                }
+            }
+        },
+        Err(e) => {
+            error!("❌ Failed to determine current working directory: {}", e);
+            return;
+        }
+    };
+    
+    info!("Launching Godot (Headless) from: {}", GODOT_EXE_PATH);
+    info!("Running test scene: {} in project (Absolute Path): {}", GODOT_TEST_SCENE, project_path_abs);
+
+    // --- 3. Launch Godot Headless to Execute the GDExtension Test ---
+    let godot_command = Command::new(GODOT_EXE_PATH) 
+        .arg("--headless") // Run without a GUI
+        .arg("--path")
+        .arg(&project_path_abs) // Pass the calculated absolute path
+        .arg("--scene") // KEY CHANGE: Using --scene instead of --script
+        .arg(GODOT_TEST_SCENE) 
+        .output();
+
+    // --- 4. Process the Output ---
+    match godot_command {
+        Ok(output) => {
+            // Print the standard output from the Godot process
+            println!("\n--- GODOT TEST OUTPUT START ---");
+            println!("{}", String::from_utf8_lossy(&output.stdout));
+            println!("--- GODOT TEST OUTPUT END ---\n");
+            
+            if output.status.success() {
+                info!("✅ FFI/GDExtension Bridge VALIDATION SUCCEEDED!");
+            } else {
+                error!("❌ FFI/GDExtension Bridge VALIDATION FAILED! Exit code: {:?}", output.status.code());
+                eprintln!("--- GODOT ERROR OUTPUT ---");
+                eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+            }
+        },
+        Err(e) => {
+            error!("❌ Failed to execute Godot command: {}", e);
+            warn!("Please ensure the Godot executable is in the current directory: {}", GODOT_EXE_PATH);
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// PHASE 1: FOUNDATION VALIDATION
+// -----------------------------------------------------------------------------
 
 /// Runs only the unit tests defined in the Phase 1 Foundation Layer packages.
 pub fn run_priority_1_tests() {
@@ -100,7 +182,8 @@ pub fn start_signal_inspector() {
     warn!("🔮 Initializing Conductor and starting Signal Inspector (Real-Time Feed)...");
 
     // 1. Initialize Conductor and retrieve the thread-safe state
-    let (conductor, state) = match Conductor::new() {
+    // FIX: Pass None to Conductor::new() to satisfy the updated signature. (Error E0061 Fix #2)
+    let (conductor, state) = match Conductor::new(None) {
         Ok(result) => result,
         Err(e) => {
             error!("❌ Failed to initialize Conductor/Runtime: {}", e);
@@ -181,8 +264,3 @@ pub fn start_signal_inspector() {
     let _ = writeln!(io::stdout(), "\r{: <200}", " "); // Overwrite and clear the line
     info!("Inspector shutdown complete. Conductor runtime terminated.");
 }
-
-// --- PLACEHOLDER/BENCHMARK ACTIONS ---
-
-// Note: test_generation_and_placement_cli, run_bitmask_conversion, 
-// and run_max_grid_benchmark are assumed to be implemented in cli_util_bench.rs
