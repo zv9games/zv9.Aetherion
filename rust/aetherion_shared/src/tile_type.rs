@@ -21,9 +21,12 @@ pub enum TileType {
     Boundary = 4,
     /// 5: Reserved for future structured objects/built environment (Structure/Roads).
     Structure = 5,
-    /// 6-7: Reserved for future expansion or custom user types.
-    Custom1 = 6,
-    Custom2 = 7,
+    /// 6: **(CA GENERATOR)** Represents solid ground or a wall, used as the 'live' cell by the Cellular Automata Generator.
+    Rock = 6,
+    /// 7: Reserved for future expansion or custom user types.
+    Custom1 = 7,
+    /// 8: Reserved for future expansion or custom user types.
+    Custom2 = 8,
 }
 
 // ---------------------------
@@ -53,8 +56,11 @@ impl TileType {
             3 => Some(TileType::Mountain),
             4 => Some(TileType::Boundary),
             5 => Some(TileType::Structure),
-            6 => Some(TileType::Custom1),
-            7 => Some(TileType::Custom2),
+            // FIX: Added Rock
+            6 => Some(TileType::Rock), 
+            // FIX: Updated Custom variants' values
+            7 => Some(TileType::Custom1),
+            8 => Some(TileType::Custom2),
             _ => None,
         }
     }
@@ -67,7 +73,8 @@ impl TileType {
 impl TileType {
     /// Checks if the tile type indicates a ground-based, traversable surface.
     pub const fn is_walkable(self) -> bool {
-        matches!(self, TileType::Grass | TileType::Mountain | TileType::Structure)
+        // FIX: Added Rock as a walkable surface
+        matches!(self, TileType::Grass | TileType::Mountain | TileType::Structure | TileType::Rock)
     }
 
     /// Checks if the tile type indicates a liquid that typically requires fluid dynamics simulation.

@@ -8,6 +8,8 @@ edition = "2021"
 aetherion_shared = { path = "../aetherion_shared" }
 aetherion_math   = { path = "../aetherion_math" }
 aetherion_sync   = { path = "../aetherion_sync" }
+aetherion_tools = { path = "../aetherion_tools" }
+aetherion_cache = { path = "../aetherion_cache" }
 
 # --- EXTERNAL DEPENDENCIES (Core Computation) ---
 # For parallel execution of generation algorithms
@@ -20,3 +22,4 @@ image            = { workspace = true }
 tracing          = { workspace = true }
 tokio            = { workspace = true }
 noise            = { workspace = true }
+glam             = { workspace = true }

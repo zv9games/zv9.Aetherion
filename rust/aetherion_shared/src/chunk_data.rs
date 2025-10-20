@@ -9,7 +9,7 @@ use crate::grid_bounds::GridBounds;
 use crate::tile_data::TileData; 
 use crate::math_primitives; // Used for the SystemTime serde helper
 
-// --- FIX: Import Vec2i from the dedicated aetherion_math crate (External Dependency) ---
+// Import Vec2i from the dedicated aetherion_math crate (External Dependency)
 use aetherion_math::Vec2i; 
 
 use serde_big_array::BigArray;
@@ -18,13 +18,16 @@ use serde_big_array::BigArray;
 
 /// The canonical size for all chunks in the Aetherion Engine (32x32 tiles).
 pub const CHUNK_SIZE: u32 = 32;
-const TILE_COUNT: usize = (CHUNK_SIZE * CHUNK_SIZE) as usize; // 1024
+/// The total number of tiles in a single chunk (32 * 32 = 1024).
+const TILE_COUNT: usize = (CHUNK_SIZE * CHUNK_SIZE) as usize; 
 
 // --- STRUCT DEFINITION ---
 #[derive(Debug, Clone, Serialize, Deserialize)] 
 pub struct ChunkData {
     pub id: u64,
     pub bounds: GridBounds,
+    /// The fixed-size array containing all tile data. `BigArray` is used for efficient
+    /// serialization of the large array.
     #[serde(with = "BigArray")]
     pub tiles: [TileData; TILE_COUNT],
     pub dimension_tag: String,
@@ -59,7 +62,6 @@ impl ChunkData {
         let max_x = min_x + chunk_size_i64 - 1;
         let max_y = min_y + chunk_size_i64 - 1;
 
-        // --- FIX: Call the existing GridBounds::new constructor ---
         let bounds = GridBounds::new(min_x, min_y, max_x, max_y);
         
         // NOTE: In a final system, the ID should be derived via robust hashing.
@@ -92,9 +94,11 @@ impl ChunkData {
         })
     }
     
-    /// Replaces the chunk's fixed-size tile array with a new set of tiles.
+    /// **CRITICAL FIX for CA Generator:** Replaces the chunk's fixed-size tile array with a new set of tiles.
+    /// Used by generators (like Cellular Automata) that produce a `Vec<TileData>`.
     pub fn insert_tiles(&mut self, tiles_vec: Vec<TileData>) {
         if tiles_vec.len() == TILE_COUNT {
+            // Efficiently copy the vector's contents into the fixed-size array
             self.tiles.clone_from_slice(&tiles_vec);
         } else {
             panic!(
@@ -113,7 +117,6 @@ impl ChunkData {
         })
     }
 }
-// ... (tests remain the same) ...
 
 #[cfg(test)]
 mod tests {
@@ -139,5 +142,5 @@ mod tests {
         assert_eq!(ChunkData::coord_to_index(32, 0), None);
         assert_eq!(ChunkData::coord_to_index(0, 32), None);
         assert_eq!(ChunkData::coord_to_index(33, 33), None);
-    }
-}
+    } // <-- Missing brace restored
+} // <-- Missing brace restored

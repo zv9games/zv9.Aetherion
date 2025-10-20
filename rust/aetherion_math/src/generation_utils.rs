@@ -1,9 +1,30 @@
 // aetherion_math/src/generation_utils.rs
-//! Placeholder module for utility functions used by the generation pipeline.
+//! Utility module for core functions used by the generation pipeline.
 
-// --- FIX: Corrected the module path from 'math_primitives' to 'primitives' ---
+// FIX: Corrected the module path from 'math_primitives' to 'primitives'
 use crate::primitives::AetherionData; 
-use crate::primitives::Vec2i;
+use std::time::SystemTime; // Required for seeding fast_rand
+
+/// 🛠️ Implements a basic placeholder fast random utility for CA seeding.
+///
+/// Returns `0` if a generated random value (0-99) is less than `target_percent`.
+/// This is used to randomly select tiles for the initial Cellular Automata seed.
+pub fn fast_rand(target_percent: u8) -> u32 {
+    // Uses time/memory address hash for a quick, non-cryptographic pseudo-random seed
+    let seed = SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos() as u64;
+        
+    // Simple modulo 100 to get a value for percent chance check
+    let rand_val = (seed % 100) as u8;
+
+    if rand_val < target_percent {
+        0
+    } else {
+        1
+    }
+}
 
 /// Processes the input data, applying a placeholder mathematical transformation.
 ///

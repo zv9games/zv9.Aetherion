@@ -13,7 +13,7 @@ pub mod primitives;
 // -------------------------------------------------------------------------
 // EXPORTS FOR DOWNSTREAM CRATES
 // -------------------------------------------------------------------------
-
+pub use coordinate_system::{ChunkKey, WorldPos, TileOffset};
 pub use crate::generation_utils::process_data;
 // Exports correctly point to the 'primitives' module
 pub use crate::primitives::Vec2i; 

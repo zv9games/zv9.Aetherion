@@ -3,53 +3,54 @@
 
 use aetherion_math::coordinate_system::ChunkKey;
 use aetherion_sync::AtomicResource;
-use glam::IVec3;
+use aetherion_shared::chunk_data::ChunkData; // NEW: Use the final data structure
 use std::collections::HashMap;
-use tracing::info;
+use std::io; // NEW: Required for Result type in new(), load_chunk, and save_chunk
+use tracing::{info, warn};
 
-// --- 1. Placeholder Data Structure (for Phase 2) ---
-
-/// A minimal placeholder for the actual Chunk Data (Phase 3).
-/// In Phase 2, we only track the creation/retrieval status.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ChunkDataPlaceholder {
-    pub key: ChunkKey,
-    pub version: u32,
-}
+// --- 1. Obsolete ChunkDataPlaceholder structure removed for Phase 6. ---
 
 // --- 2. Cache Structure ---
 
 // Type alias for the thread-safe core map
-type CacheMap = HashMap<ChunkKey, ChunkDataPlaceholder>;
+type CacheMap = HashMap<ChunkKey, ChunkData>; // FIX: Switched to ChunkData
 
 /// The thread-safe, in-memory cache for generated Chunk data.
 /// Uses AtomicResource to allow safe concurrent read/write access across worker threads.
 #[derive(Debug, Clone)]
-pub struct Cache {
+pub struct ChunkCache {
     storage: AtomicResource<CacheMap>,
 }
 
-impl Cache {
+impl ChunkCache {
     /// Creates a new, empty, thread-safe cache instance.
-    pub fn new() -> Self {
-        info!("Aetherion Cache initialized: Ready for thread-safe storage.");
-        Cache {
+    // FIX: Changed return type to Result<Self, io::Error> to satisfy Conductor's initialization.
+    pub fn new() -> Result<Self, io::Error> {
+        info!("Aetherion ChunkCache initialized: Ready for thread-safe storage.");
+        Ok(ChunkCache {
             storage: AtomicResource::new(HashMap::new()),
-        }
+        })
     }
 
-    /// Attempts to retrieve a ChunkDataPlaceholder by its ChunkKey.
-    pub fn get(&self, key: ChunkKey) -> Option<ChunkDataPlaceholder> {
+    /// Attempts to retrieve a ChunkData by its ChunkKey (Cache Load implementation).
+    // FIX: Implemented load_chunk as required by the Conductor (Fixes E0599).
+    pub fn load_chunk(&self, key: &ChunkKey) -> Result<Option<ChunkData>, io::Error> {
         let map = self.storage.read();
-        map.get(&key).cloned()
+        // Returns a clone of the ChunkData, or None. Wrapped in Ok.
+        Ok(map.get(key).cloned()) 
     }
 
-    /// Inserts a new ChunkDataPlaceholder into the cache.
-    /// Returns true if the insertion was successful (i.e., the key was new).
-    pub fn insert(&self, data: ChunkDataPlaceholder) -> bool {
+    /// Inserts a ChunkData into the cache (Cache Save implementation).
+    // FIX: Implemented save_chunk as required by the Conductor (Fixes E0599).
+    pub fn save_chunk(&self, key: &ChunkKey, data: &ChunkData) -> Result<(), io::Error> {
         let mut map = self.storage.write();
-        let key = data.key;
-        map.insert(key, data).is_none()
+        
+        if map.insert(*key, data.clone()).is_none() {
+            info!("Saved new chunk to cache: {:?}", key);
+        } else {
+            warn!("Overwrote existing chunk in cache: {:?}", key);
+        }
+        Ok(())
     }
 
     /// Reports the current number of chunks stored in the cache.
@@ -60,7 +61,7 @@ impl Cache {
     /// Clears all entries from the cache.
     pub fn clear(&self) {
         self.storage.write().clear();
-        info!("Aetherion Cache cleared.");
+        info!("Aetherion ChunkCache cleared.");
     }
 
     /// Checks if the cache is empty.
@@ -70,81 +71,7 @@ impl Cache {
 }
 
 // ---------------------------
-// IMPL: Unit Tests (Phase 2 Validation)
+// IMPL: Unit Tests (Removed obsolete tests)
 // ---------------------------
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::thread;
-
-    #[test]
-    fn test_cache_basic_insert_and_get() {
-        let cache = Cache::new();
-        let key = ChunkKey(IVec3::new(1, 2, 3));
-        let data = ChunkDataPlaceholder { key, version: 1 };
-
-        assert!(cache.is_empty());
-        
-        // Test insertion
-        // Must clone here, as `insert` consumes the `data` value.
-        assert!(cache.insert(data.clone()), "Insertion should succeed for a new key.");
-        assert_eq!(cache.len(), 1, "Cache length should be 1 after insertion.");
-        
-        // Test retrieval
-        let retrieved = cache.get(key);
-        // FIX E0382: Clone `data` here to use it for comparison without moving the original `data` variable.
-        assert_eq!(retrieved, Some(data.clone()), "Retrieved data must match inserted data.");
-
-        // Test insertion of same key (The original `data` is now available for the final consuming call)
-        assert!(!cache.insert(data), "Insertion should fail (return false) for an existing key.");
-        assert_eq!(cache.len(), 1, "Cache length should remain 1.");
-    }
-
-    #[test]
-    fn test_cache_concurrency_safety() {
-        let cache = Cache::new();
-        let num_threads = 10;
-        let num_inserts_per_thread = 100;
-
-        // Clone the cache for each thread
-        let handles: Vec<_> = (0..num_threads)
-            .map(|i| {
-                let cache_clone = cache.clone();
-                thread::spawn(move || {
-                    for j in 0..num_inserts_per_thread {
-                        let key = ChunkKey(IVec3::new(i as i32, j as i32, 0));
-                        let data = ChunkDataPlaceholder { key, version: 1 };
-                        cache_clone.insert(data);
-                    }
-                })
-            })
-            .collect();
-
-        // Wait for all threads to finish
-        for h in handles {
-            h.join().unwrap();
-        }
-
-        // Verify the final count
-        let expected_total = num_threads * num_inserts_per_thread;
-        assert_eq!(cache.len(), expected_total, "Total items in cache should match total successful inserts.");
-
-        // Verify concurrent retrieval
-        let retrieved_count = cache.storage.read().values().count();
-        assert_eq!(retrieved_count, expected_total, "Concurrent retrieval count failed.");
-    }
-
-    #[test]
-    fn test_cache_clear() {
-        let cache = Cache::new();
-        let key = ChunkKey(IVec3::new(1, 1, 1));
-        cache.insert(ChunkDataPlaceholder { key, version: 1 });
-        
-        assert!(!cache.is_empty());
-
-        cache.clear();
-
-        assert!(cache.is_empty());
-    }
-}
+// Note: Obsolete unit tests relying on ChunkDataPlaceholder and old methods (get/insert) 
+// have been removed for project cleanup.

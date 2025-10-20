@@ -3,7 +3,7 @@
 // FIX: Replace the log import with the tracing import.
 use tracing::warn;
 // NEW IMPORT: Add the new function to be called from the menu
-use crate::cli_util_actions::{run_cargo_tests, start_aetherion_runtime, launch_headless_godot, run_priority_1_tests};
+use crate::cli_util_actions::{run_cargo_tests, start_aetherion_runtime, launch_headless_godot, run_priority_1_tests, start_signal_inspector}; // <-- ADDED start_signal_inspector
 use crate::cli_util_inspect::{print_godot_api_surface, print_module_tree};
 use crate::cli_util_bench::{run_bitmask_conversion, run_max_grid_benchmark, test_generation_and_placement_cli};
 
@@ -37,7 +37,8 @@ pub fn build_menu() -> Vec<MenuItem> {
 
 		// 🔮 Future Expansion / TODOs
 		MenuItem { key: 'A', label: "🔮 TODO: Export Chunk Hashes for Streaming", action: Box::new(|| warn!("TODO: Chunk hashing not yet implemented.")) },
-		MenuItem { key: 'B', label: "🔮 TODO: Signal Inspector / Live Feed", action: Box::new(|| warn!("TODO: Signal inspector not yet implemented.")) },
+		// 🔥 PHASE 4: Signal Inspector is now a callable action
+		MenuItem { key: 'B', label: "🔮 Start: Signal Inspector / Live Feed", action: Box::new(start_signal_inspector) }, // <-- UPDATED ACTION
 		// NEW ITEM: Dedicated Phase 1 validation test
 		MenuItem { key: 'C', label: "✅ Validate: Phase 1 Final Integration Check", action: Box::new(run_priority_1_tests) },
 	]
@@ -45,7 +46,7 @@ pub fn build_menu() -> Vec<MenuItem> {
 
 /// 🖥 Prints the menu to the console
 pub fn print_menu(menu: &[MenuItem]) {
-  
+	
 	println!("\n🧭 Aetherion Engine Dev Console\n");
 	for item in menu {
 		println!("[{}] {}", item.key, item.label);

@@ -53,9 +53,11 @@ impl AetherionEngine {
         info!("AetherionEngine: Initializing GDExtension Class.");
         
         let conductor = match Conductor::new() {
-            Ok(c) => {
+            // FIX E0308: Conductor::new() now returns a tuple (Conductor, ConductorState).
+            // We unpack the tuple and only wrap the Conductor instance.
+            Ok((conductor_instance, _state)) => {
                 info!("Aetherion Conductor initialized successfully.");
-                Some(Arc::new(Mutex::new(c)))
+                Some(Arc::new(Mutex::new(conductor_instance)))
             },
             Err(e) => {
                 error!("Aetherion Conductor failed to initialize: {:?}", e);
@@ -129,7 +131,9 @@ impl AetherionEngine {
         };
 
         match conductor_arc.lock() {
-            Ok(conductor) => GString::from(conductor.get_active_generator_id()), 
+            // FIX E0277: The method returns a Rust 'String', but GString::from requires '&str' or '&String'.
+            // We convert the owned String to an &str slice using `.as_str()`.
+            Ok(conductor) => GString::from(conductor.get_active_generator_id().as_str()), 
             Err(_) => GString::from("ERROR: MUTEX POISONED"),
         }
     }
@@ -140,10 +144,14 @@ impl AetherionEngine {
     pub fn shutdown_engine(&mut self) {
         info!("AetherionEngine: Shutting down.");
         
+        // Use .take() to consume the Option<Arc<Mutex<Conductor>>>
         if let Some(conductor_arc) = self.conductor.take() {
+            // Try to unwrap the Arc, ensuring we are the last owner
             if let Ok(c) = Arc::try_unwrap(conductor_arc) {
+                // Unwrap the Mutex to get the owned Conductor instance
                 if let Ok(conductor) = c.into_inner() {
-                    conductor.shutdown();
+                    // FIX: Use the renamed, consuming shutdown method
+                    conductor.graceful_teardown();
                 }
             } else {
                 error!("AetherionEngine: Cannot fully shutdown Conductor; other references still exist.");

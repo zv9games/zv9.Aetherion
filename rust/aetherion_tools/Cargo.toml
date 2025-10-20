@@ -9,3 +9,5 @@ aetherion_cache = { path = "../aetherion_cache" }
 
 # External dependency (Workspace-Inherited)
 regex = { workspace = true }
+once_cell = { workspace = true }
+tracing = { workspace = true }

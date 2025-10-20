@@ -66,12 +66,13 @@ parking_lot         = "0.12" # High-performance synchronization primitives
 glam                = "0.28" # High-performance linear algebra library (Vectors, Matrices)
 sha2                = "0.10"
 image               = "0.24" # For image processing in aetherion_tools
-noise               = "0.7"
+noise               = "0.9"
 # ------------------------------------------------------------------
 # CLI AND CONSOLE UTILITIES
 # ------------------------------------------------------------------
 crossterm           = "0.27" 
 walkdir             = "2.5" 
+ctrlc               = "3.4"
 
 [workspace.lints.rust]
 unsafe_code      = "deny"

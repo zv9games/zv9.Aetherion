@@ -1,4 +1,3 @@
-// aetherion_generate/src/lib.rs
 //! Core generation algorithms, runtime orchestration, and task management.
 
 // -------------------------------------------------------------------------------------------------
@@ -6,14 +5,19 @@
 // -------------------------------------------------------------------------------------------------
 // Expose the Conductor (the validated Runtime/Orchestration core).
 pub mod conductor;
-// Expose the Generator trait and its implementations (the MVG priority).
-mod generator;
-mod perlin_generator;
-mod cellular_automata_generator;
+pub mod benchmark_logic;
+// The generator.rs file is now obsolete since the Generator trait is defined here.
+// pub mod generator; // <-- REMOVED for clean structure
+pub mod perlin_generator;
+pub mod cellular_automata_generator;
 
+// Direct re-exports of concrete implementations
+pub use cellular_automata_generator::CellularAutomataGenerator;
+pub use perlin_generator::PerlinGenerator;
 
 // -------------------------------------------------------------------------------------------------
 // CORE TRAIT DEFINITION (Generator Interface)
+// NOTE: This trait is implicitly public to external crates because it is defined with `pub trait`.
 // -------------------------------------------------------------------------------------------------
 use aetherion_shared::chunk_data::ChunkData;
 use aetherion_math::Vec2i;
@@ -36,20 +40,29 @@ pub trait Generator {
 // Re-export the main components for easy use by other crates (aetherion_godot, aetherion_cli).
 pub use conductor::Conductor;
 
+// EXPOSED BENCHMARK FUNCTION: This resolves the E0432 error in aetherion_cli
+pub use benchmark_logic::benchmark_generation_workload;
+
+// REMOVED: pub use crate::Generator; 
+// The E0255 error is caused by attempting to re-export the Generator trait 
+// that is already defined as public in the current file.
 // -------------------------------------------------------------------------------------------------
 // PUBLIC API FOR CLI/FFI (Validation Entry Points)
 // -------------------------------------------------------------------------------------------------
 use tracing::{info, error};
 
 /// Starts the Aetherion Runtime, creating and immediately shutting down the Conductor.
-/// 
+///
 /// NOTE: This is the **structural validation test for CLI Menu [4]** (Start Runtime).
 pub fn start_runtime_placeholder() {
     match Conductor::new() {
-        Ok(conductor) => {
-            info!("Runtime created successfully. Testing immediate graceful shutdown...");
-            // The call now correctly consumes the `conductor` instance.
-            conductor.shutdown(); 
+        // FIX: Properly destructure the (Conductor, ConductorState) tuple.
+        Ok((conductor, _state)) => {
+            // FIX: Updated info message to match the new method name.
+            info!("Runtime created successfully. Testing immediate graceful teardown...");
+            
+            // FIX: Call the renamed, consuming method from conductor.rs.
+            conductor.graceful_teardown();
         }
         Err(e) => {
             error!("Failed to initialize Conductor/Runtime: {:?}", e);

@@ -25,8 +25,10 @@ pub struct PerlinGenerator {
 impl PerlinGenerator {
     /// Creates a new PerlinGenerator with a fixed seed and configurable scale.
     pub fn new(scale: f64) -> Self {
+        const DEFAULT_SEED: u32 = 42; // A simple, fixed seed for consistency
         PerlinGenerator { 
-            perlin: Perlin::new(), 
+            // FIX: Supply the required u32 seed argument to Perlin::new()
+            perlin: Perlin::new(DEFAULT_SEED), // <--- CHANGE THIS LINE
             scale,
         }
     }
