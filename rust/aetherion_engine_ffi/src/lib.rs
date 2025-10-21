@@ -28,10 +28,10 @@ pub extern "C" fn aetherion_start_runtime() -> bool {
         return true;
     }
 
-    // FIX: Pass None to Conductor::new() to satisfy the updated signature. 
-    // This makes Conductor use its internal default config path (suitable for CLI/FFI).
+    // FIX: Destructure the 3-element tuple (Conductor, ConductorState, Receiver).
+    // We only need the Conductor instance for the OnceLock.
     match Conductor::new(None) {
-        Ok((conductor, _state)) => {
+        Ok((conductor, _state, _receiver)) => {
             if CONDUCTOR.set(conductor).is_err() {
                 return false;
             }

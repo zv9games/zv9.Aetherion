@@ -21,8 +21,8 @@ pub fn test_generation_and_placement_cli() {
     warn!("🧪 Running CLI Test: Generation and Placement (Conductor Validation)...");
 
     // 1. Initialize Conductor and retrieve state
-    // FIX: Pass None to Conductor::new() to satisfy the updated signature.
-    let (mut conductor, _state) = match Conductor::new(None) {
+    // FIX: Update destructuring to handle the new 3-element tuple (Conductor, ConductorState, Receiver).
+    let (mut conductor, _state, _receiver) = match Conductor::new(None) {
         Ok(result) => result,
         Err(e) => {
             error!("❌ Failed to initialize Conductor/Runtime: {}", e);

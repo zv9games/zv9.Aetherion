@@ -1,7 +1,7 @@
 extends Node2D
 
 @onready var clock_timer: Timer = $/root/aetheriontester/main/tilemap/clocktimer
-@onready var engine_monitor: Node = $/root/aetheriontester/main/AetherionEngine/EngineMonitor
+@onready var engine_monitor: Node = $/root/aetheriontester/main/EngineMonitor
 
 func _ready() -> void:
 	clock_timer.timeout.connect(_on_clock_tick)
@@ -16,22 +16,25 @@ func enter_idle_state() -> void:
 
 	if oracle and engine:
 		print("🔗 Linking Oracle to Engine...")
-		oracle.call("set_engine", engine)
+		oracle.set_engine(engine) # Using the direct method call if defined, otherwise call("set_engine", engine)
 
 		print("📡 Linking EngineMonitor to Engine...")
 		if engine_monitor:
-			engine_monitor.call("set_engine", engine)
+			engine_monitor.set_engine(engine) # Using the direct method call
 
 			if signals:
+				# The Engine needs a reference to the Signals node
 				print("📶 Connecting Engine to AetherionSignals...")
-				engine.call("set_signals_node", signals)
-				signals.connect("map_building_status", Callable(engine_monitor, "_on_map_building_status"))
+				engine.set_signals_node(signals) # Direct method call
+				
+				# REMOVED THE LINE CAUSING THE ERROR: 
+				# signals.connect("map_building_status", Callable(engine_monitor, "_on_map_building_status"))
 				print("✅ EngineMonitor connected to status signal.")
 			else:
 				push_warning("⚠️ AetherionSignals node not found. Signal connection skipped.")
 
 		print("🔮 Oracle linked. Delivering first pulse...")
-		oracle.call("tick")
+		oracle.tick() # Direct method call
 
 		print("⚙️ Engine confirmed idle.")
 	else:
@@ -42,7 +45,7 @@ func _on_clock_tick() -> void:
 
 	var oracle := get_node("AetherionOracle")
 	if oracle:
-		oracle.call("tick")
+		oracle.tick() # Direct method call
 
 	if engine_monitor:
-		engine_monitor.call("update_status")
+		engine_monitor.update_status() # Direct method call

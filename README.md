@@ -3,7 +3,7 @@
 </p>
 
 
-# zv9.Aetherion (AETHERION SUPER MASSIVE EXPANSIVE ARC UPDATE 8)
+# zv9.Aetherion (AETHERION SUPER MASSIVE EXPANSIVE ARC UPDATE 8.4)
 2D/3D procedural gen core rust gdextension. 
 
 ```text
@@ -59,7 +59,7 @@
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║ 🛠 ROADMAP                                                              	║
 ║   																		║
-║ ✓ Aetherion Super Massive Expansive Update 8								║
+║ ✓ Aetherion Super Massive Expansive Update 8.4								║
 ║ ✓ Core Data Structs Finalized												║
 ║ ✓ Safe Memory Cache implemented											║
 ║ ✓ Async Synchronization Layer											    ║

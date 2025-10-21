@@ -20,7 +20,7 @@ gdextension = { workspace = true }
 
 # Workspace standard logging framework
 tracing = { workspace = true }
-
+tokio = { workspace = true }
 
 ###############################################################
 # REQUIRED FIX FOR GDExtension LINKER ERROR (E0127)

@@ -1,5 +1,9 @@
 extends Control
 
+# --- CHUNK CONSTANTS ---
+const CHUNK_SIZE_X = 64
+const CHUNK_SIZE_Y = 64
+
 # 🧭 UI Node References
 @onready var grid_width: SpinBox = $gridwidthspinbox
 @onready var grid_height: SpinBox = $gridheightspinbox
@@ -30,6 +34,7 @@ var last_percent := -1
 var tile_size := Vector2(16, 16)
 var panel_collapsed := false
 var engine_tick_count := 0
+var total_chunks_processed := 0
 
 # 🧭 Boot Sequence
 func _ready() -> void:
@@ -43,6 +48,12 @@ func _ready() -> void:
 	_setup_ui()
 	_connect_signals()
 
+	# FIX: Configure GDExtension dependencies immediately in _ready()
+	# This ensures the engine nodes are set before build_map/generate_chunk is called.
+	if aetherion_engine:
+		aetherion_engine.set_signals_node(aetherion_signals)
+		aetherion_engine.set_tilemap(expansive_tilemap)
+
 	if expansive_tilemap and expansive_tilemap is TileMap:
 		var tileset: TileSet = expansive_tilemap.get_tileset()
 		if tileset:
@@ -54,13 +65,13 @@ func _setup_ui() -> void:
 	grid_height.max_value = 1_000_000_000
 	grid_width.step = 1
 	grid_height.step = 1
-	grid_width.value = 10
-	grid_height.value = 10
+	grid_width.value = CHUNK_SIZE_X * 2
+	grid_height.value = CHUNK_SIZE_Y * 2
 
 	placement_mode_selector.clear()
-	placement_mode_selector.add_item("Noise")
-	placement_mode_selector.add_item("Checkerboard")
-	placement_mode_selector.add_item("Clustered")
+	placement_mode_selector.add_item("perlin_basic_2d")
+	placement_mode_selector.add_item("checkerboard")
+	placement_mode_selector.add_item("random_walk")
 	placement_mode_selector.select(0)
 
 	tile_type_selector.clear()
@@ -80,15 +91,20 @@ func _connect_signals() -> void:
 	generate_button.pressed.connect(_on_generate_pressed)
 	toggle_terminal_button.pressed.connect(_on_toggle_terminal_button_pressed)
 
+	if aetherion_engine:
+		if not aetherion_engine.status_updated.is_connected(_on_engine_status_updated):
+			aetherion_engine.status_updated.connect(_on_engine_status_updated)
+
 	if aetherion_signals:
 		if not aetherion_signals.build_map_start.is_connected(_on_build_map_start):
 			aetherion_signals.build_map_start.connect(_on_build_map_start)
-		if not aetherion_signals.map_building_status.is_connected(_on_map_building_status):
-			aetherion_signals.map_building_status.connect(_on_map_building_status)
-		if not aetherion_signals.generation_progress.is_connected(_on_generation_progress):
-			aetherion_signals.generation_progress.connect(_on_generation_progress)
-		if not aetherion_signals.generation_complete.is_connected(_on_generation_complete):
-			aetherion_signals.generation_complete.connect(_on_generation_complete)
+		
+		if not aetherion_signals.chunk_generated.is_connected(_on_chunk_generated):
+			aetherion_signals.chunk_generated.connect(_on_chunk_generated)
+			
+		if not aetherion_signals.build_map_complete.is_connected(_on_build_map_complete):
+			aetherion_signals.build_map_complete.connect(_on_build_map_complete)
+
 
 # 🔄 Engine Status Poll
 func _process(_delta: float) -> void:
@@ -112,8 +128,7 @@ func _on_generate_pressed() -> void:
 	var width := int(grid_width.value)
 	var height := int(grid_height.value)
 	var seed_text := seed_input.text
-	var animate := animate_checkbox.button_pressed
-	var mode := tile_type_selector.get_item_text(tile_type_selector.selected).to_lower()
+	var generator_name := placement_mode_selector.get_item_text(placement_mode_selector.selected)
 
 	if width <= 0 or height <= 0 or width * height > 1_000_000_000:
 		status_label.text = "⚠️ Invalid grid size."
@@ -124,16 +139,16 @@ func _on_generate_pressed() -> void:
 		seed_input.text = str(seed)
 		status_label.text = "⚠️ Invalid seed. Using random seed: %d" % seed
 
-	# Configure dependencies first, then init, then build
-	aetherion_engine.call("set_signals_node", aetherion_signals)
-	aetherion_engine.call("set_tilemap", expansive_tilemap)
-	if aetherion_engine.has_method("init_engine"):
-		aetherion_engine.call("init_engine")
-
+	# Configure dependencies and reset state
+	# Engine setup calls removed as they are now handled in _ready()
+	
+	progress_bar.max_value = width * height
 	progress_bar.value = 0
 	progress_bar.visible = true
 	last_percent = -1
-	status_label.text = "🧬 Generating map with mode: %s, animate: %s..." % [mode, str(animate)]
+	total_chunks_processed = 0
+
+	status_label.text = "🧬 Generating map with mode: %s..." % [generator_name]
 	generate_button.disabled = true
 	engine_timer.start()
 
@@ -142,48 +157,110 @@ func _on_generate_pressed() -> void:
 	camera_tilemap.make_current()
 	camera_tilemap.zoom = Vector2(1.0, 1.0)
 
-	aetherion_engine.call(
-		"build_map",
-		width, height, seed, mode, animate, Vector2i(0, 0), Vector2i(1, 0)
+	aetherion_engine.build_map(
+		width, height, str(seed), generator_name
 	)
+	# This call triggers the Rust code's ensure_conductor() for lazy initialization (the log you see).
 	print("🧪 ControlPanel: build_map called with seed %d" % seed)
 
 # 📡 Signal Handlers
+
+func _on_engine_status_updated(status_message: String) -> void:
+	if status_message.begins_with("GENERATING:") or status_message.begins_with("ERROR:") or status_message.begins_with("IDLE:"):
+		status_label.text = status_message
+
 func _on_build_map_start() -> void:
 	print("📡 Signal: build_map_start")
-	status_label.text = "🚀 Map generation started..."
 
-func _on_map_building_status(status_message: String) -> void:
-	print("📡 Signal: map_building_status - %s" % status_message)
-	status_label.text = "📢 %s" % status_message
+func _on_chunk_generated(chunk_x: int, chunk_y: int) -> void:
+	# Defer the data retrieval and tile-laying to the next idle frame.
+	call_deferred("_process_chunk_data", chunk_x, chunk_y)
+	
+	status_label.text = "🏗️ Chunk (%d, %d) signaled..." % [chunk_x, chunk_y]
 
-func _on_generation_progress(percent: int) -> void:
-	print("📡 Signal: generation_progress - %d%%" % percent)
-	progress_bar.value = percent
-	# Throttle visual updates to reduce main-thread stress
-	if percent % 5 == 0 and percent != last_percent:
+# --- DEFERRED CHUNK PROCESSING WITH VALIDATION ---
+func _process_chunk_data(chunk_x: int, chunk_y: int) -> void:
+	# This call is safe because aetherion_engine.generate_chunk() now calls ensure_conductor()
+	var chunk_dict: Dictionary = aetherion_engine.generate_chunk(chunk_x, chunk_y, 0)
+	var tile_array: Array = chunk_dict.get("tiles", [])
+
+	if tile_array.is_empty():
+		push_warning("Received empty tile array for chunk (%d, %d)." % [chunk_x, chunk_y])
+		return
+
+	# --- 1. TileMap Setup Check ---
+	var layer := 0
+	var source_id := 0
+	var tile_index := 0
+	
+	var tileset: TileSet = expansive_tilemap.get_tileset()
+	var atlas_source: TileSetAtlasSource = null
+	
+	if tileset:
+		atlas_source = tileset.get_source(source_id)
+		if atlas_source == null:
+			push_error("TileMap source ID %d not found in TileSet. Check TileSet configuration." % source_id)
+			return
+	else:
+		push_error("TileMap is missing a TileSet. Cannot draw tiles.")
+		return
+
+	# --- 2. Iterate, Validate, and Place Tiles ---
+	for tile_data_variant in tile_array:
+		# FIX: Rely on implicit casting from Variant to Dictionary.
+		var tile_data: Dictionary = tile_data_variant
+		var tile_id: int = tile_data.get("id", 0)
+		
+		var local_x = tile_index % CHUNK_SIZE_X
+		var local_y = tile_index / CHUNK_SIZE_X
+		
+		var global_x = (chunk_x * CHUNK_SIZE_X) + local_x
+		var global_y = (chunk_y * CHUNK_SIZE_Y) + local_y
+		
+		var tile_coords = Vector2i(global_x, global_y)
+		var atlas_coords = Vector2i(tile_id, 0)
+		
+		# Validate that the atlas coordinates point to a valid tile definition
+		if atlas_source.has_tile(atlas_coords):
+			# Place the tile (layer, coordinates, source, atlas_coords)
+			expansive_tilemap.set_cell(layer, tile_coords, source_id, atlas_coords)
+		else:
+			# If invalid, erase the cell to prevent the rendering error.
+			push_warning("Invalid Tile ID %d received for chunk (%d, %d). TileSet check failed. Erasing cell at (%d, %d)." % [
+				tile_id, chunk_x, chunk_y, global_x, global_y
+			])
+			expansive_tilemap.erase_cell(layer, tile_coords)
+
+		tile_index += 1
+
+	# --- 3. Update Progress Bar ---
+	var tiles_processed = tile_array.size()
+	progress_bar.value += tiles_processed
+	total_chunks_processed += 1
+	
+	var percent = int(float(progress_bar.value) / float(progress_bar.max_value) * 100.0)
+
+	# Throttle visual updates
+	if percent % 5 == 0 or percent == 100:
+		status_label.text = "🏗️ Chunk (%d, %d) placed... %d%%" % [chunk_x, chunk_y, percent]
 		expansive_tilemap.queue_redraw()
+		
 	last_percent = percent
 
-func _on_generation_complete(results: Dictionary) -> void:
-	print("📡 Signal: generation_complete")
+
+func _on_build_map_complete() -> void:
+	print("📡 Signal: build_map_complete")
 	progress_bar.visible = false
 	generate_button.disabled = false
 	engine_timer.stop()
-
-	var width: int = results.get("width", 0)
-	var height: int = results.get("height", 0)
-	var mode: String = results.get("mode", "unknown")
-	var animate: bool = results.get("animate", false)
-	var duration: float = results.get("duration", 0.0)
+	
 	var elapsed := engine_timer.wait_time - engine_timer.time_left
-
-	status_label.text = "✅ Map complete: %dx%d, mode: %s, animate: %s\n⏱️ Duration: %.2fs (%.2fs elapsed)" % [
-		width, height, mode, str(animate), duration, elapsed
-	]
+	
 	engine_timer_label.text = "⏱️ Final Runtime: %.2fs" % elapsed
-
+	
 	# Center and clamp camera zoom
+	var width := int(grid_width.value)
+	var height := int(grid_height.value)
 	camera_tilemap.global_position = Vector2(width * tile_size.x / 2.0, height * tile_size.y / 2.0)
 	var zx = 1.0 / max(width / 10.0, 1.0)
 	var zy = 1.0 / max(height / 10.0, 1.0)
@@ -195,7 +272,6 @@ func _on_generation_complete(results: Dictionary) -> void:
 func _on_clock_timer_timeout() -> void:
 	clock_label.text = "🕒 " + Time.get_datetime_string_from_system()
 	engine_tick_count += 1
-	engine_timer_label.text = "⏱️ Engine Ticks: %d" % engine_tick_count
 
 # 🪄 Terminal Toggle
 func _on_toggle_terminal_button_pressed() -> void:
@@ -215,3 +291,6 @@ func _on_toggle_terminal_button_pressed() -> void:
 func _on_engine_timer_timeout() -> void:
 	var elapsed := engine_timer.wait_time - engine_timer.time_left
 	engine_timer_label.text = "⏱️ Engine Runtime: %.2fs" % elapsed
+	
+	if aetherion_engine and aetherion_engine.has_method("tick"):
+		aetherion_engine.tick(engine_tick_count)
