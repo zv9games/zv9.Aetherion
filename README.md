@@ -28,17 +28,18 @@
 ║    git clone https://github.com/zv9/aetherionengine.git                	║
 ║                                                                          	║
 ║ 2. Build it:                                                            	║
-║    cargo build --release                                               	║
+║    cargo build //arguments subject to interpretation                     	║
 ║                                                                          	║
-║ 3. Link the .so/.dll/.dylib in Godot.                                  	║
-║                                                                          	║
-║ 4. Add rust exposed nodes and call methods                               	║
+║ 3. Link the .dll to your engine, whatever.extension for Godot for example.║
+║    Cradles for other engines are on the future feature list.              ║
+║                                                                           ║
+║ 4. Add the rust exposed nodes and call API methods and functions.         ║
 ║                                                                          	║
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║ 📦 MODULES                                                         	    ║
 ║          																	║
-║ Legend:																	║
-║ ├── Directory																║
+║ Legend:                                                                   ║
+║ ├── Directory	                                                            ║
 ║ │   Subdirectory															║
 ║ └── File                                                                  ║
 ║          																	║
@@ -59,7 +60,7 @@
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║ 🛠 ROADMAP                                                              	║
 ║   																		║
-║ ✓ Aetherion Super Massive Expansive Update 8.4								║
+║ ✓ Aetherion Super Massive Expansive Update 8.4							║
 ║ ✓ Core Data Structs Finalized												║
 ║ ✓ Safe Memory Cache implemented											║
 ║ ✓ Async Synchronization Layer											    ║
