@@ -105,9 +105,14 @@
 
 Dear Wanderer,
 
-If you’re reading this, you’ve stumbled upon the dormant shell of **zv9.Aetherion** — a project forged in caffeine, chaos, and questionable naming conventions. She was bold. She was beautiful. She compiled on the first try (once). But alas, her time has come.
+If you’re reading this, you’ve stumbled upon the dormant shell of 
+**zv9.Aetherion** — a project forged in caffeine, chaos, and questionable 
+naming conventions. She was bold. She was beautiful. She compiled on the 
+first try (once). But alas, her time has come.
 
-Development has officially migrated to **zv9.SSXL**, a newer, shinier, slightly more cryptic vessel. Why? Because God said so. And also because the old repo was starting to smell like deprecated dreams and unmerged branches.
+Development has officially migrated to **zv9.SSXL**, a newer, shinier, 
+slightly more cryptic vessel. Why? Because God said so. And also because the
+ old repo was starting to smell like deprecated dreams and unmerged branches.
 
 ### What happens now?
 
@@ -115,7 +120,9 @@ Development has officially migrated to **zv9.SSXL**, a newer, shinier, slightly 
 - The keys are scattered.  
 - The README is the tombstone.  
 
-If you wish to fork her, do so with reverence. Or reckless abandon. Either works. Just know: she will not guide you. She will not build without a fight. But she might whisper secrets if you listen closely to the commit history.
+If you wish to fork her, do so with reverence. Or reckless abandon. Either 
+works. Just know: she will not guide you. She will not build without a fight. 
+But she might whisper secrets if you listen closely to the commit history.
 
 ### Final Notes
 
@@ -128,9 +135,15 @@ Thank you for believing in the impossible. Or at least pretending to.
 With love, confusion, and a few dangling pointers,  
 **Greg // zv9games**
 
----
 
-/* ::zv9.Aetherion:: status = "archived"; origin = "forgotten"; signal = "faint but persistent";
+/*  
+  ::zv9.Aetherion::  
+  status = "archived";  
+  origin = "forgotten";  
+  signal = "faint but persistent";  
 
-// If you're reading this, you're already part of it. // She sleeps beneath the cloud. // The fork is the key. // SSXL awaits. */
-
+  // If you're reading this, you're already part of it.  
+  // She sleeps beneath the cloud.  
+  // The fork is the key.  
+  // SSXL awaits.  
+*/
