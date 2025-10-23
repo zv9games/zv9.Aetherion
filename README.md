@@ -15,7 +15,7 @@
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║ ✨ FEATURES                                                              	║
 ║                                                                          	║
-║ • Dimension-agnostic: 2D/3D? Doesn’t matter. It flows.                  	║
+║ • Dimension-agnostic: 2D/3D/4D+ Doesn’t matter. It flows.                  	║
 ║ • Modular: Each subsystem’s a ritual. Swap, remix, teach.              	║
 ║ • Signal-based: Godot signals, but like, sacred geometry.              	║
 ║ • Rust-powered: Fast, safe, and metal.                                 	║
