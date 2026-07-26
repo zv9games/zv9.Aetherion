@@ -1,13 +1,17 @@
 // aetherion_generate/src/generator.rs
 
-use aetherion_shared::chunk_data::ChunkData;
-// FIX: Imported Vec2i from aetherion_math, where it is now defined and exported.
+//! Defines the Generator trait, the core interface for all procedural generation algorithms
+//! in the zv9.Aetherion engine.
 
+use aetherion_shared::chunk_data::ChunkData;
 use aetherion_math::Vec2i;
 
 /// Defines the core contract for all procedural generation algorithms.
 /// Every generator (Perlin, CA, DiamondSquare, etc.) must implement this trait.
-#[allow(dead_code)]
+/// 
+/// The `#[allow(dead_code)]` attribute suppresses warnings for traits that are
+/// publicly exported but only implemented/used by downstream crates (like `aetherion_godot`).
+#[allow(dead_code)] 
 pub trait Generator {
     /// The unique identifier for this specific algorithm (e.g., "perlin_2d_v1").
     fn id(&self) -> &str;

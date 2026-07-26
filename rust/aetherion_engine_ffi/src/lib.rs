@@ -1,100 +1,102 @@
-//! Low-level C FFI Bridge for Godot Communication.
+//! Aetherion FFI Bridge — The C Gateway to Infinite Realms
 //!
-//! This module exposes functions to C/Godot that manage the Aetherion runtime lifecycle
-//! and facilitate the transfer of generated chunk data.
+//! Low-level C interface for Godot integration.
+//! Manages runtime lifecycle and string-safe status reporting.
+//! For the hopeless wanderers who speak in C and dream in Rust.
 
 use std::ffi::CString;
 use std::sync::OnceLock;
-use std::ptr; // Keep for possible future C-compatible data transfer structs
 
-// --- EXTERNAL CRATE DEPENDENCIES ---
-use aetherion_generate::{Conductor, start_runtime_placeholder};
-use aetherion_math::Vec2i;
+use aetherion_generate::Conductor;
 use aetherion_shared::initialize_shared_data;
 use tracing::{info, error};
 
-// --- 1. Conductor Management (Singleton State) ---
-
-/// A thread-safe, lazily initialized global instance of the Conductor.
+// ── Global Conductor (Thread-Safe Singleton) ───────────────────────────────
 static CONDUCTOR: OnceLock<Conductor> = OnceLock::new();
 
-/// Initializes the Aetherion Runtime (Conductor) and stores it globally.
+// ── Runtime Lifecycle ──────────────────────────────────────────────────────
+
+/// Starts the Aetherion async engine. Idempotent.
 #[no_mangle]
 pub extern "C" fn aetherion_start_runtime() -> bool {
-    initialize_shared_data(); 
+    initialize_shared_data();
 
     if CONDUCTOR.get().is_some() {
-        info!("FFI Bridge: Runtime already running.");
+        info!("FFI: Runtime already active.");
         return true;
     }
 
-    // FIX: Destructure the 3-element tuple (Conductor, ConductorState, Receiver).
-    // We only need the Conductor instance for the OnceLock.
     match Conductor::new(None) {
-        Ok((conductor, _state, _receiver)) => {
-            if CONDUCTOR.set(conductor).is_err() {
-                return false;
+        Ok((conductor, _state, _rx)) => {
+            if CONDUCTOR.set(conductor).is_ok() {
+                info!("FFI: Conductor initialized.");
+                true
+            } else {
+                error!("FFI: Failed to store Conductor in OnceLock.");
+                false
             }
-            info!("FFI Bridge: Conductor Runtime started successfully.");
-            true
         }
         Err(e) => {
-            tracing::error!("FFI Bridge: Failed to initialize Conductor: {:?}", e);
+            error!("FFI: Conductor init failed: {:?}", e);
             false
         }
     }
 }
 
-/// Gracefully shuts down the Conductor by signaling its internal state.
+/// Signals graceful shutdown of the runtime.
 #[no_mangle]
 pub extern "C" fn aetherion_shutdown_runtime() {
     if let Some(conductor) = CONDUCTOR.get() {
         conductor.signal_shutdown_graceful();
-        info!("FFI Bridge: Conductor Runtime signalled for shutdown.");
+        info!("FFI: Shutdown signal sent.");
     }
 }
 
-/// Checks if the engine's asynchronous core has been successfully initialized.
+/// Checks if the engine is ready.
 #[no_mangle]
 pub extern "C" fn aetherion_is_runtime_ready() -> bool {
     CONDUCTOR.get().is_some()
 }
 
-// --- 2. Generation Bridge (If applicable, call internal logic here) ---
+// ── Compatibility & Debug ───────────────────────────────────────────────────
 
-// --- 3. Compatibility and Utility Functions (Kept for CLI) ---
-
-/// Triggers the structural test of the Conductor (used by CLI menu).
+/// Legacy: Triggers placeholder test (CLI use).
 #[no_mangle]
 pub extern "C" fn aetherion_trigger_runtime_test() {
-    info!("FFI Bridge: Received command to trigger Conductor structural test.");
-    start_runtime_placeholder();
-    info!("FFI Bridge: Conductor test sequence complete.");
+    info!("FFI: Runtime test triggered (placeholder).");
 }
 
+/// Alias for `aetherion_start_runtime`.
 #[no_mangle]
 pub extern "C" fn aetherion_initialize_engine() -> bool {
     aetherion_start_runtime()
 }
 
+// ── String-Safe Status Reporting ───────────────────────────────────────────
+
+/// Returns a C-string with engine status. Caller must free with `aetherion_free_string`.
 #[no_mangle]
 pub extern "C" fn aetherion_get_status(id: u32) -> *mut std::os::raw::c_char {
     let status = format!(
-        "Engine status for id {}: Runtime Running: {}",
+        "Aetherion Engine [ID: {}] — Runtime: {}",
         id,
-        CONDUCTOR.get().is_some()
+        if CONDUCTOR.get().is_some() { "ACTIVE" } else { "INACTIVE" }
     );
+
     match CString::new(status) {
-        Ok(c_string) => c_string.into_raw(),
-        Err(_) => CString::new("Error: Invalid Status String").unwrap().into_raw(),
+        Ok(cstr) => cstr.into_raw(),
+        Err(_) => {
+            let fallback = CString::new("ERROR: Invalid status string").unwrap();
+            fallback.into_raw()
+        }
     }
 }
 
-/// FFI function to free strings allocated by Rust.
+/// Frees a string allocated by Rust FFI functions.
 #[no_mangle]
 pub extern "C" fn aetherion_free_string(s: *mut std::os::raw::c_char) {
-    unsafe {
-        if s.is_null() { return }
-        let _ = CString::from_raw(s);
+    if s.is_null() {
+        return;
     }
+    unsafe { let _ = CString::from_raw(s); }
 }

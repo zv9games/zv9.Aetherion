@@ -1,4 +1,3 @@
-// aetherion_shared/src/chunk_data.rs
 //! Canonical data structure for a single, dimension-agnostic chunk of procedural data.
 
 use serde::{Serialize, Deserialize};
@@ -7,12 +6,32 @@ use std::time::SystemTime;
 // Import types from other modules in aetherion_shared
 use crate::grid_bounds::GridBounds;
 use crate::tile_data::TileData; 
-use crate::math_primitives; // Used for the SystemTime serde helper
+
+pub mod system_time_serde {
+    use serde::{Deserialize, Deserializer, Serializer};
+    use std::time::{Duration, SystemTime, UNIX_EPOCH};
+
+    pub fn serialize<S>(time: &SystemTime, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let nanos = time.duration_since(UNIX_EPOCH).unwrap_or(Duration::ZERO).as_nanos() as u64;
+        serializer.serialize_u64(nanos)
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<SystemTime, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let nanos = u64::deserialize(deserializer)?;
+        Ok(UNIX_EPOCH + Duration::from_nanos(nanos))
+    }
+}
 
 // Import Vec2i from the dedicated aetherion_math crate (External Dependency)
 use aetherion_math::Vec2i; 
 
-use serde_big_array::BigArray;
+// ❌ Removed: use serde_big_array::BigArray;
 
 // --- CONSTANTS ---
 
@@ -26,12 +45,12 @@ const TILE_COUNT: usize = (CHUNK_SIZE * CHUNK_SIZE) as usize;
 pub struct ChunkData {
     pub id: u64,
     pub bounds: GridBounds,
-    /// The fixed-size array containing all tile data. `BigArray` is used for efficient
-    /// serialization of the large array.
-    #[serde(with = "BigArray")]
-    pub tiles: [TileData; TILE_COUNT],
+    /// 🚀 SSXL Update: Changed from a fixed-size array to a dynamic Vec<TileData> 
+    /// for maximum flexibility, serialization simplicity, and reduced code complexity.
+    // ❌ Removed: #[serde(with = "BigArray")]
+    pub tiles: Vec<TileData>,
     pub dimension_tag: String,
-    #[serde(with = "math_primitives::system_time_serde")]
+    #[serde(with = "system_time_serde")]
     pub generated_at: SystemTime,
 }
 
@@ -42,7 +61,8 @@ impl ChunkData {
 
     /// Creates a new, empty ChunkData instance initialized with default data.
     pub fn new(id: u64, bounds: GridBounds, dimension_tag: String) -> Self {
-        let tiles = [TileData::default(); TILE_COUNT];
+        // 🚀 Initialize Vec<TileData>
+        let tiles = vec![TileData::default(); TILE_COUNT];
         ChunkData {
             id,
             bounds,
@@ -66,7 +86,8 @@ impl ChunkData {
         
         // NOTE: In a final system, the ID should be derived via robust hashing.
         let id = chunk_coords.x as u64 ^ chunk_coords.y as u64; 
-        let tiles = [TileData::default(); TILE_COUNT];
+        // 🚀 Initialize Vec<TileData>
+        let tiles = vec![TileData::default(); TILE_COUNT];
 
         ChunkData {
             id,
@@ -94,12 +115,12 @@ impl ChunkData {
         })
     }
     
-    /// **CRITICAL FIX for CA Generator:** Replaces the chunk's fixed-size tile array with a new set of tiles.
-    /// Used by generators (like Cellular Automata) that produce a `Vec<TileData>`.
+    /// **CRITICAL FIX for CA Generator:** Replaces the chunk's tile data with a new set of tiles.
+    /// The function is updated for the new `Vec<TileData>` structure.
     pub fn insert_tiles(&mut self, tiles_vec: Vec<TileData>) {
         if tiles_vec.len() == TILE_COUNT {
-            // Efficiently copy the vector's contents into the fixed-size array
-            self.tiles.clone_from_slice(&tiles_vec);
+            // 🚀 SSXL Update: Efficiently replace the entire vector data.
+            self.tiles = tiles_vec;
         } else {
             panic!(
                 "Tile vector size mismatch for chunk {:?}: Expected {} but got {}", 
@@ -121,6 +142,7 @@ impl ChunkData {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tile_type::TileType;
 
     /// Tests the coordinate flattening function for standard and edge cases.
     #[test]
@@ -142,5 +164,29 @@ mod tests {
         assert_eq!(ChunkData::coord_to_index(32, 0), None);
         assert_eq!(ChunkData::coord_to_index(0, 32), None);
         assert_eq!(ChunkData::coord_to_index(33, 33), None);
-    } // <-- Missing brace restored
-} // <-- Missing brace restored
+    }
+    
+    /// Tests that the new ChunkData initializes correctly and that insert_tiles works with Vec.
+    #[test]
+    fn test_chunk_data_init_and_insert() {
+        let bounds = GridBounds::new(0, 0, 31, 31);
+        let mut chunk = ChunkData::new(1, bounds, "test_dim".to_string());
+        
+        // Check initialization size
+        assert_eq!(chunk.tiles.len(), TILE_COUNT);
+        assert_eq!(chunk.tiles[0].tile_type, TileType::default());
+
+        // Create a new Vec of tiles for insertion
+        let mut new_tiles = vec![TileData::default(); TILE_COUNT];
+        
+        // Set a tile to a unique type for verification
+        let index_to_change = ChunkData::coord_to_index(1, 1).unwrap();
+        new_tiles[index_to_change].tile_type = TileType::Rock;
+        
+        // Insert (replace) the tiles
+        chunk.insert_tiles(new_tiles);
+
+        // Verify the change
+        assert_eq!(chunk.get_tile(1, 1).unwrap().tile_type, TileType::Rock);
+    }
+}

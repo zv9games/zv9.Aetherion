@@ -1,4 +1,5 @@
-// aetherion_generate/src/cellular_automata_generator.rs
+//! Implements a 2D Cellular Automata (CA) generator for pattern-based terrain,
+//! including SSXL deterministic rules.
 
 use crate::Generator; 
 use aetherion_math::{
@@ -17,9 +18,11 @@ use tracing::{info, warn};
 const CA_ITERATIONS: u8 = 4;
 const INITIAL_FILL_PERCENT: u8 = 45; // 45% of tiles start as 'Rock'
 
-// --- RULESET DEFINITIONS ---
-pub const RULE_BASIC_CAVE: u8 = 0; // Current rules: Generates large, open cave systems.
-pub const RULE_MAZE: u8 = 1;       // New rules: Generates thin, winding maze/pillar structures.
+// --- RULESET DEFINITIONS (SSXL Integration) ---
+pub const RULE_BASIC_CAVE: u8 = 0;   // CA Rule: Generates large, open cave systems.
+pub const RULE_MAZE: u8 = 1;         // CA Rule: Generates thin, winding maze/pillar structures.
+pub const RULE_SOLID: u8 = 2;        // SSXL Rule: Generates a completely solid chunk (non-CA).
+pub const RULE_CHECKERBOARD: u8 = 3; // SSXL Rule: Generates a 1x1 checkerboard pattern (non-CA).
 
 
 /// ⚙️ Implements a 2D Cellular Automata (CA) generator for pattern-based terrain.
@@ -38,6 +41,7 @@ impl CellularAutomataGenerator {
 // --- CORE GENERATION LOGIC ---
 
 /// Determines the next tile type based on the current type, live neighbors, and the active ruleset.
+/// This function only applies to true Cellular Automata rules (CAVE, MAZE).
 fn get_next_tile_type(current_type: TileType, live_neighbors: u8, ruleset: u8) -> TileType {
     // NOTE: We only handle Rock/Void transitions here.
     
@@ -124,6 +128,8 @@ impl Generator for CellularAutomataGenerator {
     fn id(&self) -> &str {
         match self.ruleset {
             RULE_MAZE => "cellular_automata_maze",
+            RULE_SOLID => "cellular_automata_solid",
+            RULE_CHECKERBOARD => "cellular_automata_checkerboard",
             RULE_BASIC_CAVE | _ => "cellular_automata_basic",
         }
     }
@@ -149,10 +155,39 @@ impl Generator for CellularAutomataGenerator {
         let dimension_name = self.id().to_string(); // Use the ID as the dimension name
 
         let mut chunk_data = ChunkData::new(chunk_id, bounds, dimension_name);
-
-        // --- 2. INITIAL RANDOM FILL (Seed) ---
         let mut tiles = Vec::with_capacity((CHUNK_SIZE * CHUNK_SIZE) as usize);
         
+        // --- 2. SSXL Deterministic Rules (Bypass CA Iteration) ---
+        match self.ruleset {
+            RULE_SOLID => {
+                info!("CA Generator: Using RULE_SOLID (SSXL deterministic fill).");
+                for _ in 0..(CHUNK_SIZE * CHUNK_SIZE) {
+                    // Fill all with Rock, using 1.0 noise for easy visual confirmation
+                    tiles.push(TileData::new(TileType::Rock, 1.0)); 
+                }
+                chunk_data.insert_tiles(tiles);
+                warn!("CA Generator: Finished chunk at {:?}. Result is ready.", chunk_coords);
+                return chunk_data;
+            },
+            RULE_CHECKERBOARD => {
+                info!("CA Generator: Using RULE_CHECKERBOARD (SSXL deterministic pattern).");
+                for cy in 0..CHUNK_SIZE {
+                    for cx in 0..CHUNK_SIZE {
+                        // Checkerboard pattern depends on parity of coordinates
+                        let is_rock = (cx + cy) % 2 == 0;
+                        let tile_type = if is_rock { TileType::Rock } else { TileType::Void };
+                        // Use 0.5 noise value for subtle patterning
+                        tiles.push(TileData::new(tile_type, 0.5)); 
+                    }
+                }
+                chunk_data.insert_tiles(tiles);
+                warn!("CA Generator: Finished chunk at {:?}. Result is ready.", chunk_coords);
+                return chunk_data;
+            },
+            _ => { /* Fallthrough to standard CA logic */ }
+        }
+
+        // --- 3. Standard CA Logic (Initial Random Fill) ---
         for _ in 0..(CHUNK_SIZE * CHUNK_SIZE) {
             // fast_rand(N) returns 0 if a random number 0..=99 is < N
             let is_rock = fast_rand(INITIAL_FILL_PERCENT) == 0; 
@@ -166,7 +201,7 @@ impl Generator for CellularAutomataGenerator {
         }
         chunk_data.insert_tiles(tiles);
 
-        // --- 3. APPLY CA ITERATIONS ---
+        // --- 4. APPLY CA ITERATIONS ---
         for i in 0..CA_ITERATIONS {
             // Pass the active ruleset ID
             apply_ca_step(&mut chunk_data, self.ruleset); 

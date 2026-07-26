@@ -303,6 +303,13 @@ layout_mode = 3
 anchors_preset = 0
 script = ExtResource("4_3lhfi")
 
+[node name="tiletimeofplacement" type="Label" parent="main/controlpanel" unique_id=304114375]
+layout_mode = 0
+offset_left = 141.0
+offset_top = 345.0
+offset_right = 181.0
+offset_bottom = 368.0
+
 [node name="progressbar" type="ProgressBar" parent="main/controlpanel" unique_id=266651082]
 layout_mode = 0
 offset_left = 480.0
@@ -334,6 +341,7 @@ offset_left = 184.0
 offset_top = 88.0
 offset_right = 270.5625
 offset_bottom = 119.0
+max_value = 10000000000000.0
 
 [node name="gridheightlabel" type="Label" parent="main/controlpanel" unique_id=1707712007]
 layout_mode = 0
@@ -349,6 +357,7 @@ offset_left = 184.0
 offset_top = 128.0
 offset_right = 270.5625
 offset_bottom = 159.0
+max_value = 100000000000.0
 
 [node name="seedlabel" type="Label" parent="main/controlpanel" unique_id=492711749]
 layout_mode = 0
@@ -435,6 +444,13 @@ offset_top = 74.0
 offset_right = 519.0
 offset_bottom = 106.0
 text = "ENGINE"
+
+[node name="tilesplacedlabel" type="Label" parent="main/controlpanel" unique_id=1084489727]
+layout_mode = 0
+offset_left = 262.0
+offset_top = 327.0
+offset_right = 302.0
+offset_bottom = 350.0
 
 [node name="cameras" type="Node" parent="main" unique_id=1867544453]
 script = ExtResource("5_6byaw")

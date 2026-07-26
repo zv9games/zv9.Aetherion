@@ -1,23 +1,24 @@
 //! Core generation algorithms, runtime orchestration, and task management.
+//!
+//! This crate defines the `Generator` trait and orchestrates asynchronous world
+//! generation via the `Conductor`.
 
 // -------------------------------------------------------------------------------------------------
-// MODULE EXPOSURE
+// MODULE DECLARATIONS
 // -------------------------------------------------------------------------------------------------
-// Expose the Conductor (the validated Runtime/Orchestration core).
+
 pub mod conductor;
 pub mod benchmark_logic;
 pub mod perlin_generator;
 pub mod cellular_automata_generator;
 
-// Direct re-exports of concrete implementations
-pub use cellular_automata_generator::CellularAutomataGenerator;
-pub use perlin_generator::PerlinGenerator;
-
 // -------------------------------------------------------------------------------------------------
 // CORE TRAIT DEFINITION (Generator Interface)
 // -------------------------------------------------------------------------------------------------
+
 use aetherion_shared::chunk_data::ChunkData;
 use aetherion_math::Vec2i;
+use tracing::{info, error};
 
 /// Defines the core contract for all procedural generation algorithms.
 /// Every generator (Perlin, CA, DiamondSquare, etc.) must implement this trait.
@@ -30,22 +31,22 @@ pub trait Generator {
     fn generate_chunk(&self, chunk_coords: Vec2i) -> ChunkData;
 }
 
-
 // -------------------------------------------------------------------------------------------------
-// PUBLIC EXPORTS
+// PUBLIC EXPORTS (Used by aetherion_godot and aetherion_cli)
 // -------------------------------------------------------------------------------------------------
-// Re-export the main components for easy use by other crates (aetherion_godot, aetherion_cli).
-pub use conductor::Conductor;
-// PHASE 8.3 EXPORT: Expose GeneratorConfig for use by the FFI/Godot wrapper.
-pub use conductor::GeneratorConfig;
 
-// EXPOSED BENCHMARK FUNCTION: This resolves the E0432 error in aetherion_cli
+// Re-export core structs and config
+pub use conductor::{Conductor, GeneratorConfig};
+pub use perlin_generator::PerlinGenerator;
+pub use cellular_automata_generator::CellularAutomataGenerator;
+
+// Re-export utility functions
 pub use benchmark_logic::benchmark_generation_workload;
+
 
 // -------------------------------------------------------------------------------------------------
 // PUBLIC API FOR CLI/FFI (Validation Entry Points)
 // -------------------------------------------------------------------------------------------------
-use tracing::{info, error};
 
 /// Starts the Aetherion Runtime, creating and immediately shutting down the Conductor.
 ///

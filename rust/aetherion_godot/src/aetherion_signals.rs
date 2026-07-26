@@ -1,8 +1,10 @@
+// aetherion_godot/src/aetherion_signals.rs
+
 use godot::prelude::*;
 use godot::classes::Node;
 use godot::obj::{Base, Gd};
-// FIX: Removed 'Variant' to clear the unused import warning
-use godot::builtin::{GString, Dictionary, Array}; 
+// Cleaned Imports: Dictionary is the only Godot type needed besides core types.
+use godot::builtin::Dictionary; 
 
 // -------------------------------------------------------------------------------------------------
 // AETHERION SIGNALS GODOT WRAPPER
@@ -26,16 +28,17 @@ impl AetherionSignals {
     
     // --- Signal Declarations ---
 
-    #[signal] 
+    #[signal]
     fn build_map_start();
 
+    /// Emits the full chunk data as a dictionary for asynchronous loading.
     #[signal]
-    fn chunk_generated(x: i32, y: i32);
+    fn chunk_data_ready(chunk_data_dictionary: godot::builtin::Dictionary);
     
     #[signal]
-    fn build_map_complete(); // Corresponds to the missing method in E0599
+    fn build_map_complete();
 
-    // --- Signal Emitter Functions (Fixes E0599 errors) ---
+    // --- Signal Emitter Functions ---
 
     /// Emits the signal that the map build process has started.
     #[func]
@@ -43,15 +46,16 @@ impl AetherionSignals {
         self.base_mut().emit_signal("build_map_start", &[]);
     }
 
-    /// Emits the signal that a new chunk has been generated and is ready to be loaded.
+    /// Emits the full chunk data dictionary for asynchronous loading.
     #[func]
-    pub fn emit_chunk_generated(&mut self, x: i32, y: i32) { // Corresponds to the missing method in E0599
-        self.base_mut().emit_signal("chunk_generated", &[x.to_variant(), y.to_variant()]);
+    pub fn emit_chunk_data_ready(&mut self, chunk_data_dictionary: godot::builtin::Dictionary) {
+        // The Dictionary is converted to a Variant before being passed in the signal args array.
+        self.base_mut().emit_signal("chunk_data_ready", &[chunk_data_dictionary.to_variant()]);
     }
 
     /// Emits the signal that the entire map build process is complete.
     #[func]
-    pub fn emit_build_map_complete(&mut self) { // Corresponds to the missing method in E0599
+    pub fn emit_build_map_complete(&mut self) {
         self.base_mut().emit_signal("build_map_complete", &[]);
     }
 }

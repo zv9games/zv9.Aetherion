@@ -16,7 +16,6 @@ aetherion_generate = { path = "../aetherion_generate" }
 
 # CORE GDExtension BINDINGS
 godot = { workspace = true }
-gdextension = { workspace = true }
 
 # Workspace standard logging framework
 tracing = { workspace = true }
