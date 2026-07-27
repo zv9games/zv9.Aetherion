@@ -61,47 +61,48 @@ You want lines like `aetherion 0.1.0`, `health=aetherion-ok`, and `godot=C:\...e
 
 ---
 
-## 3. Launch Godot in the Aetherion environment (main command)
+## 3. Operator menu (main way to work)
 
 From the **repo root** (`aetherion/`, next to `Cargo.toml`):
 
 ```powershell
-cargo run -p aetherion-cli -- launch
+cargo run -p aetherion-cli
 ```
 
-Aliases (same thing): `run`, `godot`
+That opens an **interactive menu**. Type a **number or letter** and press Enter:
+
+| Key | Action |
+|-----|--------|
+| `1` / `d` | Doctor (health, paths) |
+| `2` / `b` | Build extension |
+| `3` / `p` | Deploy DLL into demo |
+| `4` / `l` | **Launch demo** (build + deploy + Godot) |
+| `5` / `r` | Launch demo, no rebuild |
+| `6` / `g` | **Launch plain Godot** (Project Manager — new projects, no demo) |
+| `7` / `s` | Smoke (headless) |
+| `8` / `f` | Bench 4M (CPU) |
+| `9` / `t` | Bench 10M (CPU) |
+| `0` / `q` | Quit |
+| `h` | Reprint menu |
+
+### Same actions without the menu (scripts / muscle memory)
 
 ```powershell
-cargo run -p aetherion-cli -- run
-cargo run -p aetherion-cli -- godot
+cargo run -p aetherion-cli -- launch   # demo (aliases: run, godot)
+cargo run -p aetherion-cli -- editor   # plain Godot, no demo
+cargo run -p aetherion-cli -- launch --no-build
+cargo run -p aetherion-cli -- smoke
+cargo run -p aetherion-cli --release -- bench10m
 ```
 
-**`launch` does the full pipeline:**
+**`launch` does the full demo pipeline:**
 
 1. **Builds** the Rust library with Godot support (`aetherion.dll` on Windows)  
 2. **Copies** it into `examples/godot_demo/` (hook the extension)  
 3. **Writes** Godot’s extension list so Godot finds `aetherion.gdextension`  
-4. **Starts Godot** with `--path examples/godot_demo` (Aetherion environment)
+4. **Starts Godot** with `--path examples/godot_demo`
 
-Skip rebuild when you only changed GDScript:
-
-```powershell
-cargo run -p aetherion-cli -- launch --no-build
-```
-
-**Do not** type only `cargo run` — always use `-p aetherion-cli -- …`.
-
-### Headless test (no window)
-
-```powershell
-cargo run -p aetherion-cli -- smoke
-```
-
-### CPU-only stress (no Godot)
-
-```powershell
-cargo run -p aetherion-cli --release -- bench10m
-```
+**`editor`** only starts Godot (Project Manager). Use that for a normal new game project.
 
 ---
 

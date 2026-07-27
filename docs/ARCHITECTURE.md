@@ -4,7 +4,9 @@
 aetherion-cli
   build  → cargo build -p aetherion --features godot
   deploy → copy cdylib → examples/godot_demo/
-  run    → GODOT_BIN --path examples/godot_demo
+  menu   → interactive number/letter menu (default)
+  launch → GODOT_BIN --path examples/godot_demo
+  editor → GODOT_BIN (plain Project Manager, no demo)
 
 examples/godot_demo
   aetherion.gdextension → aetherion.dll / libaetherion.so

@@ -1,5 +1,9 @@
 # Aetherion
 
+<p align="center">
+  <img src="./.assets/godot_aetherion.jpg" alt="Godot Aetherion Poster" width="600"/>
+</p>
+
 [![CI](https://github.com/zv9games/aetherion/actions/workflows/ci.yml/badge.svg)](https://github.com/zv9games/aetherion/actions/workflows/ci.yml)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
 
@@ -39,6 +43,9 @@ Scale confirmation lineage: [`ssxl-ext`](https://github.com/zv9games/ssxl-ext) (
 git clone https://github.com/zv9games/aetherion.git
 cd aetherion
 
+# Interactive menu (number or letter) — recommended:
+cargo run -p aetherion-cli
+
 # No Godot required:
 cargo test --workspace
 cargo run -p aetherion-cli -- doctor
@@ -47,19 +54,22 @@ cargo run -p aetherion-cli --release -- bench4m
 # With Godot 4.x (PowerShell example):
 $env:GODOT_BIN = "C:\path\to\Godot_v4.x_win64.exe"
 cargo run -p aetherion-cli -- smoke    # headless
-cargo run -p aetherion-cli -- launch   # open Godot in Aetherion environment
-# aliases: run, godot
+cargo run -p aetherion-cli -- launch   # Aetherion demo
+cargo run -p aetherion-cli -- editor   # plain Godot (new projects)
+# launch aliases: run, godot
 ```
 
 ### CLI (`aetherion-cli`)
 
 | Command | Action |
 |---------|--------|
+| *(no args)* / `menu` | **Interactive menu** — pick by number or letter |
 | `doctor` | Version, health, demo path, `GODOT_BIN` |
 | `build` | Release cdylib with `--features godot` |
 | `deploy` | Copy library into `examples/godot_demo` + extension list |
-| **`launch`** | **Build + deploy + open Godot in Aetherion env** (aliases: `run`, `godot`) |
-| `launch --no-build` | Deploy existing DLL + open Godot (skip cargo) |
+| **`launch`** | **Build + deploy + open demo** (aliases: `run`, `godot`) |
+| `launch --no-build` | Deploy existing DLL + open demo (skip cargo) |
+| **`editor`** | **Plain Godot** Project Manager / no demo (aliases: `pm`) |
 | `smoke` | build + deploy + headless quit-after |
 | `bench` | CPU region timing |
 | `bench4m` | CPU ~4.19M tiles |

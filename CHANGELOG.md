@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Interactive CLI menu (default `cargo run -p aetherion-cli`) — pick by number or letter
+- `editor` command — plain Godot / Project Manager (no demo); aliases `pm`, `project-manager`
+- Menu keys: demo launch (`4`/`l`), plain Godot (`6`/`g`), doctor/build/deploy/smoke/benches
+- Restored README poster (`.assets/godot_aetherion.jpg`) from pre-greenfield archive
+
 ## [0.1.0] — 2026-07-27
 
 First greenfield open-source release of **Aetherion**.
