@@ -50,11 +50,15 @@ enum Commands {
     },
     /// CPU-only region bench (no Godot). Prints tile count and ms.
     Bench {
+        /// Chunks along each axis (total chunks = chunks²).
         #[arg(long, default_value_t = 8)]
         chunks: u32,
+        /// Tiles along each chunk edge.
         #[arg(long, default_value_t = 64)]
         size: u32,
     },
+    /// CPU-only ~4M tiles (32×32 chunks of 64²) — SSXL-ext confirmation scale class.
+    Bench4m,
 }
 
 fn workspace_root() -> Result<PathBuf> {
@@ -232,24 +236,30 @@ fn main() -> Result<()> {
             )?;
         }
         Commands::Bench { chunks, size } => {
-            let report = aetherion::run_region(
-                aetherion::ChunkCoord::new(0, 0),
-                chunks,
-                chunks,
-                size,
-                aetherion::FillMode::HashNoise,
-                7,
-            );
-            println!("{}", report.summary());
-            println!(
-                "tiles_per_sec≈{:.0}",
-                if report.elapsed_ms == 0 {
-                    report.tiles as f64
-                } else {
-                    report.tiles as f64 / (report.elapsed_ms as f64 / 1000.0)
-                }
-            );
+            print_bench(chunks, chunks, size, 7);
+        }
+        Commands::Bench4m => {
+            // 32*32*64*64 = 4_194_304
+            print_bench(32, 32, 64, 13);
         }
     }
     Ok(())
+}
+
+fn print_bench(chunks_x: u32, chunks_y: u32, size: u32, seed: u32) {
+    let report = aetherion::run_region(
+        aetherion::ChunkCoord::new(0, 0),
+        chunks_x,
+        chunks_y,
+        size,
+        aetherion::FillMode::HashNoise,
+        seed,
+    );
+    println!("{}", report.summary());
+    let tps = if report.elapsed_ms == 0 {
+        report.tiles as f64
+    } else {
+        report.tiles as f64 / (report.elapsed_ms as f64 / 1000.0)
+    };
+    println!("tiles_per_sec≈{tps:.0}");
 }

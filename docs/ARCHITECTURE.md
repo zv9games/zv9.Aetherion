@@ -18,18 +18,18 @@ examples/godot_demo
 | `aetherion` | Core types + optional GDExtension |
 | `aetherion-cli` | Operator surface (SSXL-ext pipeline, cleaned) |
 
-## Host apply (Phase 3)
+## Host apply
 
 ```text
-AetherionEngine.bind_tilemap(TileMap)
-  → ensure_demo_tileset (4-color atlas if missing)
-generate_region(...)
-  → conductor::run_region_data
-  → host_tilemap::apply_chunks_to_tilemap (set_cell_ex)
+generate_region (Rayon-parallel chunks)
+  → TileMap:    host_tilemap (procedural atlas + set_cell_ex)
+  → MultiMesh:  host_multimesh (colored quads, Plan-B-lite)
+bind_tilemap / bind_multimesh / set_prefer_multimesh
+flood_million → 16×16×64² = 1,048,576 tiles via MultiMesh
+bench_4m_cpu  → 32×32×64² = 4,194,304 tiles (CPU only)
 ```
 
 ## Later
 
-- Streaming / async conductor workers
-- Plan B mesh renderer (SSXL-ext `SSXLRenderer` lineage)
-- Larger TileMap bulk APIs if Godot exposes them
+- Streaming / async conductor workers  
+- Full 3D Plan B mesh renderer (SSXL-ext `SSXLRenderer` lineage)

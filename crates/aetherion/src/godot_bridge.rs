@@ -5,8 +5,9 @@
 use crate::chunk::ChunkCoord;
 use crate::conductor::run_region_data;
 use crate::generate::FillMode;
+use crate::host_multimesh::apply_chunks_to_multimesh;
 use crate::host_tilemap::{apply_chunks_to_tilemap, ensure_demo_tileset};
-use godot::classes::TileMap;
+use godot::classes::{MultiMeshInstance2D, TileMap};
 use godot::init::{ExtensionLibrary, InitLevel};
 use godot::prelude::*;
 
@@ -24,6 +25,14 @@ unsafe impl ExtensionLibrary for AetherionExtension {
     }
 }
 
+/// Host visualization target.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ApplyTarget {
+    None,
+    TileMap,
+    MultiMesh,
+}
+
 /// Root engine node exposed to Godot.
 #[derive(GodotClass)]
 #[class(base=Node)]
@@ -34,8 +43,9 @@ pub struct AetherionEngine {
     last_ms: u64,
     last_apply_ms: u64,
     last_summary: GString,
-    /// Optional TileMap for host apply (set via `bind_tilemap`).
+    apply_mode: ApplyTarget,
     tilemap: Option<Gd<TileMap>>,
+    multimesh: Option<Gd<MultiMeshInstance2D>>,
 }
 
 #[godot_api]
@@ -49,14 +59,15 @@ impl INode for AetherionEngine {
             last_ms: 0,
             last_apply_ms: 0,
             last_summary: GString::from(""),
+            apply_mode: ApplyTarget::None,
             tilemap: None,
+            multimesh: None,
         }
     }
 
     fn ready(&mut self) {
         godot_print!("[Aetherion] ready — health={}", crate::health());
-        // Auto-bind sibling/parent TileMap if present.
-        self.try_autobind_tilemap();
+        self.try_autobind();
         let report = self.run_generate_inner(0, 0, 2, 2, 16, 0, 42, true);
         godot_print!("[Aetherion] auto-smoke {}", report);
     }
@@ -105,9 +116,28 @@ impl AetherionEngine {
         ensure_demo_tileset(&mut map);
         godot_print!("[Aetherion] bound TileMap {}", map.get_name());
         self.tilemap = Some(map);
+        self.apply_mode = ApplyTarget::TileMap;
     }
 
-    /// `mode`: 0 = checkerboard, 1 = hash noise. Applies to bound TileMap when present.
+    /// Bind MultiMeshInstance2D for fast large floods (Plan-B-lite).
+    #[func]
+    fn bind_multimesh(&mut self, mmi: Gd<MultiMeshInstance2D>) {
+        godot_print!("[Aetherion] bound MultiMeshInstance2D {}", mmi.get_name());
+        self.multimesh = Some(mmi);
+        self.apply_mode = ApplyTarget::MultiMesh;
+    }
+
+    /// Prefer MultiMesh for large demos when both are available.
+    #[func]
+    fn set_prefer_multimesh(&mut self, prefer: bool) {
+        if prefer && self.multimesh.is_some() {
+            self.apply_mode = ApplyTarget::MultiMesh;
+        } else if self.tilemap.is_some() {
+            self.apply_mode = ApplyTarget::TileMap;
+        }
+    }
+
+    /// `mode`: 0 = checkerboard, 1 = hash noise. Applies to bound host when present.
     #[func]
     fn generate_region(
         &mut self,
@@ -133,7 +163,7 @@ impl AetherionEngine {
         GString::from(summary.as_str())
     }
 
-    /// CPU-only generation (no TileMap apply) — for pure gen timing.
+    /// CPU-only generation (no host apply).
     #[func]
     fn generate_region_cpu(
         &mut self,
@@ -159,26 +189,59 @@ impl AetherionEngine {
         GString::from(summary.as_str())
     }
 
-    /// Medium flood with host apply when TileMap is bound.
+    /// Medium flood (~16k tiles) with host apply.
     #[func]
     fn bench_medium(&mut self) -> GString {
         self.generate_region(0, 0, 4, 4, 32, 1, 7)
     }
+
+    /// Large flood: 16×16 chunks of 64 → 1,048,576 tiles (prefer MultiMesh).
+    #[func]
+    fn flood_million(&mut self) -> GString {
+        if self.multimesh.is_some() {
+            self.apply_mode = ApplyTarget::MultiMesh;
+        }
+        self.generate_region(0, 0, 16, 16, 64, 1, 11)
+    }
+
+    /// CPU-only ~4M tiles (32×32 × 64²) — parity scale with SSXL-ext confirmation class.
+    #[func]
+    fn bench_4m_cpu(&mut self) -> GString {
+        self.generate_region_cpu(0, 0, 32, 32, 64, 1, 13)
+    }
 }
 
 impl AetherionEngine {
-    fn try_autobind_tilemap(&mut self) {
-        // Prefer child named TileMap, then sibling under parent.
+    fn try_autobind(&mut self) {
+        // MultiMesh first for large demos if present.
+        if let Some(child) = self.base().get_node_or_null("MultiMeshInstance2D") {
+            if let Ok(mm) = child.try_cast::<MultiMeshInstance2D>() {
+                self.bind_multimesh(mm);
+            }
+        }
         if let Some(child) = self.base().get_node_or_null("TileMap") {
             if let Ok(map) = child.try_cast::<TileMap>() {
+                let prefer_mm = matches!(self.apply_mode, ApplyTarget::MultiMesh);
                 self.bind_tilemap(map);
-                return;
+                // MultiMesh wins when both exist (large-flood path).
+                if prefer_mm || self.multimesh.is_some() {
+                    self.apply_mode = ApplyTarget::MultiMesh;
+                }
             }
         }
         if let Some(parent) = self.base().get_parent() {
-            if let Some(node) = parent.get_node_or_null("TileMap") {
-                if let Ok(map) = node.try_cast::<TileMap>() {
-                    self.bind_tilemap(map);
+            if self.multimesh.is_none() {
+                if let Some(node) = parent.get_node_or_null("MultiMeshInstance2D") {
+                    if let Ok(mm) = node.try_cast::<MultiMeshInstance2D>() {
+                        self.bind_multimesh(mm);
+                    }
+                }
+            }
+            if self.tilemap.is_none() {
+                if let Some(node) = parent.get_node_or_null("TileMap") {
+                    if let Ok(map) = node.try_cast::<TileMap>() {
+                        self.bind_tilemap(map);
+                    }
                 }
             }
         }
@@ -214,14 +277,29 @@ impl AetherionEngine {
 
         let mut summary = report.summary();
         if apply {
-            if let Some(map) = self.tilemap.as_mut() {
-                let (cells, apply_ms) = apply_chunks_to_tilemap(map, &chunks);
-                self.last_apply_ms = apply_ms as u64;
-                summary = format!(
-                    "{summary} | apply {cells} cells in {apply_ms} ms"
-                );
-            } else {
-                summary = format!("{summary} | apply skipped (no TileMap bound)");
+            match self.apply_mode {
+                ApplyTarget::TileMap => {
+                    if let Some(map) = self.tilemap.as_mut() {
+                        let (cells, apply_ms) = apply_chunks_to_tilemap(map, &chunks);
+                        self.last_apply_ms = apply_ms as u64;
+                        summary = format!("{summary} | tilemap apply {cells} cells in {apply_ms} ms");
+                    } else {
+                        summary = format!("{summary} | apply skipped (no TileMap)");
+                    }
+                }
+                ApplyTarget::MultiMesh => {
+                    if let Some(mmi) = self.multimesh.as_mut() {
+                        let (n, apply_ms) = apply_chunks_to_multimesh(mmi, &chunks);
+                        self.last_apply_ms = apply_ms as u64;
+                        summary =
+                            format!("{summary} | multimesh apply {n} instances in {apply_ms} ms");
+                    } else {
+                        summary = format!("{summary} | apply skipped (no MultiMesh)");
+                    }
+                }
+                ApplyTarget::None => {
+                    summary = format!("{summary} | apply skipped (no host bound)");
+                }
             }
         }
         self.last_summary = GString::from(summary.as_str());

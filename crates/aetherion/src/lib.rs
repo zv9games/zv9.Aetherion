@@ -25,6 +25,8 @@ pub fn health() -> &'static str {
 #[cfg(feature = "godot")]
 mod godot_bridge;
 #[cfg(feature = "godot")]
+mod host_multimesh;
+#[cfg(feature = "godot")]
 mod host_tilemap;
 
 #[cfg(feature = "godot")]

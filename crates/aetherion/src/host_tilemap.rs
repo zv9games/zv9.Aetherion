@@ -1,6 +1,6 @@
-//! Apply generated chunks to a Godot `TileMap` (SSXL-ext host_tilemap lineage, simplified).
+//! Apply generated chunks to a Godot `TileMap` (SSXL-ext host_tilemap lineage).
 //!
-//! Builds a 4-color procedural atlas when the map has no TileSet, then calls `set_cell`.
+//! Builds a 4-color procedural atlas when the map has no TileSet, then batches `set_cell_ex`.
 
 use crate::chunk::ChunkData;
 use godot::classes::image::Format;
@@ -14,19 +14,17 @@ pub fn ensure_demo_tileset(tilemap: &mut Gd<TileMap>) {
         return;
     }
 
-    // 4 tiles in a row: 64×16 RGBA
     let mut image = Image::create(64, 16, false, Format::RGBA8).expect("create image");
     let colors: [(u8, u8, u8, u8); 4] = [
-        (30, 30, 40, 255),    // void
-        (40, 180, 90, 255),   // green
-        (50, 100, 220, 255),  // blue
-        (220, 160, 40, 255),  // gold
+        (30, 30, 40, 255),
+        (40, 180, 90, 255),
+        (50, 100, 220, 255),
+        (220, 160, 40, 255),
     ];
     for (ti, (r, g, b, a)) in colors.iter().enumerate() {
         let x0 = (ti as i32) * 16;
         for y in 0..16 {
             for x in 0..16 {
-                // light border
                 let edge = x == 0 || y == 0 || x == 15 || y == 15;
                 let (cr, cg, cb) = if edge {
                     (
@@ -37,11 +35,7 @@ pub fn ensure_demo_tileset(tilemap: &mut Gd<TileMap>) {
                 } else {
                     (*r, *g, *b)
                 };
-                image.set_pixel(
-                    x0 + x,
-                    y,
-                    Color::from_rgba8(cr, cg, cb, *a),
-                );
+                image.set_pixel(x0 + x, y, Color::from_rgba8(cr, cg, cb, *a));
             }
         }
     }
@@ -58,47 +52,52 @@ pub fn ensure_demo_tileset(tilemap: &mut Gd<TileMap>) {
     }
 
     let mut tileset = TileSet::new_gd();
-    let source_id = tileset.add_source(&atlas);
-    // Godot assigns source id; we assume 0 for first source.
-    let _ = source_id;
+    let _source_id = tileset.add_source(&atlas);
     tilemap.set_tileset(&tileset);
     godot_print!("[Aetherion] installed procedural demo TileSet (4 atlas tiles)");
 }
 
+#[inline]
+fn atlas_x_for_tile(tile: u16) -> i32 {
+    match tile {
+        0 | 1 => 0,
+        2 => 1,
+        3 => 2,
+        _ => 3,
+    }
+}
+
 /// Apply chunks onto layer 0 of `tilemap`. Returns cells written + elapsed ms.
+///
+/// Clears the layer once, writes all cells, then calls `update_internals`.
 pub fn apply_chunks_to_tilemap(tilemap: &mut Gd<TileMap>, chunks: &[ChunkData]) -> (u64, u128) {
     ensure_demo_tileset(tilemap);
     let t0 = Instant::now();
+    tilemap.clear_layer(0);
+
     let mut cells: u64 = 0;
     let source_id = 0;
 
     for chunk in chunks {
         let origin_x = chunk.coord.x * chunk.size as i32;
         let origin_y = chunk.coord.y * chunk.size as i32;
-        for ly in 0..chunk.size {
-            for lx in 0..chunk.size {
-                let Some(idx) = chunk.index(lx, ly) else {
-                    continue;
-                };
-                let tile = chunk.tiles[idx];
-                // Map generator ids 1..4 → atlas columns 0..3; 0 clears? use 0 atlas
-                let atlas_x = match tile {
-                    0 => 0,
-                    1 => 0,
-                    2 => 1,
-                    3 => 2,
-                    _ => 3,
-                };
+        let size = chunk.size;
+        let tiles = &chunk.tiles;
+        for ly in 0..size {
+            let row = (ly * size) as usize;
+            let map_y = origin_y + ly as i32;
+            for lx in 0..size {
+                let tile = tiles[row + lx as usize];
                 let map_x = origin_x + lx as i32;
-                let map_y = origin_y + ly as i32;
                 tilemap
                     .set_cell_ex(0, Vector2i::new(map_x, map_y))
                     .source_id(source_id)
-                    .atlas_coords(Vector2i::new(atlas_x, 0))
+                    .atlas_coords(Vector2i::new(atlas_x_for_tile(tile), 0))
                     .done();
                 cells += 1;
             }
         }
     }
+    tilemap.update_internals();
     (cells, t0.elapsed().as_millis())
 }

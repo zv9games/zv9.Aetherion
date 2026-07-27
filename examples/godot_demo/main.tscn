@@ -7,10 +7,12 @@ script = ExtResource("1_main")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(256, 256)
-zoom = Vector2(0.75, 0.75)
+zoom = Vector2(0.5, 0.5)
 
 [node name="TileMap" type="TileMap" parent="."]
 format = 2
+
+[node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="."]
 
 [node name="AetherionEngine" type="AetherionEngine" parent="."]
 
@@ -19,10 +21,10 @@ format = 2
 [node name="Status" type="Label" parent="UI"]
 offset_left = 16.0
 offset_top = 12.0
-offset_right = 980.0
-offset_bottom = 160.0
+offset_right = 1100.0
+offset_bottom = 200.0
 theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = "Aetherion loading…"

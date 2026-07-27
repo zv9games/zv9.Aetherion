@@ -15,9 +15,10 @@ Scale confirmation lineage: [`ssxl-ext`](https://github.com/zv9games/ssxl-ext) t
 | Workspace + CLI scaffold | **yes** |
 | GDExtension loads in Godot 4.5 | **yes** (`AetherionEngine`, headless smoke) |
 | CPU region generate + metrics | **yes** (`bench`, `generate_region`) |
-| TileMap host apply (procedural atlas) | **yes** (`bind_tilemap`, apply path) |
-| Plan B mesh renderer | planned |
-| Multi-million tile host apply re-run | planned |
+| TileMap host apply (procedural atlas) | **yes** |
+| MultiMesh large flood (Plan-B-lite) | **yes** (`flood_million`, ~1M instances) |
+| CPU ~4M tiles (Rayon) | **yes** (`aetherion-cli bench4m`) |
+| Full SSXL-ext mesh/3D Plan B | planned |
 
 ## Requirements
 
@@ -51,6 +52,7 @@ CLI binary name: **`aetherion-cli`**.
 | `aetherion-cli run` | build + deploy + launch Godot |
 | `aetherion-cli smoke` | build + deploy + headless quit-after |
 | `aetherion-cli bench` | CPU-only region timing (no Godot) |
+| `aetherion-cli bench4m` | CPU ~4.19M tiles (SSXL-ext scale class) |
 
 ## Layout
 
