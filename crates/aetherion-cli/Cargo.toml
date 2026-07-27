@@ -5,8 +5,11 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
-description = "Aetherion operator CLI — build, deploy GDExtension, launch Godot"
+authors.workspace = true
+description = "Aetherion operator CLI — menu, build/deploy GDExtension, gift project, launch Godot"
 readme = "../../README.md"
+keywords = ["godot", "aetherion", "cli", "gdextension"]
+categories = ["command-line-utilities", "game-development"]
 
 [[bin]]
 name = "aetherion-cli"

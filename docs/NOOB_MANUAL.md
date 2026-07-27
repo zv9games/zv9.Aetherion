@@ -1,207 +1,313 @@
-# Aetherion in one page (Godot n00b edition)
+# Aetherion n00b bible
 
-**Goal:** Install tools → build Aetherion → open a Godot project → see Aetherion run.  
-**Time:** ~15–30 minutes if Rust and Godot install cleanly.  
-**OS:** Windows (paths shown); Linux/macOS same steps with different binary names.
+**One job:** install tools → get source → compile → drop Godot in the folder → run the CLI → press **g** → make a game.
 
----
-
-## What you are installing
-
-| Piece | What it is | Who provides it |
-|-------|------------|-----------------|
-| **Godot 4** | The game editor / runtime | You download it (not in this repo) |
-| **Aetherion** | Rust code that becomes a **plugin DLL** Godot loads | This git repo |
-| **Demo project** | Tiny Godot project that already hooks Aetherion | `examples/godot_demo/` in this repo |
-
-Aetherion is **not** a second editor. It is a **GDExtension**: Godot loads `aetherion.dll` (or `.so` / `.dylib`) like a plugin.
+**Time:** ~20–40 minutes the first time (Rust + VS tools dominate).  
+**OS:** Windows steps below. Linux/macOS are the same ideas with different binary names.
 
 ---
 
-## 0. Prerequisites
+## What the pieces are
 
-1. **Git** — [https://git-scm.com](https://git-scm.com)  
-2. **Rust** — [https://rustup.rs](https://rustup.rs) (install, then close and reopen the terminal)  
-3. **Visual Studio Build Tools** (Windows) — “Desktop development with C++” so Rust can link  
-4. **Godot 4.2 or newer** (4.5.x is fine)  
-   - Download: [https://godotengine.org/download](https://godotengine.org/download)  
-   - Get the **standard** Windows 64-bit build (`.exe`). Unzip anywhere, e.g.  
-     `C:\Godot\Godot_v4.5.1-stable_win64.exe`  
-   - You do **not** put this file inside the Aetherion repo.
+| Piece | What it is |
+|-------|------------|
+| **Godot 4** | Game editor. You download it. Drop the `.exe` into the Aetherion repo root. |
+| **Aetherion** | Rust library that becomes `aetherion.dll` — a **plugin** Godot loads. |
+| **aetherion-cli** | Small menu program (`aetherion-cli.exe`) that builds, installs, and launches. |
+| **Your game** | A Godot project folder. Menu **g** can create one for you. |
+
+Aetherion is **not** a second editor. It is a **GDExtension**.  
+Godot loads the DLL. You place an **`AetherionEngine`** node (menu **g** already does this).
+
+```text
+  YOU                         AETHERION FOLDER
+  ───                         ────────────────
+  install Rust + Git
+  git clone            ──►    source code
+  cargo build          ──►    target\debug\aetherion-cli.exe
+  download Godot       ──►    Godot_v*-stable_*.exe  (repo root)
+  run CLI → press g    ──►    godot_save\… + plugin + editor open
+                                      │
+                                      ▼
+                              make a game
+```
 
 ---
 
-## 1. Get Aetherion
+## Step 0 — Install tools
+
+### Git
+
+[https://git-scm.com](https://git-scm.com)  
+Install with defaults. Open a **new** PowerShell after install.
+
+### Rust
+
+[https://rustup.rs](https://rustup.rs)
+
+```powershell
+# After rustup finishes:
+rustc --version
+cargo --version
+```
+
+If those fail, close the terminal completely and open a new one.
+
+This repo pins a toolchain in `rust-toolchain.toml` (currently **1.87**).  
+First build may download that channel automatically.
+
+### Windows C++ build tools
+
+Rust on Windows needs a linker:
+
+1. Install **Visual Studio Build Tools** (or full VS).  
+2. Workload: **Desktop development with C++**.  
+3. New terminal again.
+
+### Godot 4 stable
+
+1. Open [https://godotengine.org/download](https://godotengine.org/download)  
+2. Download **standard** Godot 4 **Windows 64-bit** (not .NET unless you know you want it).  
+3. Unzip — you want a file like:
+
+```text
+Godot_v4.7.1-stable_win64.exe
+```
+
+(Version numbers change. Any **4.2+** stable is fine; **4.5–4.7** are tested.)
+
+---
+
+## Step 1 — Download Aetherion source
 
 ```powershell
 cd C:\ZV9\lines\games
-# or any folder you like:
+# or wherever you keep game code:
+
 git clone https://github.com/zv9games/aetherion.git
 cd aetherion
 ```
 
-If you already have the repo: `cd C:\ZV9\lines\games\aetherion`.
+You should see `Cargo.toml` in the current folder.
 
 ---
 
-## 2. Point the CLI at Godot
+## Step 2 — Copy Godot into the Aetherion root
 
-```powershell
-$env:GODOT_BIN = "C:\Godot\Godot_v4.5.1-stable_win64.exe"
-# use YOUR real path to the .exe
+Copy / move the Godot `.exe` **into the aetherion folder** (same place as `Cargo.toml`):
+
+```text
+aetherion\
+  Cargo.toml
+  README.md
+  Godot_v4.7.1-stable_win64.exe     ★ here
+  crates\
+  docs\
+  examples\
+  target\                           (appears after you build)
 ```
 
-Check:
+The CLI looks for any `Godot*.exe` in this folder automatically.
+
+**Optional** (if you refuse to copy Godot here):
 
 ```powershell
-cargo run -p aetherion-cli -- doctor
+$env:GODOT_BIN = "C:\path\to\Godot_v4.x_win64.exe"
 ```
 
-You want lines like `aetherion 0.1.0`, `health=aetherion-ok`, and `godot=C:\...exe` (not “not configured”).
+**Do not commit Godot** — git ignores `Godot_*.exe` on purpose (huge file, not ours to redistribute).
 
 ---
 
-## 3. Operator menu (main way to work)
+## Step 3 — Compile the binary
 
-From the **repo root** (`aetherion/`, next to `Cargo.toml`):
+From the **repo root** (`aetherion\`):
 
 ```powershell
-cargo run -p aetherion-cli
+cargo build -p aetherion-cli
 ```
 
-That opens an **interactive menu**. Type a **number or letter** and press Enter:
+First compile can take a while. When it finishes:
+
+```text
+Finished `dev` profile …
+```
+
+### Where is the .exe?
+
+```text
+target\debug\aetherion-cli.exe
+```
+
+| Profile | Command | Binary |
+|---------|---------|--------|
+| debug (default, fine for learning) | `cargo build -p aetherion-cli` | `target\debug\aetherion-cli.exe` |
+| release (faster, longer compile) | `cargo build -p aetherion-cli --release` | `target\release\aetherion-cli.exe` |
+
+Check Godot was found:
+
+```powershell
+.\target\debug\aetherion-cli.exe doctor
+```
+
+You want:
+
+```text
+health=aetherion-ok
+godot=C:\...\Godot_v....exe
+```
+
+If `godot=(not configured)`, the `.exe` is not in the repo root and `GODOT_BIN` is unset — fix Step 2.
+
+---
+
+## Step 4 — Run the menu, press **g**, make a game
+
+```powershell
+.\target\debug\aetherion-cli.exe
+```
+
+(or `cargo run -p aetherion-cli`)
+
+```text
+  Aetherion
+  C:\...\aetherion
+  godot: C:\...\Godot_v4.x...exe
+
+  1  d    doctor
+  2  b    build
+  3  l    launch demo
+  4  g    launch godot + aetherion  ★ make a game
+  5  s    smoke
+  6  f    bench 4M
+  7  t    bench 10M
+  0  q    quit
+     h    help
+
+aetherion>
+```
+
+### Make a game (the gift)
+
+1. Type **`g`** (or **`4`**) → Enter  
+2. Project path prompt → press **Enter** for the default  
+   (`godot_save\aetherion-game`)  
+   or paste any empty folder path  
+3. Wait for build + install  
+4. Godot **editor** opens  
+
+What the CLI just did for you:
+
+- Created a Godot project if the folder was empty  
+- Built `aetherion.dll` with Godot support  
+- Wrote `aetherion.gdextension`  
+- Installed **`aetherion_engine_api.gd`** and attached it to **AetherionEngine**  
+- Opened the **editor** (not “run game”)
+
+In Godot:
+
+- Select **AetherionEngine** in the scene tree — script: `aetherion_engine_api.gd`  
+- That script **is** the API tutorial (`extends AetherionEngine`, every callable)  
+- Press **F5** / Play: HUD + Output walk `bind_*`, `generate_region`, benches…  
+- Keys: **1** light tour · **2** +`flood_million` · **3** `flood_10m` · **Space** skip hold  
+
+Repo template (re-copied on each **g** / install): `templates/gift/aetherion_engine_api.gd`
+
+**After you change Rust code:** run the CLI again → **`g`** on the same path.
+
+### Repo demo (menu **l**)
+
+Type **`l`** for the bigger staged showcase under `examples/godot_demo/` (separate from your gift game).
+
+### Other keys
 
 | Key | Action |
 |-----|--------|
-| `1` / `d` | Doctor (health, paths) |
-| `2` / `b` | Build extension |
-| `3` / `p` | Deploy DLL into demo |
-| `4` / `l` | **Launch demo** (build + deploy + Godot) |
-| `5` / `r` | Launch demo, no rebuild |
-| `6` / `g` | **Launch plain Godot** (Project Manager — new projects, no demo) |
-| `7` / `s` | Smoke (headless) |
-| `8` / `f` | Bench 4M (CPU) |
-| `9` / `t` | Bench 10M (CPU) |
-| `0` / `q` | Quit |
-| `h` | Reprint menu |
-
-### Same actions without the menu (scripts / muscle memory)
-
-```powershell
-cargo run -p aetherion-cli -- launch   # demo (aliases: run, godot)
-cargo run -p aetherion-cli -- editor   # plain Godot, no demo
-cargo run -p aetherion-cli -- launch --no-build
-cargo run -p aetherion-cli -- smoke
-cargo run -p aetherion-cli --release -- bench10m
-```
-
-**`launch` does the full demo pipeline:**
-
-1. **Builds** the Rust library with Godot support (`aetherion.dll` on Windows)  
-2. **Copies** it into `examples/godot_demo/` (hook the extension)  
-3. **Writes** Godot’s extension list so Godot finds `aetherion.gdextension`  
-4. **Starts Godot** with `--path examples/godot_demo`
-
-**`editor`** only starts Godot (Project Manager). Use that for a normal new game project.
+| `d` | doctor — health + paths |
+| `b` | build plugin only |
+| `s` | smoke — headless proof |
+| `f` / `t` | CPU benches ~4M / ~10M tiles |
+| `q` | quit |
+| `h` | reprint menu |
 
 ---
 
-## 4. What “success” looks like
+## Success looks like
 
-**In the Godot Output dock** (or console):
+**CLI / Output dock:**
 
 ```text
 [Aetherion] GDExtension Scene init …
 [Aetherion] ready — health=aetherion-ok
-[Aetherion] bound TileMap / MultiMesh …
-… tiles … | apply … cells/instances …
 ```
 
-**On screen:** large maximized window, dark background, **timer HUD** top-left.  
-Demo stages (each holds ~3.5s so you can read times):
+**Demo (`l`):** large window, dark background, stage timer HUD, floods of tiles.
 
-1. TileMap — **1,024** tiles  
-2. MultiMesh medium — **16,384** tiles  
-3. MultiMesh BIG — **10,240,000** tiles (window only; needs RAM)
+**Your game (`g`):** editor open on `godot_save\…` (or your path), `AetherionEngine` in the scene tree.
 
-HUD shows **stage timer**, **gen ms**, **apply ms**, and **tile count**.  
-**Controls:** WASD / arrows pan · mouse wheel zoom.
+### If something’s wrong
 
-If you see `Cannot get class 'AetherionEngine'`: the DLL was not deployed or Godot did not load the extension — run `cargo run -p aetherion-cli -- deploy` then open the project again with `run`.
+| Symptom | Fix |
+|---------|-----|
+| `godot=(not configured)` | Put `Godot_v*.exe` in repo root or set `GODOT_BIN` |
+| `Cannot get class 'AetherionEngine'` | Run menu **g** again on that project (reinstall plugin); reload project |
+| `Can't run project: no main scene` | Use a **current** CLI — menu **g** opens with `--editor` and scaffolds `main.tscn` |
+| Scene tree search finds nothing | Use **Create New Node** (Ctrl+A), not the scene-tree filter |
+| Cargo / link errors on Windows | Install VS Build Tools “Desktop development with C++”, new terminal |
+| First build forever | Normal — dependencies + Rust download |
 
-**Godot version:** Built/tested against **4.5–4.7**. A line like  
-`API v4.5.stable … runtime v4.7.1` is normal (godot-rust targets a stable API; newer Godot still loads it).
-
-**MultiMesh errors** (“Instance count must be 0 to change transform format”) on older builds: update to latest `main` and rebuild (`cargo run -p aetherion-cli -- run`).
-
----
-
-## 5. How the hook works (so you can make your own project later)
-
-Inside `examples/godot_demo/`:
-
-| File | Role |
-|------|------|
-| `aetherion.gdextension` | Tells Godot: load `aetherion.dll`, entry `gdext_rust_init` |
-| `aetherion.dll` | Built by the CLI (gitignored; recreated by `build`/`deploy`) |
-| `main.tscn` | Scene with an **`AetherionEngine`** node + TileMap / MultiMesh |
-| `main.gd` | Calls `bind_tilemap` / `bind_multimesh` and shows stats |
-
-**Your own project (after the demo works):**
-
-1. Create a new Godot 4 project.  
-2. Copy `aetherion.gdextension` into the project root.  
-3. From Aetherion repo:  
-   `cargo run -p aetherion-cli -- build`  
-   then copy `target/release/aetherion.dll` next to that `.gdextension`  
-   (or change the CLI deploy path later).  
-4. Add a node of type **`AetherionEngine`** (appears after the extension loads).  
-5. Optionally add a `TileMap` and call `bind_tilemap` from a script (see `main.gd`).
-
-You must **re-run `build` + `deploy` (or `run`)** after you change Rust code.
+Godot may print `API v4.5 … runtime v4.7` — that is normal (godot-rust targets a stable API).
 
 ---
 
-## 6. Mental model (one diagram)
+## Mental model (keep this)
 
 ```text
-  YOU                     AETHERION REPO                  GODOT
-  ───                     ──────────────                  ─────
-  Install Godot.exe  ──►  GODOT_BIN=...
-  git clone          ──►  cargo run -p aetherion-cli -- run
-                              │
-                              ├─ cargo build → aetherion.dll
-                              ├─ copy dll → examples/godot_demo/
-                              └─ start Godot --path examples/godot_demo
-                                                           │
-                                                           ▼
-                                              loads aetherion.gdextension
-                                              creates AetherionEngine node
-                                              generates + draws tiles
+  target\debug\aetherion-cli.exe     operator menu
+           │
+           ├─ g  →  install plugin into YOUR project + open editor
+           ├─ l  →  run the Aetherion showcase demo
+           └─ b  →  rebuild aetherion.dll after Rust edits
+
+  aetherion.dll + aetherion.gdextension   what Godot actually loads
+  AetherionEngine                         the node you add / already have
 ```
-
----
-
-## 7. Expectation check
-
-| This **is** | This is **not** (yet) |
-|-------------|------------------------|
-| A real, testable **v0.1** GDExtension + demo | A finished commercial engine product |
-| Something you build from source with a CLI | A double-click installer that bundles Godot |
-| Ready for learning + OSS iteration | Guaranteed multi-million **TileMap** FPS on every PC |
 
 ---
 
 ## Cheat sheet
 
 ```powershell
-cd C:\ZV9\lines\games\aetherion
-$env:GODOT_BIN = "C:\path\to\Godot_v4.x_win64.exe"
+cd C:\path\to\aetherion
 
-cargo run -p aetherion-cli -- doctor    # is Godot found?
-cargo run -p aetherion-cli -- smoke     # headless proof
-cargo run -p aetherion-cli -- launch    # open Godot in Aetherion environment
-# aliases: run, godot
+# Godot.exe sits in this folder (or set GODOT_BIN)
+
+cargo build -p aetherion-cli
+.\target\debug\aetherion-cli.exe doctor
+.\target\debug\aetherion-cli.exe
+# → g   make a game
+# → l   launch demo
+# → q   quit
 ```
 
-More detail: [ARCHITECTURE.md](ARCHITECTURE.md) · [LINEAGE.md](LINEAGE.md) · [CONTRIBUTING.md](../CONTRIBUTING.md)
+Shell equivalents (no menu):
+
+```powershell
+cargo run -p aetherion-cli -- launch
+cargo run -p aetherion-cli -- install "C:\path\to\game" --open
+cargo run -p aetherion-cli -- smoke
+cargo run -p aetherion-cli --release -- bench10m
+```
+
+---
+
+## Expectation check
+
+| This **is** | This is **not** (yet) |
+|-------------|------------------------|
+| Real **v0.2** **2D** GDExtension + CLI + gift API bible | A double-click store installer |
+| Source you compile; Godot you download | Godot or DLLs bundled in git |
+| Gift path + tracked `examples/gift_game` | 3D mesh engine (fork for that) |
+| crates.io: `aetherion` / `aetherion-cli` | Guaranteed 10M-tile FPS on every laptop |
+
+More: [ARCHITECTURE.md](ARCHITECTURE.md) · [LINEAGE.md](LINEAGE.md) · [BENCHMARKS.md](BENCHMARKS.md) · [CONTRIBUTING.md](../CONTRIBUTING.md)

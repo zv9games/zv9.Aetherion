@@ -2,8 +2,12 @@
 
 ## What this `main` is
 
-**Greenfield rebuild (2026)** of the Aetherion Godot bridge as an open-source product.  
-**v0.1.0** ships the CLI pipeline, parallel gen, TileMap + MultiMesh host apply.
+**Greenfield rebuild (2026)** of the Aetherion Godot bridge as an open-source **2D** product.
+
+| Version | Notes |
+|---------|--------|
+| **v0.2.0** | Operator menu, gift path + API bible, crates.io, explicit 2D scope |
+| **v0.1.0** | CLI pipeline, parallel gen, TileMap + MultiMesh host apply |
 
 Old multi-crate U8.4 tree is frozen at:
 
@@ -18,12 +22,17 @@ Old multi-crate U8.4 tree is frozen at:
 
 SSXL-ext confirmation vault tag: `archive/confirmation-record` on `zv9games/ssxl-ext`.
 
-## What we do not claim yet
+## Scope (product)
 
-Scale numbers from SSXL-ext history are **prior art**. They will appear under Aetherion only after re-measurement on this tree (`docs/BENCHMARKS.md`).
+- **In:** 2D procedural generation + TileMap / MultiMesh2D host apply for Godot 4.  
+- **Out:** 3D mesh atlas / SSXL “Plan B” renderer. Want 3D? **Fork.**
+
+## What we do not claim lightly
+
+Scale numbers from SSXL-ext history are **prior art**. They appear under Aetherion only after re-measurement on this tree (`docs/BENCHMARKS.md`).
 
 ## Relation to other ZV9 products
 
 - **ssxl** — engine-of-record (GEN cosmology); not this GDExtension host.
 - **ssxl-ext** — frozen Godot-scale reference; not the public product name.
-- **pacman** — consumer game; Pacman 1.0 ships independently.
+- **pacman** — consumer game; ships independently.

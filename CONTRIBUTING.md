@@ -5,7 +5,7 @@ Thanks for helping. Keep the scope sharp: **Rust owns generation; Godot owns pre
 ## Setup
 
 1. Install Rust matching `rust-toolchain.toml` (currently 1.87).
-2. Optionally install **Godot 4.2+** and set `GODOT_BIN` to the executable.
+2. Optionally install **Godot 4.2+** (drop `Godot_v*-stable_*.exe` in the repo root, or set `GODOT_BIN`).
 3. From the repo root:
 
 ```bash
@@ -17,8 +17,10 @@ cargo run -p aetherion-cli -- smoke
 
 ## Guidelines
 
+- **2D product.** TileMap / MultiMesh2D only. 3D experiments belong in a **fork**, not PRs to `main`.
 - No absolute machine paths (`C:\…`) in code; use env/config and paths relative to the workspace.
-- Do **not** commit Godot editor binaries, `.dll` / `.so` / `.dylib` build products, or `.godot/` caches.
+- Do **not** commit Godot editor binaries, `.dll` / `.so` / `.dylib` build products, `.godot/` caches, or `godot_save/`.
+- API bible source of truth: `templates/gift/aetherion_engine_api.gd` (also mirrored in `examples/gift_game/`).
 - Prefer small, documented modules over monorepo dumps from SSXL-ext / old Aetherion.
 - Scale numbers in README/BENCHMARKS must be **measured on this tree**, not copied from SSXL-ext alone.
 - `cargo fmt` and `cargo clippy --workspace -- -D warnings` should pass.

@@ -1,0 +1,17 @@
+﻿; Aetherion gift game — tracked starter (no DLL in git).
+; After: cargo run -p aetherion-cli -- deploy --to examples/gift_game
+config_version=5
+
+[application]
+config/name="Aetherion Gift Game"
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.2", "Forward Plus")
+
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+
+[rendering]
+renderer/rendering_method="forward_plus"
+environment/defaults/default_clear_color=Color(0.08, 0.09, 0.12, 1)

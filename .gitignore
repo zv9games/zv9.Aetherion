@@ -28,3 +28,6 @@ Thumbs.db
 # Local config secrets
 .env
 aetherion.local.toml
+
+# CLI-scaffolded user Godot projects (menu 4 / install default path)
+/godot_save/

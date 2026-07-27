@@ -5,8 +5,12 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
-description = "Aetherion procedural generation core (optional Godot 4 GDExtension)"
+authors.workspace = true
+description = "2D procedural generation for Godot 4 (optional GDExtension) — Rust owns gen, Godot owns presentation"
 readme = "../../README.md"
+keywords = ["godot", "gdextension", "procedural", "2d", "game"]
+categories = ["game-development", "graphics"]
+exclude = ["/target/", "**/*.dll", "**/*.so", "**/*.dylib"]
 
 [lib]
 name = "aetherion"
