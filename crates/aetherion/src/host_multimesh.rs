@@ -1,9 +1,7 @@
 //! Plan-B-lite host path: flood a `MultiMeshInstance2D` with colored quads.
 //!
-//! Much faster than per-cell TileMap writes for large demos (SSXL-ext mesh lineage, 2D).
-//!
-//! Godot requires `instance_count == 0` before changing transform format or color mode,
-//! so each apply builds a **fresh** MultiMesh (safe for bench_medium → flood_million).
+//! Quads are **16×16 world units** (readable on screen). Godot requires
+//! `instance_count == 0` before changing format/colors, so each apply uses a fresh MultiMesh.
 
 use crate::chunk::ChunkData;
 use godot::classes::multi_mesh::TransformFormat;
@@ -11,22 +9,24 @@ use godot::classes::{MultiMesh, MultiMeshInstance2D, QuadMesh};
 use godot::prelude::*;
 use std::time::Instant;
 
+/// World size of one tile quad (matches demo TileMap-ish scale).
+pub const TILE_WORLD_SIZE: f32 = 16.0;
+
 fn color_for_tile(tile: u16) -> Color {
     match tile {
-        0 | 1 => Color::from_rgb(0.15, 0.7, 0.35),
-        2 => Color::from_rgb(0.2, 0.4, 0.9),
-        3 => Color::from_rgb(0.9, 0.65, 0.15),
-        _ => Color::from_rgb(0.75, 0.25, 0.55),
+        0 | 1 => Color::from_rgb(0.12, 0.85, 0.40),
+        2 => Color::from_rgb(0.25, 0.45, 1.0),
+        3 => Color::from_rgb(1.0, 0.75, 0.15),
+        _ => Color::from_rgb(0.95, 0.30, 0.65),
     }
 }
 
-/// Build a new MultiMesh sized for `count` instances (format/colors set while count is 0).
 fn new_colored_multimesh(count: i32) -> Gd<MultiMesh> {
     let mut mm = MultiMesh::new_gd();
     let mut quad = QuadMesh::new_gd();
+    // Unit quad; we scale per-instance via transform basis.
     quad.set_size(Vector2::new(1.0, 1.0));
     mm.set_mesh(&quad);
-    // Order matters: format + colors while instance_count is still 0, then grow.
     mm.set_instance_count(0);
     mm.set_transform_format(TransformFormat::TRANSFORM_2D);
     mm.set_use_colors(true);
@@ -34,7 +34,7 @@ fn new_colored_multimesh(count: i32) -> Gd<MultiMesh> {
     mm
 }
 
-/// Apply all chunk tiles as MultiMesh instances (1 unit = 1 tile).
+/// Apply all chunk tiles as MultiMesh instances.
 /// Returns (instances, elapsed_ms).
 pub fn apply_chunks_to_multimesh(
     mmi: &mut Gd<MultiMeshInstance2D>,
@@ -48,6 +48,7 @@ pub fn apply_chunks_to_multimesh(
 
     let t0 = Instant::now();
     let mut mm = new_colored_multimesh(total);
+    let s = TILE_WORLD_SIZE;
 
     let mut i = 0i32;
     for chunk in chunks {
@@ -58,9 +59,13 @@ pub fn apply_chunks_to_multimesh(
             let row = (ly * size) as usize;
             for lx in 0..size {
                 let tile = chunk.tiles[row + lx as usize];
-                let x = (origin_x + lx as i32) as f32;
-                let y = (origin_y + ly as i32) as f32;
-                let xf = Transform2D::from_angle_origin(0.0, Vector2::new(x + 0.5, y + 0.5));
+                let cx = (origin_x + lx as i32) as f32 * s + s * 0.5;
+                let cy = (origin_y + ly as i32) as f32 * s + s * 0.5;
+                // Scale unit quad to TILE_WORLD_SIZE and place at cell center.
+                let mut xf = Transform2D::IDENTITY;
+                xf[0] = Vector2::new(s * 0.92, 0.0); // slight gap so grid reads
+                xf[1] = Vector2::new(0.0, s * 0.92);
+                xf[2] = Vector2::new(cx, cy);
                 mm.set_instance_transform_2d(i, xf);
                 mm.set_instance_color(i, color_for_tile(tile));
                 i += 1;

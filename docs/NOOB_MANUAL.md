@@ -103,7 +103,9 @@ cargo run -p aetherion-cli --release -- bench4m
 … tiles … | apply … cells/instances …
 ```
 
-**On screen:** status text with version + tile counts; colored tiles / multimesh flood.
+**On screen:** large window (maximized), dark background, status panel top-left.  
+Demo runs in **stages** (TileMap → medium MultiMesh → ~1M MultiMesh) with camera framing so tiles are visible.  
+**Controls:** WASD / arrow keys pan · mouse wheel zoom.
 
 If you see `Cannot get class 'AetherionEngine'`: the DLL was not deployed or Godot did not load the extension — run `cargo run -p aetherion-cli -- deploy` then open the project again with `run`.
 
