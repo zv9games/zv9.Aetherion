@@ -1,6 +1,6 @@
 //! Tiny conductor: timed region generation + metrics (SSXL-ext scale path, simplified).
 
-use crate::chunk::ChunkCoord;
+use crate::chunk::{ChunkCoord, ChunkData};
 use crate::generate::{generate_region, FillMode};
 use std::time::Instant;
 
@@ -27,7 +27,32 @@ impl GenerationReport {
     }
 }
 
-/// Run a timed region generation (CPU only).
+/// Timed region generation including chunk payloads (for host apply).
+pub fn run_region_data(
+    origin: ChunkCoord,
+    chunks_x: u32,
+    chunks_y: u32,
+    chunk_size: u32,
+    mode: FillMode,
+    seed: u32,
+) -> (Vec<ChunkData>, GenerationReport) {
+    let t0 = Instant::now();
+    let (chunks, tiles) = generate_region(origin, chunks_x, chunks_y, chunk_size, mode, seed);
+    let elapsed_ms = t0.elapsed().as_millis();
+    let mode_s = match mode {
+        FillMode::Checkerboard => "checkerboard",
+        FillMode::HashNoise => "hash_noise",
+    };
+    let report = GenerationReport {
+        chunks: chunks.len() as u32,
+        tiles,
+        elapsed_ms,
+        mode: mode_s,
+    };
+    (chunks, report)
+}
+
+/// Run a timed region generation (CPU only, metrics only).
 pub fn run_region(
     origin: ChunkCoord,
     chunks_x: u32,
@@ -36,19 +61,7 @@ pub fn run_region(
     mode: FillMode,
     seed: u32,
 ) -> GenerationReport {
-    let t0 = Instant::now();
-    let (chunks, tiles) = generate_region(origin, chunks_x, chunks_y, chunk_size, mode, seed);
-    let elapsed_ms = t0.elapsed().as_millis();
-    let mode_s = match mode {
-        FillMode::Checkerboard => "checkerboard",
-        FillMode::HashNoise => "hash_noise",
-    };
-    GenerationReport {
-        chunks: chunks.len() as u32,
-        tiles,
-        elapsed_ms,
-        mode: mode_s,
-    }
+    run_region_data(origin, chunks_x, chunks_y, chunk_size, mode, seed).1
 }
 
 #[cfg(test)]

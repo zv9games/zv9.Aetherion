@@ -2,17 +2,27 @@
 
 [ext_resource type="Script" path="res://main.gd" id="1_main"]
 
-[node name="Main" type="Node"]
+[node name="Main" type="Node2D"]
 script = ExtResource("1_main")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(256, 256)
+zoom = Vector2(0.75, 0.75)
+
+[node name="TileMap" type="TileMap" parent="."]
+format = 2
 
 [node name="AetherionEngine" type="AetherionEngine" parent="."]
 
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="Status" type="Label" parent="UI"]
-offset_left = 24.0
-offset_top = 24.0
-offset_right = 900.0
-offset_bottom = 200.0
-theme_override_font_sizes/font_size = 22
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 980.0
+offset_bottom = 160.0
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
 text = "Aetherion loading…"

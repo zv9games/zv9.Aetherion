@@ -15,7 +15,8 @@ Scale confirmation lineage: [`ssxl-ext`](https://github.com/zv9games/ssxl-ext) t
 | Workspace + CLI scaffold | **yes** |
 | GDExtension loads in Godot 4.5 | **yes** (`AetherionEngine`, headless smoke) |
 | CPU region generate + metrics | **yes** (`bench`, `generate_region`) |
-| TileMap host apply / Plan B mesh | planned |
+| TileMap host apply (procedural atlas) | **yes** (`bind_tilemap`, apply path) |
+| Plan B mesh renderer | planned |
 | Multi-million tile host apply re-run | planned |
 
 ## Requirements

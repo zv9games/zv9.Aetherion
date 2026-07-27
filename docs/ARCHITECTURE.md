@@ -18,8 +18,18 @@ examples/godot_demo
 | `aetherion` | Core types + optional GDExtension |
 | `aetherion-cli` | Operator surface (SSXL-ext pipeline, cleaned) |
 
-## Later (not in v0.1)
+## Host apply (Phase 3)
 
-- Bulk TileMap apply / streaming conductor
+```text
+AetherionEngine.bind_tilemap(TileMap)
+  → ensure_demo_tileset (4-color atlas if missing)
+generate_region(...)
+  → conductor::run_region_data
+  → host_tilemap::apply_chunks_to_tilemap (set_cell_ex)
+```
+
+## Later
+
+- Streaming / async conductor workers
 - Plan B mesh renderer (SSXL-ext `SSXLRenderer` lineage)
-- Headless / automated Godot tests
+- Larger TileMap bulk APIs if Godot exposes them
