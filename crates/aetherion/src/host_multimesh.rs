@@ -62,10 +62,12 @@ pub fn apply_chunks_to_multimesh(
                 let cx = (origin_x + lx as i32) as f32 * s + s * 0.5;
                 let cy = (origin_y + ly as i32) as f32 * s + s * 0.5;
                 // Scale unit quad to TILE_WORLD_SIZE and place at cell center.
-                let mut xf = Transform2D::IDENTITY;
-                xf[0] = Vector2::new(s * 0.92, 0.0); // slight gap so grid reads
-                xf[1] = Vector2::new(0.0, s * 0.92);
-                xf[2] = Vector2::new(cx, cy);
+                let gap = 0.92;
+                let xf = Transform2D {
+                    a: Vector2::new(s * gap, 0.0),
+                    b: Vector2::new(0.0, s * gap),
+                    origin: Vector2::new(cx, cy),
+                };
                 mm.set_instance_transform_2d(i, xf);
                 mm.set_instance_color(i, color_for_tile(tile));
                 i += 1;
