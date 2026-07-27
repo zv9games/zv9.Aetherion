@@ -195,7 +195,7 @@ impl AetherionEngine {
         self.generate_region(0, 0, 4, 4, 32, 1, 7)
     }
 
-    /// Large flood: 16×16 chunks of 64 → 1,048,576 tiles (prefer MultiMesh).
+    /// ~1M MultiMesh flood (16×16 × 64² = 1,048,576). Kept for lighter machines.
     #[func]
     fn flood_million(&mut self) -> GString {
         if self.multimesh.is_some() {
@@ -204,10 +204,26 @@ impl AetherionEngine {
         self.generate_region(0, 0, 16, 16, 64, 1, 11)
     }
 
-    /// CPU-only ~4M tiles (32×32 × 64²) — parity scale with SSXL-ext confirmation class.
+    /// Big showcase flood: 50×50 chunks of 64² = **10,240,000** tiles (MultiMesh).
+    /// Pacman-class demos sat ~3.5M; 10M covers “crazy adventure” headroom.
+    #[func]
+    fn flood_10m(&mut self) -> GString {
+        if self.multimesh.is_some() {
+            self.apply_mode = ApplyTarget::MultiMesh;
+        }
+        self.generate_region(0, 0, 50, 50, 64, 1, 17)
+    }
+
+    /// CPU-only ~4M tiles (32×32 × 64²).
     #[func]
     fn bench_4m_cpu(&mut self) -> GString {
         self.generate_region_cpu(0, 0, 32, 32, 64, 1, 13)
+    }
+
+    /// CPU-only ~10.24M tiles (50×50 × 64²).
+    #[func]
+    fn bench_10m_cpu(&mut self) -> GString {
+        self.generate_region_cpu(0, 0, 50, 50, 64, 1, 19)
     }
 }
 

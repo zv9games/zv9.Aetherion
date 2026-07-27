@@ -59,6 +59,8 @@ enum Commands {
     },
     /// CPU-only ~4M tiles (32×32 chunks of 64²) — SSXL-ext confirmation scale class.
     Bench4m,
+    /// CPU-only ~10.24M tiles (50×50 × 64²) — big showcase / adventure headroom.
+    Bench10m,
 }
 
 fn workspace_root() -> Result<PathBuf> {
@@ -241,6 +243,10 @@ fn main() -> Result<()> {
         Commands::Bench4m => {
             // 32*32*64*64 = 4_194_304
             print_bench(32, 32, 64, 13);
+        }
+        Commands::Bench10m => {
+            // 50*50*64*64 = 10_240_000
+            print_bench(50, 50, 64, 19);
         }
     }
     Ok(())

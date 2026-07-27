@@ -18,8 +18,9 @@ Scale confirmation lineage: [`ssxl-ext`](https://github.com/zv9games/ssxl-ext) (
 | GDExtension loads in Godot 4.5 | yes — `AetherionEngine` |
 | Parallel region generation (Rayon) | yes |
 | TileMap host apply (procedural atlas) | yes |
-| MultiMesh large flood (Plan-B-lite) | yes — `flood_million` (~1M) |
-| CPU ~4.19M tiles | yes — `aetherion-cli bench4m` |
+| MultiMesh large flood (Plan-B-lite) | yes — `flood_million` (~1M), **`flood_10m` (~10.24M)** |
+| CPU ~4.19M / ~10.24M tiles | yes — `bench4m` / **`bench10m`** |
+| On-screen stage timer + hold | yes — demo HUD |
 | Operator CLI (build → deploy → run) | yes |
 | Full 3D mesh Plan B (SSXL-ext renderer) | future |
 
