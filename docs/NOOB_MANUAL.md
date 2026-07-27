@@ -61,20 +61,33 @@ You want lines like `aetherion 0.1.0`, `health=aetherion-ok`, and `godot=C:\...e
 
 ---
 
-## 3. Build the extension + hook it into the demo (one command)
+## 3. Launch Godot in the Aetherion environment (main command)
 
 From the **repo root** (`aetherion/`, next to `Cargo.toml`):
 
 ```powershell
-cargo run -p aetherion-cli -- run
+cargo run -p aetherion-cli -- launch
 ```
 
-That single command:
+Aliases (same thing): `run`, `godot`
+
+```powershell
+cargo run -p aetherion-cli -- run
+cargo run -p aetherion-cli -- godot
+```
+
+**`launch` does the full pipeline:**
 
 1. **Builds** the Rust library with Godot support (`aetherion.dll` on Windows)  
-2. **Copies** it into `examples/godot_demo/` (this is the “hook in” step)  
+2. **Copies** it into `examples/godot_demo/` (hook the extension)  
 3. **Writes** Godot’s extension list so Godot finds `aetherion.gdextension`  
-4. **Launches** Godot on `examples/godot_demo`
+4. **Starts Godot** with `--path examples/godot_demo` (Aetherion environment)
+
+Skip rebuild when you only changed GDScript:
+
+```powershell
+cargo run -p aetherion-cli -- launch --no-build
+```
 
 **Do not** type only `cargo run` — always use `-p aetherion-cli -- …`.
 
@@ -87,7 +100,7 @@ cargo run -p aetherion-cli -- smoke
 ### CPU-only stress (no Godot)
 
 ```powershell
-cargo run -p aetherion-cli --release -- bench4m
+cargo run -p aetherion-cli --release -- bench10m
 ```
 
 ---
@@ -186,7 +199,8 @@ $env:GODOT_BIN = "C:\path\to\Godot_v4.x_win64.exe"
 
 cargo run -p aetherion-cli -- doctor    # is Godot found?
 cargo run -p aetherion-cli -- smoke     # headless proof
-cargo run -p aetherion-cli -- run       # open demo and play/see it
+cargo run -p aetherion-cli -- launch    # open Godot in Aetherion environment
+# aliases: run, godot
 ```
 
 More detail: [ARCHITECTURE.md](ARCHITECTURE.md) · [LINEAGE.md](LINEAGE.md) · [CONTRIBUTING.md](../CONTRIBUTING.md)

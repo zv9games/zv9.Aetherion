@@ -1,9 +1,9 @@
 //! Aetherion CLI — the winning ticket, cleaned up.
 //!
 //! Pipeline (from SSXL-ext ashes, without hardcoded machine paths):
-//!   build  → cargo build -p aetherion --features godot --release
-//!   deploy → copy cdylib into examples/godot_demo
-//!   run    → launch Godot via GODOT_BIN / config
+//!   build   → cargo build -p aetherion --features godot --release
+//!   deploy  → copy cdylib into examples/godot_demo
+//!   launch  → open Godot in the Aetherion demo environment
 
 use anyhow::{bail, Context, Result};
 use clap::{Parser, Subcommand};
@@ -12,8 +12,13 @@ use std::process::Command;
 use tracing::{info, warn};
 
 #[derive(Parser, Debug)]
-#[command(name = "aetherion")]
-#[command(about = "Aetherion operator CLI — build / deploy / run Godot demo", long_about = None)]
+#[command(name = "aetherion-cli")]
+#[command(
+    about = "Aetherion operator CLI — build / deploy / launch Godot in the Aetherion environment",
+    long_about = "Primary command for day-to-day work:\n  \
+        cargo run -p aetherion-cli -- launch\n\n\
+        Requires GODOT_BIN (or godot on PATH). See docs/NOOB_MANUAL.md."
+)]
 #[command(version)]
 struct Cli {
     #[command(subcommand)]
@@ -22,49 +27,60 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    /// Print library health and version (no Godot required).
+    /// Print library health, workspace path, and Godot binary resolution.
     Doctor,
+
     /// Build the GDExtension cdylib (`--features godot`).
     Build {
         /// Release profile (default true).
         #[arg(long, default_value_t = true)]
         release: bool,
     },
-    /// Copy the built library into `examples/godot_demo`.
+
+    /// Copy the built library into `examples/godot_demo` (hook the extension).
     Deploy {
         #[arg(long, default_value_t = true)]
         release: bool,
     },
-    /// Build, deploy, then launch Godot on the demo project.
-    Run {
+
+    /// Build + deploy + launch Godot in the Aetherion demo environment.
+    ///
+    /// This is the main “open Godot with Aetherion loaded” command.
+    #[command(visible_alias = "run")]
+    #[command(visible_alias = "godot")]
+    Launch {
         #[arg(long, default_value_t = true)]
         release: bool,
-        /// Extra args forwarded to Godot.
+        /// Skip rebuild (only deploy if dll exists + launch). Faster iteration on GDScript.
+        #[arg(long, default_value_t = false)]
+        no_build: bool,
+        /// Extra args forwarded to Godot (after `--`).
         #[arg(last = true)]
         godot_args: Vec<String>,
     },
+
     /// Build, deploy, headless Godot smoke (quit after a few frames).
     Smoke {
         #[arg(long, default_value_t = true)]
         release: bool,
     },
+
     /// CPU-only region bench (no Godot). Prints tile count and ms.
     Bench {
-        /// Chunks along each axis (total chunks = chunks²).
         #[arg(long, default_value_t = 8)]
         chunks: u32,
-        /// Tiles along each chunk edge.
         #[arg(long, default_value_t = 64)]
         size: u32,
     },
-    /// CPU-only ~4M tiles (32×32 chunks of 64²) — SSXL-ext confirmation scale class.
+
+    /// CPU-only ~4M tiles (32×32 chunks of 64²).
     Bench4m,
-    /// CPU-only ~10.24M tiles (50×50 × 64²) — big showcase / adventure headroom.
+
+    /// CPU-only ~10.24M tiles (50×50 × 64²).
     Bench10m,
 }
 
 fn workspace_root() -> Result<PathBuf> {
-    // crates/aetherion-cli → repo root
     let manifest = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     Ok(manifest
         .parent()
@@ -100,7 +116,6 @@ fn resolve_godot_bin() -> Result<PathBuf> {
         }
         bail!("GODOT_BIN is set but not a file: {}", pb.display());
     }
-    // Fall back to PATH
     for candidate in ["godot", "godot4", "Godot_v4"] {
         if let Ok(output) = Command::new("where").arg(candidate).output() {
             if output.status.success() {
@@ -114,7 +129,6 @@ fn resolve_godot_bin() -> Result<PathBuf> {
             }
         }
     }
-    // Unix which
     if let Ok(output) = Command::new("which").arg("godot").output() {
         if output.status.success() {
             let text = String::from_utf8_lossy(&output.stdout);
@@ -126,7 +140,7 @@ fn resolve_godot_bin() -> Result<PathBuf> {
     }
     bail!(
         "Godot binary not found. Set GODOT_BIN to your Godot 4.x executable \
-         (e.g. GODOT_BIN=C:\\Godot\\Godot_v4.3-stable_win64.exe)"
+         (e.g. $env:GODOT_BIN = 'C:\\Godot\\Godot_v4.7.1-stable_win64.exe')"
     );
 }
 
@@ -158,7 +172,7 @@ fn deploy_extension(root: &Path, release: bool) -> Result<()> {
     let src = target_lib_path(root, release);
     if !src.is_file() {
         bail!(
-            "library not built yet: {}\nRun: aetherion build",
+            "library not built yet: {}\nRun: cargo run -p aetherion-cli -- build",
             src.display()
         );
     }
@@ -171,7 +185,6 @@ fn deploy_extension(root: &Path, release: bool) -> Result<()> {
         .with_context(|| format!("copy {} → {}", src.display(), dest.display()))?;
     info!("deployed → {}", dest.display());
 
-    // Ensure Godot discovers the extension on fresh clones / headless runs.
     let godot_meta = dest_dir.join(".godot");
     std::fs::create_dir_all(&godot_meta)?;
     let ext_list = godot_meta.join("extension_list.cfg");
@@ -184,7 +197,18 @@ fn deploy_extension(root: &Path, release: bool) -> Result<()> {
 fn run_godot(root: &Path, extra: &[String]) -> Result<()> {
     let godot = resolve_godot_bin()?;
     let project = demo_dir(root);
-    info!("launching {} --path {}", godot.display(), project.display());
+    info!(
+        "launching Godot in Aetherion environment:\n  godot = {}\n  project = {}",
+        godot.display(),
+        project.display()
+    );
+    println!("────────────────────────────────────────");
+    println!("  Aetherion environment");
+    println!("  Godot:   {}", godot.display());
+    println!("  Project: {}", project.display());
+    println!("  Plugin:  {}", project.join(lib_name()).display());
+    println!("────────────────────────────────────────");
+
     let mut cmd = Command::new(&godot);
     cmd.arg("--path").arg(&project);
     for a in extra {
@@ -194,6 +218,18 @@ fn run_godot(root: &Path, extra: &[String]) -> Result<()> {
     if !status.success() {
         warn!("Godot exited with {status}");
     }
+    Ok(())
+}
+
+/// Full pipeline: optional build → deploy → launch Godot on the demo.
+fn launch_aetherion_env(root: &Path, release: bool, no_build: bool, godot_args: &[String]) -> Result<()> {
+    if no_build {
+        info!("--no-build: skipping cargo build (using existing library if present)");
+    } else {
+        build_extension(root, release)?;
+    }
+    deploy_extension(root, release)?;
+    run_godot(root, godot_args)?;
     Ok(())
 }
 
@@ -213,25 +249,28 @@ fn main() -> Result<()> {
             println!("{}", aetherion::version_string());
             println!("health={}", aetherion::health());
             println!("workspace={}", root.display());
+            println!("demo={}", demo_dir(&root).display());
             match resolve_godot_bin() {
                 Ok(g) => println!("godot={}", g.display()),
                 Err(e) => println!("godot=(not configured) {e}"),
             }
+            println!();
+            println!("Launch Godot in Aetherion environment:");
+            println!("  cargo run -p aetherion-cli -- launch");
+            println!("  (aliases: run, godot)");
         }
         Commands::Build { release } => build_extension(&root, release)?,
         Commands::Deploy { release } => deploy_extension(&root, release)?,
-        Commands::Run {
+        Commands::Launch {
             release,
+            no_build,
             godot_args,
         } => {
-            build_extension(&root, release)?;
-            deploy_extension(&root, release)?;
-            run_godot(&root, &godot_args)?;
+            launch_aetherion_env(&root, release, no_build, &godot_args)?;
         }
         Commands::Smoke { release } => {
             build_extension(&root, release)?;
             deploy_extension(&root, release)?;
-            // Godot 4: --headless --quit-after N
             run_godot(
                 &root,
                 &["--headless".into(), "--quit-after".into(), "60".into()],
@@ -241,11 +280,9 @@ fn main() -> Result<()> {
             print_bench(chunks, chunks, size, 7);
         }
         Commands::Bench4m => {
-            // 32*32*64*64 = 4_194_304
             print_bench(32, 32, 64, 13);
         }
         Commands::Bench10m => {
-            // 50*50*64*64 = 10_240_000
             print_bench(50, 50, 64, 19);
         }
     }

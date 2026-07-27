@@ -46,18 +46,20 @@ cargo run -p aetherion-cli --release -- bench4m
 
 # With Godot 4.x (PowerShell example):
 $env:GODOT_BIN = "C:\path\to\Godot_v4.x_win64.exe"
-cargo run -p aetherion-cli -- smoke   # headless
-cargo run -p aetherion-cli -- run     # window + TileMap / MultiMesh demo
+cargo run -p aetherion-cli -- smoke    # headless
+cargo run -p aetherion-cli -- launch   # open Godot in Aetherion environment
+# aliases: run, godot
 ```
 
 ### CLI (`aetherion-cli`)
 
 | Command | Action |
 |---------|--------|
-| `doctor` | Version, health, `GODOT_BIN` |
+| `doctor` | Version, health, demo path, `GODOT_BIN` |
 | `build` | Release cdylib with `--features godot` |
 | `deploy` | Copy library into `examples/godot_demo` + extension list |
-| `run` | build + deploy + launch Godot |
+| **`launch`** | **Build + deploy + open Godot in Aetherion env** (aliases: `run`, `godot`) |
+| `launch --no-build` | Deploy existing DLL + open Godot (skip cargo) |
 | `smoke` | build + deploy + headless quit-after |
 | `bench` | CPU region timing |
 | `bench4m` | CPU ~4.19M tiles |
