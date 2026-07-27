@@ -31,6 +31,9 @@ Scale confirmation lineage: [`ssxl-ext`](https://github.com/zv9games/ssxl-ext) (
 
 ## Quick start
 
+**New to Godot?** Use the one-page walkthrough: **[docs/NOOB_MANUAL.md](docs/NOOB_MANUAL.md)**  
+(install Godot → set `GODOT_BIN` → `cargo run -p aetherion-cli -- run`).
+
 ```bash
 git clone https://github.com/zv9games/aetherion.git
 cd aetherion
