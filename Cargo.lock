@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "aetherion"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "anyhow",
  "godot",
@@ -16,7 +16,7 @@ dependencies = [
 
 [[package]]
 name = "aetherion-cli"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "aetherion",
  "anyhow",
