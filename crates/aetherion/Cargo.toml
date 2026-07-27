@@ -1,0 +1,27 @@
+[package]
+name = "aetherion"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+description = "Aetherion procedural generation core (optional Godot 4 GDExtension)"
+readme = "../../README.md"
+
+[lib]
+name = "aetherion"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[features]
+default = []
+# Enable Godot 4 GDExtension bindings (requires godot-rust).
+godot = ["dep:godot"]
+
+[dependencies]
+anyhow.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+# Pin within 0.2 for stable ExtensionLibrary API; bump when Phase 2 lands.
+godot = { version = "=0.2.4", optional = true }
