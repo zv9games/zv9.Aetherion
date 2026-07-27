@@ -60,7 +60,8 @@ cargo run -p aetherion-cli -- run     # window + TileMap / MultiMesh demo
 | `run` | build + deploy + launch Godot |
 | `smoke` | build + deploy + headless quit-after |
 | `bench` | CPU region timing |
-| `bench4m` | CPU ~4.19M tiles (SSXL-ext scale class) |
+| `bench4m` | CPU ~4.19M tiles |
+| `bench10m` | CPU ~10.24M tiles (adventure-class headroom) |
 
 ## Layout
 
