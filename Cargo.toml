@@ -23,3 +23,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 toml = "0.8"
 rayon = "1.10"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

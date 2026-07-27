@@ -282,7 +282,8 @@ impl AetherionEngine {
                     if let Some(map) = self.tilemap.as_mut() {
                         let (cells, apply_ms) = apply_chunks_to_tilemap(map, &chunks);
                         self.last_apply_ms = apply_ms as u64;
-                        summary = format!("{summary} | tilemap apply {cells} cells in {apply_ms} ms");
+                        summary =
+                            format!("{summary} | tilemap apply {cells} cells in {apply_ms} ms");
                     } else {
                         summary = format!("{summary} | apply skipped (no TileMap)");
                     }

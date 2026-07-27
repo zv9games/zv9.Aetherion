@@ -2,7 +2,8 @@
 
 ## What this `main` is
 
-**Greenfield rebuild (2026)** of the Aetherion Godot bridge as an open-source product.
+**Greenfield rebuild (2026)** of the Aetherion Godot bridge as an open-source product.  
+**v0.1.0** ships the CLI pipeline, parallel gen, TileMap + MultiMesh host apply.
 
 Old multi-crate U8.4 tree is frozen at:
 

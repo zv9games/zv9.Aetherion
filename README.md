@@ -1,30 +1,33 @@
 # Aetherion
 
-**Rust procedural generation core for Godot 4** via GDExtension.
+[![CI](https://github.com/zv9games/aetherion/actions/workflows/ci.yml/badge.svg)](https://github.com/zv9games/aetherion/actions/workflows/ci.yml)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
 
-Greenfield rebuild for the open-source community.  
-Historic U8.4 multi-crate tree: branch/tag [`archive/u8.4-pre-greenfield`](https://github.com/zv9games/aetherion/tree/archive/u8.4-pre-greenfield).  
-Scale confirmation lineage: [`ssxl-ext`](https://github.com/zv9games/ssxl-ext) tag `archive/confirmation-record`.
+**Rust procedural generation for Godot 4** via GDExtension.
 
 > Rust owns generation. Godot owns presentation.
 
-## Status
+**v0.1.0** — greenfield open-source release.  
+Historic multi-crate tree: [`archive/u8.4-pre-greenfield`](https://github.com/zv9games/aetherion/tree/archive/u8.4-pre-greenfield).  
+Scale confirmation lineage: [`ssxl-ext`](https://github.com/zv9games/ssxl-ext) (`archive/confirmation-record`).
 
-| Milestone | State |
-|-----------|--------|
-| Workspace + CLI scaffold | **yes** |
-| GDExtension loads in Godot 4.5 | **yes** (`AetherionEngine`, headless smoke) |
-| CPU region generate + metrics | **yes** (`bench`, `generate_region`) |
-| TileMap host apply (procedural atlas) | **yes** |
-| MultiMesh large flood (Plan-B-lite) | **yes** (`flood_million`, ~1M instances) |
-| CPU ~4M tiles (Rayon) | **yes** (`aetherion-cli bench4m`) |
-| Full SSXL-ext mesh/3D Plan B | planned |
+## Features
+
+| Capability | Status |
+|------------|--------|
+| GDExtension loads in Godot 4.5 | yes — `AetherionEngine` |
+| Parallel region generation (Rayon) | yes |
+| TileMap host apply (procedural atlas) | yes |
+| MultiMesh large flood (Plan-B-lite) | yes — `flood_million` (~1M) |
+| CPU ~4.19M tiles | yes — `aetherion-cli bench4m` |
+| Operator CLI (build → deploy → run) | yes |
+| Full 3D mesh Plan B (SSXL-ext renderer) | future |
 
 ## Requirements
 
-- Rust (see `rust-toolchain.toml`)
-- **Godot 4.2+** installed separately (not vendored)
-- Windows x64 primary; Linux/macOS libraries mapped in `.gdextension`
+- **Rust** (see `rust-toolchain.toml`, currently 1.87)
+- **Godot 4.2+** installed separately (not vendored in this repo)
+- Windows x64 primary; Linux/macOS lib names in `.gdextension`
 
 ## Quick start
 
@@ -32,41 +35,69 @@ Scale confirmation lineage: [`ssxl-ext`](https://github.com/zv9games/ssxl-ext) t
 git clone https://github.com/zv9games/aetherion.git
 cd aetherion
 
-# No Godot needed:
-cargo test -p aetherion
+# No Godot required:
+cargo test --workspace
 cargo run -p aetherion-cli -- doctor
+cargo run -p aetherion-cli --release -- bench4m
 
-# With Godot 4.x:
-# Windows PowerShell:
+# With Godot 4.x (PowerShell example):
 $env:GODOT_BIN = "C:\path\to\Godot_v4.x_win64.exe"
-cargo run -p aetherion-cli -- run
+cargo run -p aetherion-cli -- smoke   # headless
+cargo run -p aetherion-cli -- run     # window + TileMap / MultiMesh demo
 ```
 
-CLI binary name: **`aetherion-cli`**.
+### CLI (`aetherion-cli`)
 
 | Command | Action |
 |---------|--------|
-| `aetherion-cli doctor` | Version, health, Godot path |
-| `aetherion-cli build` | `cargo build -p aetherion --features godot --release` |
-| `aetherion-cli deploy` | Copy cdylib into `examples/godot_demo` |
-| `aetherion-cli run` | build + deploy + launch Godot |
-| `aetherion-cli smoke` | build + deploy + headless quit-after |
-| `aetherion-cli bench` | CPU-only region timing (no Godot) |
-| `aetherion-cli bench4m` | CPU ~4.19M tiles (SSXL-ext scale class) |
+| `doctor` | Version, health, `GODOT_BIN` |
+| `build` | Release cdylib with `--features godot` |
+| `deploy` | Copy library into `examples/godot_demo` + extension list |
+| `run` | build + deploy + launch Godot |
+| `smoke` | build + deploy + headless quit-after |
+| `bench` | CPU region timing |
+| `bench4m` | CPU ~4.19M tiles (SSXL-ext scale class) |
 
 ## Layout
 
 ```text
 crates/aetherion       engine (rlib + cdylib, feature godot)
-crates/aetherion-cli   operator CLI (build → deploy → run)
-examples/godot_demo    minimal Godot project
+crates/aetherion-cli   operator CLI
+examples/godot_demo    minimal Godot 4 project
 docs/                  lineage, architecture, benchmarks
 ```
 
+## Godot API (extension)
+
+Node class: **`AetherionEngine`**
+
+| Method | Purpose |
+|--------|---------|
+| `bind_tilemap(TileMap)` | Host apply via TileMap |
+| `bind_multimesh(MultiMeshInstance2D)` | Fast large floods |
+| `set_prefer_multimesh(bool)` | Prefer MultiMesh when both bound |
+| `generate_region(...)` | Gen + apply |
+| `generate_region_cpu(...)` | Gen only |
+| `bench_medium()` / `flood_million()` / `bench_4m_cpu()` | Built-in benches |
+| `get_last_summary()` / `get_last_ms()` / `get_last_apply_ms()` | Metrics |
+
+## Benchmarks (indicative)
+
+See [docs/BENCHMARKS.md](docs/BENCHMARKS.md). On a Windows dev machine (release CLI):
+
+- **4,194,304** tiles generated in ~**2 ms** (CPU, Rayon)
+- GDExtension load + TileMap/MultiMesh apply verified under Godot **4.5.1** headless
+
+Hardware varies — re-run `bench` / `bench4m` / `smoke` on yours.
+
 ## License
 
-Dual-licensed under **MIT** OR **Apache-2.0**.
+Dual-licensed under **[MIT](LICENSE-MIT)** OR **[Apache-2.0](LICENSE-APACHE)**.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Please keep absolute paths and editor binaries out of git.
 
 ## Lineage
 
-See [docs/LINEAGE.md](docs/LINEAGE.md).
+[docs/LINEAGE.md](docs/LINEAGE.md) — how U8.4 and SSXL-ext feed this tree without shipping their baggage.

@@ -1,9 +1,7 @@
 # Build
 /target/
 **/target/
-Cargo.lock
-# Keep lock for CLI binary reproducibility once we pin releases:
-# (uncomment later if desired) !Cargo.lock
+# Cargo.lock is committed for reproducible CLI/cdylib builds.
 
 # Godot / GDExtension artifacts — never commit
 *.dll
