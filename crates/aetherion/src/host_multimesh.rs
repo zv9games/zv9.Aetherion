@@ -1,6 +1,9 @@
 //! Plan-B-lite host path: flood a `MultiMeshInstance2D` with colored quads.
 //!
 //! Much faster than per-cell TileMap writes for large demos (SSXL-ext mesh lineage, 2D).
+//!
+//! Godot requires `instance_count == 0` before changing transform format or color mode,
+//! so each apply builds a **fresh** MultiMesh (safe for bench_medium → flood_million).
 
 use crate::chunk::ChunkData;
 use godot::classes::multi_mesh::TransformFormat;
@@ -17,31 +20,17 @@ fn color_for_tile(tile: u16) -> Color {
     }
 }
 
-/// Ensure instance has a colored MultiMesh with a unit quad.
-fn ensure_multimesh(mmi: &mut Gd<MultiMeshInstance2D>, count: i32) -> Gd<MultiMesh> {
-    let mut mm = mmi.get_multimesh().unwrap_or_else(|| {
-        let mut m = MultiMesh::new_gd();
-        let mut quad = QuadMesh::new_gd();
-        quad.set_size(Vector2::new(1.0, 1.0));
-        m.set_mesh(&quad);
-        m.set_transform_format(TransformFormat::TRANSFORM_2D);
-        m.set_use_colors(true);
-        mmi.set_multimesh(&m);
-        m
-    });
-
-    // Reconfigure mesh/format if needed
-    if mm.get_mesh().is_none() {
-        let mut quad = QuadMesh::new_gd();
-        quad.set_size(Vector2::new(1.0, 1.0));
-        mm.set_mesh(&quad);
-    }
+/// Build a new MultiMesh sized for `count` instances (format/colors set while count is 0).
+fn new_colored_multimesh(count: i32) -> Gd<MultiMesh> {
+    let mut mm = MultiMesh::new_gd();
+    let mut quad = QuadMesh::new_gd();
+    quad.set_size(Vector2::new(1.0, 1.0));
+    mm.set_mesh(&quad);
+    // Order matters: format + colors while instance_count is still 0, then grow.
+    mm.set_instance_count(0);
     mm.set_transform_format(TransformFormat::TRANSFORM_2D);
     mm.set_use_colors(true);
-    if mm.get_instance_count() != count {
-        mm.set_instance_count(count);
-    }
-    mmi.set_multimesh(&mm);
+    mm.set_instance_count(count.max(0));
     mm
 }
 
@@ -58,7 +47,7 @@ pub fn apply_chunks_to_multimesh(
         .max(0);
 
     let t0 = Instant::now();
-    let mut mm = ensure_multimesh(mmi, total);
+    let mut mm = new_colored_multimesh(total);
 
     let mut i = 0i32;
     for chunk in chunks {
@@ -71,7 +60,6 @@ pub fn apply_chunks_to_multimesh(
                 let tile = chunk.tiles[row + lx as usize];
                 let x = (origin_x + lx as i32) as f32;
                 let y = (origin_y + ly as i32) as f32;
-                // Center quad on cell
                 let xf = Transform2D::from_angle_origin(0.0, Vector2::new(x + 0.5, y + 0.5));
                 mm.set_instance_transform_2d(i, xf);
                 mm.set_instance_color(i, color_for_tile(tile));
@@ -79,7 +67,6 @@ pub fn apply_chunks_to_multimesh(
             }
         }
     }
-    // Write back in case Godot needs the resource reassigned
     mmi.set_multimesh(&mm);
     (total as u64, t0.elapsed().as_millis())
 }

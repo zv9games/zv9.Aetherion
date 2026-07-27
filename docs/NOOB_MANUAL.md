@@ -107,6 +107,11 @@ cargo run -p aetherion-cli --release -- bench4m
 
 If you see `Cannot get class 'AetherionEngine'`: the DLL was not deployed or Godot did not load the extension — run `cargo run -p aetherion-cli -- deploy` then open the project again with `run`.
 
+**Godot version:** Built/tested against **4.5–4.7**. A line like  
+`API v4.5.stable … runtime v4.7.1` is normal (godot-rust targets a stable API; newer Godot still loads it).
+
+**MultiMesh errors** (“Instance count must be 0 to change transform format”) on older builds: update to latest `main` and rebuild (`cargo run -p aetherion-cli -- run`).
+
 ---
 
 ## 5. How the hook works (so you can make your own project later)
