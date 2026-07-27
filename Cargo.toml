@@ -10,7 +10,7 @@ version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/zv9games/aetherion"
-rust-version = "1.75"
+rust-version = "1.87"
 
 [workspace.dependencies]
 aetherion = { path = "crates/aetherion" }

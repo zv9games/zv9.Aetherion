@@ -6,12 +6,16 @@
 #![deny(missing_docs)]
 
 pub mod chunk;
+pub mod conductor;
 pub mod error;
+pub mod generate;
 pub mod version;
 
-pub use chunk::ChunkCoord;
+pub use chunk::{ChunkCoord, ChunkData};
+pub use conductor::{run_region, GenerationReport};
 pub use error::AetherionError;
-pub use version::{VERSION, version_string};
+pub use generate::FillMode;
+pub use version::{version_string, VERSION};
 
 /// Library health check used by CLI and tests.
 pub fn health() -> &'static str {

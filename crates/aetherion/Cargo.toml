@@ -23,5 +23,5 @@ anyhow.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
-# Pin within 0.2 for stable ExtensionLibrary API; bump when Phase 2 lands.
-godot = { version = "=0.2.4", optional = true }
+# Align with SSXL-ext ashes (Godot 4.2–4.5 class of API).
+godot = { version = "0.4.5", optional = true }

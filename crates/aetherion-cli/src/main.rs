@@ -43,6 +43,18 @@ enum Commands {
         #[arg(last = true)]
         godot_args: Vec<String>,
     },
+    /// Build, deploy, headless Godot smoke (quit after a few frames).
+    Smoke {
+        #[arg(long, default_value_t = true)]
+        release: bool,
+    },
+    /// CPU-only region bench (no Godot). Prints tile count and ms.
+    Bench {
+        #[arg(long, default_value_t = 8)]
+        chunks: u32,
+        #[arg(long, default_value_t = 64)]
+        size: u32,
+    },
 }
 
 fn workspace_root() -> Result<PathBuf> {
@@ -152,6 +164,14 @@ fn deploy_extension(root: &Path, release: bool) -> Result<()> {
     std::fs::copy(&src, &dest)
         .with_context(|| format!("copy {} → {}", src.display(), dest.display()))?;
     info!("deployed → {}", dest.display());
+
+    // Ensure Godot discovers the extension on fresh clones / headless runs.
+    let godot_meta = dest_dir.join(".godot");
+    std::fs::create_dir_all(&godot_meta)?;
+    let ext_list = godot_meta.join("extension_list.cfg");
+    std::fs::write(&ext_list, "res://aetherion.gdextension\n")
+        .with_context(|| format!("write {}", ext_list.display()))?;
+    info!("wrote {}", ext_list.display());
     Ok(())
 }
 
@@ -201,6 +221,34 @@ fn main() -> Result<()> {
             build_extension(&root, release)?;
             deploy_extension(&root, release)?;
             run_godot(&root, &godot_args)?;
+        }
+        Commands::Smoke { release } => {
+            build_extension(&root, release)?;
+            deploy_extension(&root, release)?;
+            // Godot 4: --headless --quit-after N
+            run_godot(
+                &root,
+                &["--headless".into(), "--quit-after".into(), "60".into()],
+            )?;
+        }
+        Commands::Bench { chunks, size } => {
+            let report = aetherion::run_region(
+                aetherion::ChunkCoord::new(0, 0),
+                chunks,
+                chunks,
+                size,
+                aetherion::FillMode::HashNoise,
+                7,
+            );
+            println!("{}", report.summary());
+            println!(
+                "tiles_per_sec≈{:.0}",
+                if report.elapsed_ms == 0 {
+                    report.tiles as f64
+                } else {
+                    report.tiles as f64 / (report.elapsed_ms as f64 / 1000.0)
+                }
+            );
         }
     }
     Ok(())

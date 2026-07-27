@@ -1,5 +1,18 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://main.gd" id="1_main"]
 
 [node name="Main" type="Node"]
+script = ExtResource("1_main")
 
 [node name="AetherionEngine" type="AetherionEngine" parent="."]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Status" type="Label" parent="UI"]
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 900.0
+offset_bottom = 200.0
+theme_override_font_sizes/font_size = 22
+text = "Aetherion loading…"

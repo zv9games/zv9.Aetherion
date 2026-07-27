@@ -15,6 +15,7 @@ Godot_*.exe
 Godot_*.zip
 .godot/
 **/.godot/
+# Keep tracked extension discovery template optional; local .godot stays ignored
 *.translation
 
 # OS / IDE
