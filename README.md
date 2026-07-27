@@ -1,7 +1,7 @@
 # Aetherion
 
 <p align="center">
-  <img src="./.assets/godot_aetherion.jpg" alt="Godot Aetherion Poster" width="600"/>
+  <img src="https://raw.githubusercontent.com/zv9games/aetherion/main/.assets/godot_aetherion.jpg" alt="Godot Aetherion Poster" width="600"/>
 </p>
 
 <p align="center">
@@ -16,7 +16,7 @@
 
 ```text
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  AETHERION — v0.2.0 · 2D by design                                        ║
+║  AETHERION — v0.2.1 · 2D by design                                        ║
 ║                                                                           ║
 ║  Rust owns generation. Godot owns presentation.                           ║
 ║  Build the CLI. Drop Godot in the repo root. Press g. Make a game.        ║
@@ -199,6 +199,7 @@ See [docs/BENCHMARKS.md](docs/BENCHMARKS.md). On a Windows dev box (release CLI)
 
 ## Lineage
 
+**v0.2.1** — crates.io README poster fix.  
 **v0.2.0** — gift path, API bible, operator menu, crates.io.  
 **v0.1.0** — first greenfield OSS cut.  
 Historic multi-crate tree: [`archive/u8.4-pre-greenfield`](https://github.com/zv9games/aetherion/tree/archive/u8.4-pre-greenfield).  

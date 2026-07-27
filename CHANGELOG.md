@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## [0.2.1] — 2026-07-27
+
+### Fixed
+- README poster uses absolute GitHub raw URL so it renders on **crates.io** / docs.rs (relative `./.assets/…` does not)
+
 ## [0.2.0] — 2026-07-27
 
 **2D by design.** TileMap + MultiMesh2D host paths. 3D is out of scope — fork if you need it.
